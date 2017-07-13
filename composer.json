@@ -1,0 +1,36 @@
+{
+    "name": "chris-kruining/vivid",
+    "type": "ORM",
+    "description": "ORM for PHP 7^",
+    "keywords": ["ORM","PHP"],
+    "homepage": "https://github.com/chris-kruining/utilities",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Chris Kruining",
+            "email": "chris@kruining.eu",
+            "homepage": "https://github.com/chris-kruining",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~5.4",
+        "phpspec/phpspec": "^3.0"
+    },
+    "config": {
+      "bin-dir": "bin"
+    },
+    "autoload": {
+        "psr-4": {
+            "CPB\\Utilities\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "spec\\": "spec/"
+        }
+    }
+}
