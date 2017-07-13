@@ -15,6 +15,10 @@ set_error_handler(function($errno, $errstr, $errfile, $errline){
     ]);
 });
 
-$collection = new Collection();
+$collection = Collection::From([
+    'Name' => 'John Doe',
+    'Age' => 30,
+    'Gender' => 'Male',
+]);
 
 var_dump($collection);
