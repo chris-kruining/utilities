@@ -7,4 +7,4 @@ before_script:
   - sudo apt-get update -qq
   - composer install --dev
 script:
-  - sudo bin/phpspec run
+  - sudo ./bin/phpspec run
