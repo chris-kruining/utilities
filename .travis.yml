@@ -6,6 +6,4 @@ before_script:
   - composer install
   - chmod -R +x ./bin
 script:
-  - ls -l
-  - ls -l ./bin
   - ./bin/phpspec run
