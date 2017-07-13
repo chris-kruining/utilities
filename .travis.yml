@@ -4,7 +4,6 @@ php:
   - 7.0
   - 7.1
 before_script:
-  - apt-get update -qq
-  - composer install --dev
+  - sudo composer install --dev
 script:
-  - ./bin/phpspec run
+  - sudo ./bin/phpspec run
