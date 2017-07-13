@@ -1,10 +1,10 @@
+sudo: required
 language: php
 php:
   - 7.0
   - 7.1
-  - 7.2
 before_script:
-  - sudo apt-get update -qq
+  - apt-get update -qq
   - composer install --dev
 script:
-  - sudo ./bin/phpspec run
+  - ./bin/phpspec run
