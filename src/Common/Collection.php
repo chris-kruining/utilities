@@ -21,7 +21,7 @@ namespace CPB\Utilities\Common
 
                 return is_array($result)
                     ? static::From($result)
-                    : $result
+                    : $result;
             }
         }
 
