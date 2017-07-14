@@ -29,11 +29,11 @@ namespace spec\CPB\Utilities\Common
 
         public function it_is_sortable()
         {
-            $this::From([ 21, 42, -38 ])
-                ->Sort()
-                ->shouldHaveKeyWithValue(0, -38)
-                ->shouldHaveKeyWithValue(1, 21)
-                ->shouldHaveKeyWithValue(2, 42);
+            $sorted = $this::From([ 21, 42, -38 ])->Sort();
+            
+            $sorted->shouldHaveKeyWithValue(0, -38)
+            $sorted->shouldHaveKeyWithValue(1, 21)
+            $sorted->shouldHaveKeyWithValue(2, 42);
         }
 
         public function it_is_joinable()
