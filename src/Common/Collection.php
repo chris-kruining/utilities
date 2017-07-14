@@ -38,6 +38,11 @@ namespace CPB\Utilities\Common
             return $inst;
         }
 
+        public function ToArray()
+        {
+            return iterator_to_array($this);
+        }
+
         public function count(): int
         {
             return count($this->items);

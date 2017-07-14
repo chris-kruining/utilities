@@ -17,6 +17,11 @@ namespace spec\CPB\Utilities\Common
             $this::From([])->shouldHaveType(Collection::class);
         }
 
+        public function it_is_castable_to_array()
+        {
+            $this->ToArray()->shouldBeArray();
+        }
+
         public function it_is_iterable()
         {
             $this->getIterator()->shouldHaveType(\Generator::class);
@@ -28,7 +33,7 @@ namespace spec\CPB\Utilities\Common
                 'one',
                 'two',
                 'three',
-            ])->count()->shouldReturn(3);
+            ])->shouldHaveCount(3);
         }
 
         public function it_can_create_items()
@@ -37,7 +42,9 @@ namespace spec\CPB\Utilities\Common
             $this['two'] = 2;
             $this['three'] = 3;
 
-            $this->count()->shouldReturn(3);
+            $this->shouldHaveKeyWithValue('one', 1);
+            $this->shouldHaveKeyWithValue('two', 2);
+            $this->shouldHaveKeyWithValue('three', 3);
         }
 
         public function it_can_read_items()
