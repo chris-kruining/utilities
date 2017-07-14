@@ -31,8 +31,8 @@ namespace spec\CPB\Utilities\Common
         {
             $sorted = $this::From([ 21, 42, -38 ])->Sort();
 
-            $sorted->shouldHaveKeyWithValue(0, -38)
-            $sorted->shouldHaveKeyWithValue(1, 21)
+            $sorted->shouldHaveKeyWithValue(0, -38);
+            $sorted->shouldHaveKeyWithValue(1, 21);
             $sorted->shouldHaveKeyWithValue(2, 42);
         }
 
@@ -64,13 +64,13 @@ namespace spec\CPB\Utilities\Common
         {
             $set = $this::From([ 'One', 'Two', 'Three' ])->PowerSet();
 
-            $this->shouldContain('One');
-            $this->shouldContain('oneTwo');
-            $this->shouldContain('oneThree');
-            $this->shouldContain('oneTwoThree');
-            $this->shouldContain('Two');
-            $this->shouldContain('TwoThree');
-            $this->shouldContain('Three');
+            $set->shouldContain('One');
+            $set->shouldContain('oneTwo');
+            $set->shouldContain('oneThree');
+            $set->shouldContain('oneTwoThree');
+            $set->shouldContain('Two');
+            $set->shouldContain('TwoThree');
+            $set->shouldContain('Three');
         }
 
         public function it_can_read_items()
