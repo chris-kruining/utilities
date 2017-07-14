@@ -57,8 +57,6 @@ namespace CPB\Utilities\Common
                 $b = sprintf("%0".$count."b",$i);
                 $out = [];
 
-                var_dump($b);
-
                 for ($j = 0; $j < $count; $j++)
                 {
                     if ($b{$j} == '1')
