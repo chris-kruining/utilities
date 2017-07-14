@@ -29,6 +29,13 @@ namespace CPB\Utilities\Common
                     ? static::From($result)
                     : $result;
             }
+
+            $function = strtolower($method);
+
+            if(strpos($function, 'sort') !== false && function_exists($function))
+            {
+                return $function($this->items, ...$parameters);
+            }
         }
 
         public function Map(callable $callback): Collection

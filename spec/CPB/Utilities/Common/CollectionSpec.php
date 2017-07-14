@@ -27,6 +27,15 @@ namespace spec\CPB\Utilities\Common
             $this->getIterator()->shouldHaveType(\Generator::class);
         }
 
+        public function it_is_sortable()
+        {
+            $this::From([ 21, 42, -38 ])
+                ->Sort()
+                ->shouldHaveKeyWithValue(0, -38);
+                ->shouldHaveKeyWithValue(1, 21);
+                ->shouldHaveKeyWithValue(2, 42);
+        }
+
         public function it_is_joinable()
         {
             $this::From([ 'one', 'two', 'three' ])
