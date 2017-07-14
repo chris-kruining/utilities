@@ -31,8 +31,8 @@ namespace spec\CPB\Utilities\Common
         {
             $this::From([ 21, 42, -38 ])
                 ->Sort()
-                ->shouldHaveKeyWithValue(0, -38);
-                ->shouldHaveKeyWithValue(1, 21);
+                ->shouldHaveKeyWithValue(0, -38)
+                ->shouldHaveKeyWithValue(1, 21)
                 ->shouldHaveKeyWithValue(2, 42);
         }
 

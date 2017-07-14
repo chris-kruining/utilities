@@ -36,7 +36,7 @@ namespace CPB\Utilities\Common
             {
                 $function($this->items, ...$parameters);
 
-                return $this; 
+                return $this;
             }
         }
 
