@@ -27,13 +27,17 @@ namespace spec\CPB\Utilities\Common
             $this->getIterator()->shouldHaveType(\Generator::class);
         }
 
+        public function it_is_joinable()
+        {
+            $this::From([ 'one', 'two', 'three' ])
+                ->Join(',')
+                ->shouldReturn('one,two,three');
+        }
+
         public function it_is_countable()
         {
-            $this::From([
-                'one',
-                'two',
-                'three',
-            ])->shouldHaveCount(3);
+            $this::From([ 'one', 'two', 'three' ])
+                ->shouldHaveCount(3);
         }
 
         public function it_can_create_items()

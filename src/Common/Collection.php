@@ -49,6 +49,11 @@ namespace CPB\Utilities\Common
             return iterator_to_array($this);
         }
 
+        public function Join(string $delimitor = '') : string
+        {
+            return join($delimitor, $this->ToArray());
+        }
+
         public function count(): int
         {
             return count($this->items);
