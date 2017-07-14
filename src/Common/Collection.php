@@ -50,6 +50,7 @@ namespace CPB\Utilities\Common
         {
             $count = $this->count();
             $members = pow(2, $count);
+            $values = $this->Values();
             $return = [];
 
             for ($i = 0; $i < $members; $i++)
@@ -61,7 +62,7 @@ namespace CPB\Utilities\Common
                 {
                     if ($b{$j} == '1')
                     {
-                        $out[] = $this->items[$j];
+                        $out[] = $values[$j];
                     }
                 }
 
