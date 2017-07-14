@@ -64,13 +64,13 @@ namespace spec\CPB\Utilities\Common
         {
             $set = $this::From([ 'One', 'Two', 'Three' ])->PowerSet();
 
-            $set->shouldContain('One');
-            $set->shouldContain('oneTwo');
-            $set->shouldContain('oneThree');
-            $set->shouldContain('oneTwoThree');
-            $set->shouldContain('Two');
-            $set->shouldContain('TwoThree');
-            $set->shouldContain('Three');
+            $set->shouldContain([ 'One' ]);
+            $set->shouldContain([ 'One', 'Two' ]);
+            $set->shouldContain([ 'One', 'Three' ]);
+            $set->shouldContain([ 'One', 'Two', 'Three' ]);
+            $set->shouldContain([ 'Two' ]);
+            $set->shouldContain([ 'Two', 'Three' ]);
+            $set->shouldContain([ 'Three' ]);
         }
 
         public function it_can_read_items()
