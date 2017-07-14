@@ -1,8 +1,8 @@
 {
-    "name": "chris-kruining/vivid",
-    "type": "ORM",
-    "description": "ORM for PHP 7^",
-    "keywords": ["ORM","PHP"],
+    "name": "chris-kruining/utilities",
+    "type": "Utilities",
+    "description": "Utilities for PHP 7^",
+    "keywords": ["Utilities","PHP"],
     "homepage": "https://github.com/chris-kruining/utilities",
     "license": "GPL-3.0",
     "authors": [
