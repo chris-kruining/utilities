@@ -45,6 +45,37 @@ namespace CPB\Utilities\Common
             return static::From(array_map($callback, $this->items));
         }
 
+        // courtesy of https://stackoverflow.com/a/6092999
+        public function PowerSet(int $minLength = 1) : Collection
+        {
+            $count = $this->count();
+            $members = pow(2, $count);
+            $return = [];
+
+            for ($i = 0; $i < $members; $i++)
+            {
+                $b = sprintf("%0".$count."b",$i);
+                $out = [];
+
+                var_dump($b);
+
+                for ($j = 0; $j < $count; $j++)
+                {
+                    if ($b{$j} == '1')
+                    {
+                        $out[] = $this->items[$j];
+                    }
+                }
+
+                if (count($out) >= $minLength)
+                {
+                    $return[] = $out;
+                }
+            }
+
+            return Collection::From($return);
+        }
+
         public static function From(array $items): Collection
         {
             $inst = new static();

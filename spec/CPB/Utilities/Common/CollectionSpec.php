@@ -30,7 +30,7 @@ namespace spec\CPB\Utilities\Common
         public function it_is_sortable()
         {
             $sorted = $this::From([ 21, 42, -38 ])->Sort();
-            
+
             $sorted->shouldHaveKeyWithValue(0, -38)
             $sorted->shouldHaveKeyWithValue(1, 21)
             $sorted->shouldHaveKeyWithValue(2, 42);
@@ -58,6 +58,19 @@ namespace spec\CPB\Utilities\Common
             $this->shouldHaveKeyWithValue('one', 1);
             $this->shouldHaveKeyWithValue('two', 2);
             $this->shouldHaveKeyWithValue('three', 3);
+        }
+
+        public function it_can_create_a_power_set()
+        {
+            $set = $this::From([ 'One', 'Two', 'Three' ])->PowerSet();
+
+            $this->shouldContain('One');
+            $this->shouldContain('oneTwo');
+            $this->shouldContain('oneThree');
+            $this->shouldContain('oneTwoThree');
+            $this->shouldContain('Two');
+            $this->shouldContain('TwoThree');
+            $this->shouldContain('Three');
         }
 
         public function it_can_read_items()
