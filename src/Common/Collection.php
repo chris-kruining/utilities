@@ -13,7 +13,13 @@ namespace CPB\Utilities\Common
 
         public function __call($method, $parameters)
         {
-            $function = 'array_' . strtolower($method);
+            $function = 'array' . preg_replace_callback(
+                '/[A-Z]/',
+                function($match) {
+                    return '_' . strtolower($match[0]);
+                },
+                $method
+            );
 
             if(function_exists($function))
             {
