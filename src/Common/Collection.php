@@ -17,7 +17,11 @@ namespace CPB\Utilities\Common
 
             if(function_exists($function))
             {
-                return $function($this->items, ...$parameters);
+                $result = $function($this->items, ...$parameters);
+
+                return is_array($result)
+                    ? static::From($result)
+                    : $result
             }
         }
 
