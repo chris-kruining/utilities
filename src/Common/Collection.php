@@ -34,7 +34,9 @@ namespace CPB\Utilities\Common
 
             if(strpos($function, 'sort') !== false && function_exists($function))
             {
-                return $function($this->items, ...$parameters);
+                $function($this->items, ...$parameters);
+
+                return $this; 
             }
         }
 
