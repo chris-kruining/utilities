@@ -6,7 +6,7 @@ namespace CPB\Utilities\Common
     {
         public static function Match(string $pattern, string $subject) : array
         {
-            preg_match($pattern, $subject, $matches);
+            preg_match_all($pattern, $subject, $matches);
 
             return $matches;
         }
@@ -24,8 +24,8 @@ namespace CPB\Utilities\Common
         }
     
         public static function AfterLastOccurrence(string $subject, string $character = '/') : string
-        {        
-            return static::Match('/.*\\' . $character . '(.*)/', $subject, $match)[1];
+        {
+            return static::Match('/.*\\' . $character . '(.*)/', $subject)[1][0];
         }
     }
 }

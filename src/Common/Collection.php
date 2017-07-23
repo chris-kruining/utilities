@@ -2,7 +2,7 @@
 
 namespace CPB\Utilities\Common
 {
-    class Collection implements \Countable, \IteratorAggregate, \ArrayAccess
+    class Collection implements \Countable, \IteratorAggregate, \ArrayAccess, \Serializable, \JsonSerializable
     {
         protected $items;
 
@@ -53,26 +53,26 @@ namespace CPB\Utilities\Common
             $values = $this->Values();
             $return = [];
 
-            for ($i = 0; $i < $members; $i++)
+            for($i = 0; $i < $members; $i++)
             {
-                $b = sprintf("%0".$count."b",$i);
+                $b = sprintf("%0" . $count . "b", $i);
                 $out = [];
 
-                for ($j = 0; $j < $count; $j++)
+                for($j = 0; $j < $count; $j++)
                 {
-                    if ($b{$j} == '1')
+                    if($b{$j} == '1')
                     {
                         $out[] = $values[$j];
                     }
                 }
 
-                if (count($out) >= $minLength)
+                if(count($out) >= $minLength)
                 {
                     $return[] = $out;
                 }
             }
 
-            return Collection::From($return);
+            return static::From($return);
         }
 
         public static function From(array $items): Collection
@@ -118,6 +118,21 @@ namespace CPB\Utilities\Common
         public function offsetUnset($offset)
         {
             unset($this->items[$offset]);
+        }
+
+        public function serialize()
+        {
+            return json_encode($this->ToArray());
+        }
+
+        public function unserialize($serialized)
+        {
+            return static::From(json_decode($serialized, true));
+        }
+
+        function jsonSerialize()
+        {
+            return $this->serialize();
         }
     }
 }

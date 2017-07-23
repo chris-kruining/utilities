@@ -1,22 +1,14 @@
 <?php
 
-require_once __DIR__ . '/../../src/Common/Regex.php';
+use CPB\Utilities\Common\Regex;
+
+require_once '../render.php';
+
+echo Renderer::Init(Regex::class, [
+    'Match' => ['/quick|lazy/', 'the quick brown fox jumped over the lazy dog'],
+    'Encapsulate' => ['encapsulate.all.the.words.with.a.tick', '`'],
+    'AfterLastOccurrence' => ['select.all.that.is.after.the.last.dot', '.'],
+]);
 
 ?>
-
-<h1>Demo for Regex utility</h1>
-
-<p>
-    
-    <?php
-    
-    $subject = 'the quick brown fox jumped over the lazy dog';
-    $pattern = '/quick|lazy/';
-    
-    echo 'Subject :: ' . $subject . '<br />';
-    echo 'Pattern :: ' . $pattern . '<br />';
-    echo 'Result  :: ' . \CPB\Utilities\Common\Regex::Match($pattern, $subject). '<br />';
-    
-    ?>
-</p>
 
