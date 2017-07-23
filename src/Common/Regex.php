@@ -24,11 +24,8 @@ namespace CPB\Utilities\Common
         }
     
         public static function AfterLastOccurrence(string $subject, string $character = '/') : string
-        {
-            preg_match('/.*\\' . $character . '(.*)/', $subject, $match);
-        
-            return $match[1];
+        {        
+            return static::Match('/.*\\' . $character . '(.*)/', $subject, $match)[1];
         }
-    
     }
 }
