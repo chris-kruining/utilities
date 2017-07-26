@@ -43,7 +43,11 @@ namespace CPB\Utilities\Common
         public function Map(callable $callback): Collection
         {
             return static::From(
-				array_map($callback, $this->Keys(), $this->Values())
+				array_map(
+					$callback, 
+					array_keys($this->items), 
+					array_values($this->items)
+				)
 			);
         }
 
