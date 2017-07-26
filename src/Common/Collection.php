@@ -42,7 +42,9 @@ namespace CPB\Utilities\Common
 
         public function Map(callable $callback): Collection
         {
-            return static::From(array_map($callback, $this->items));
+            return static::From(
+				array_map($callback, $this->Keys(), $this->Values())
+			);
         }
 
         // courtesy of https://stackoverflow.com/a/6092999
