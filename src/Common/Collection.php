@@ -56,6 +56,54 @@ namespace CPB\Utilities\Common
 			);
         }
 
+		// NOTE(Chris Kruining)
+		// This function is meant to 
+		// take an action on each item 
+		// in the collection allowing 
+		// to change key and value, 
+		// whereas Map only allows for 
+		// changes in the value
+        public function Each(callable $callback): Collection
+        {
+            $collection = new static;
+
+            foreach($this->items as $key => $value)
+            {
+                $result = $callback($key, $value);
+
+                // TODO(Chris Kruining)
+                // Implement more methods of
+                // transfering key => value pairs
+                switch(gettype($result))
+                {
+                    case 'object':
+                        switch(get_class($result))
+                        {
+                            case \Generator::class:
+                                foreach($result as $key => $value)
+                                {
+                                    $collection[$key] = $value;
+                                }
+
+                                break 2;
+                        }
+
+                    case 'array':
+                        foreach($result as $key => $value)
+                        {
+                            $collection[$key] = $value;
+                        }
+
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            return $collection->count() === 0 ? $this : $collection;
+        }
+		
         // courtesy of https://stackoverflow.com/a/6092999
         public function PowerSet(int $minLength = 1) : Collection
         {
