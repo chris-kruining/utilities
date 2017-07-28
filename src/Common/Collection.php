@@ -40,6 +40,11 @@ namespace CPB\Utilities\Common
             }
         }
 
+        public function __clone()
+        {
+            return Collection::From($this->items);
+        }
+
         public function Map(callable $callback): Collection
         {
             return static::From(
