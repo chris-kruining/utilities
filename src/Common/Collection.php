@@ -44,6 +44,11 @@ namespace CPB\Utilities\Common
         {
             return Collection::From($this->items);
         }
+		
+		public function __debugInfo() : array
+		{
+			return $this->items;
+		}
 
         public function Map(callable $callback): Collection
         {
