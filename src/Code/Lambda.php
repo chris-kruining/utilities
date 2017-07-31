@@ -82,6 +82,16 @@ namespace CPB\Utilities\Code
             return $this;
         }
 
+        public function Use(array $uses) : ParserInterface
+        {
+            foreach($uses as $key => $value)
+            {
+                static::GetUsePool()[$key] = $value;
+            }
+
+            return $this;
+        }
+
         public static function From(string $lambda) : ParserInterface
         {
             $inst = new static;
