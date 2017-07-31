@@ -62,17 +62,18 @@ class Renderer
 
     public function DrawMethodChain(array $chain): string
     {
-        var_dump($chain);
-        phpinfo();
-        die;
-
         $class = $this->class;
         $inst = new $class(...$this->argument);
+        $buffer = '<card><h3>' . $class . '::' . join('->', array_keys($chain)) . '</h3>';
 
-        $buffer = '<card><h3>' . $class . '::' . $method . '</h3>';
+        foreach($chain as $method => $parameters)
+        {
+            $inst = $inst->$method(...$parameters);
 
-        $buffer .= 'Parmeters :: ' . json_encode($parameters, JSON_PRETTY_PRINT) . '<br />';
-        $buffer .= 'Result    :: ' . json_encode($inst->$method(...$parameters), JSON_PRETTY_PRINT) . '<br />';
+            $buffer .= 'Method    :: ' . $method . '<br />';
+            $buffer .= 'Parmeters :: ' . json_encode($parameters, JSON_PRETTY_PRINT) . '<br />';
+            $buffer .= 'Result    :: ' . json_encode($inst, JSON_PRETTY_PRINT) . '<br /><br />';
+        }
 
         $buffer .= '</card>';
 
