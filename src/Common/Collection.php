@@ -168,6 +168,11 @@ namespace CPB\Utilities\Common
             return $this->Keys()->Filter('is_string')->Count() > 0;
         }
 
+        public function First()
+        {
+            return $this->Values()[0] ?? null;
+        }
+
         public static function From(array $items): Collection
         {
             $inst = new static();
