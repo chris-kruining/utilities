@@ -163,6 +163,11 @@ namespace CPB\Utilities\Common
             return static::From($return);
         }
 
+        public function IsAssociative() : bool
+        {
+            return $this->Keys()->Filter('is_string')->Count() > 0;
+        }
+
         public static function From(array $items): Collection
         {
             $inst = new static();
