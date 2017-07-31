@@ -20,13 +20,14 @@ namespace CPB\Utilities\Common
                 },
                 $method
             );
-			
-			$parameters = array_map(function($value) { 
-				return $value instanceof \Closure 
-					? \Closure::bind($value, $this) 
-					: $value; 
-			}, $parameters);
 
+			// TODO(Chris Kruining) 
+			// Find a way to reference the 
+			// collection instance from a 
+			// callable without changing the 
+			// $this argument as this is 
+			// considered bad practice
+			
             if(function_exists($function))
             {
                 $result = $function($this->items, ...$parameters);
