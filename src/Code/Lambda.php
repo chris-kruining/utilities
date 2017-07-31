@@ -9,6 +9,7 @@ namespace CPB\Utilities\Code
     {
         protected $lambda;
         protected $scope;
+        protected static $usePool;
 
         public function __invoke(...$arguments)
         {
@@ -19,7 +20,7 @@ namespace CPB\Utilities\Code
         {
             try
             {
-                $parts = Regex::Match('/(.*?)\s*(->.*?)?\s*(:.*?)?\s*=>\s*(.*)/s', $this->lambda);
+                $parts = Regex::Match('/(.*?)\s*(?:->\s*(.*?))?\s*(:.*?)?\s*=>\s*(.*)/s', $this->lambda);
                 array_shift($parts);
 
                 list($parameters, $use, $returnType, $body) = $parts;
@@ -47,7 +48,23 @@ namespace CPB\Utilities\Code
 
                 if(strlen($use) > 0)
                 {
-                    $use = str_replace('->', 'use(', $use) . ')';
+                    $pool = static::GetUsePool();
+
+                    foreach(preg_split('/,\s*/', $use) as $var)
+                    {
+                        $var = ltrim($var, '$');
+
+                        if(!isset($pool[$var]))
+                        {
+                            throw new \Exception(
+                                'Use argument $' . $var . ' is unknown to the pool'
+                            );
+                        }
+
+                        $$var = $pool[$var];
+                    }
+
+                    $use = 'use(' . $use . ')';
                 }
 
                 return eval('return function(' . $parameters->Join(',') . ')' . $use . $returnType . '{' . $body . '};');
@@ -71,6 +88,16 @@ namespace CPB\Utilities\Code
             $inst->lambda = $lambda;
 
             return $inst;
+        }
+
+        public static function GetUsePool() : Collection
+        {
+            if(static::$usePool === null)
+            {
+                static::$usePool = new Collection();
+            }
+
+            return static::$usePool;
         }
     }
 }
