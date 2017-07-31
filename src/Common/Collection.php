@@ -30,7 +30,7 @@ namespace CPB\Utilities\Common
             // callable without changing the
             // $this argument as this is
             // considered bad practice
-            array_map(function($parameter){
+            $parameters = array_map(function($parameter){
                 try
                 {
                     return static::GetCallable($parameter);
