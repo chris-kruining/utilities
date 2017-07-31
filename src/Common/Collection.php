@@ -20,6 +20,12 @@ namespace CPB\Utilities\Common
                 },
                 $method
             );
+			
+			$parameters = array_map(function($value) { 
+				return $value instanceof \Closure 
+					? \Closure::bind($value, $this) 
+					: $value; 
+			}, $parameters);
 
             if(function_exists($function))
             {
