@@ -3,6 +3,7 @@
 namespace CPB\Utilities\Code
 {
     use CPB\Utilities\Common\Collection;
+    use CPB\Utilities\Common\Regex;
 
     class Lambda implements ParserInterface
     {
@@ -18,36 +19,31 @@ namespace CPB\Utilities\Code
         {
             try
             {
-                @list($parameters, $returnType, $body) = preg_split('/\s*(:|=>)\s*/', $this->lambda);
-                if($body === null)
-                {
-                    $body = $returnType;
-                    $returnType = null;
-                }
+                $parts = Regex::Match('/(.*?)\s*(:.*?)?\s*=>\s*(.*)/s', $this->lambda);
+                array_shift($parts);
+
+                list($parameters, $returnType, $body) = $parts;
+
                 $parameters = Collection::From(preg_split('/,\s*/', trim($parameters, '()')))
                     ->Each(function($key, $value){
                         // NOTE(Chris Kruining)
                         // This removed unnecessary spaces
                         yield $key => join(' ', preg_split('/\s+/', $value));
                     });
-                $prefixReturn = true;
+
                 $body = preg_replace_callback_array([
                     '/\{(.*)\}/s' => function($match) use (&$prefixReturn){
-                        $prefixReturn = false;
-
                         return $match[1];
                     },
                     '/\s*(.*)\s*/' => function($match){
                         return $match[1];
                     },
                 ], $body);
-                if($prefixReturn)
+
+                if(!(strpos($body, 'yield') !== false || strpos($body, 'return') !== false))
                 {
-                    $body = 'return ' . $body . ';';
+                    $body = 'return ' . rtrim($body, ';') . ';';
                 }
-                $returnType = $returnType === null
-                    ? ''
-                    : (':' . $returnType);
 
                 return eval('return function(' . $parameters->Join(',') . ')' . $returnType . '{' . $body . '};');
             }
