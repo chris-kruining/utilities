@@ -19,10 +19,10 @@ namespace CPB\Utilities\Code
         {
             try
             {
-                $parts = Regex::Match('/(.*?)\s*(:.*?)?\s*=>\s*(.*)/s', $this->lambda);
+                $parts = Regex::Match('/(.*?)\s*(->.*?)?\s*(:.*?)?\s*=>\s*(.*)/s', $this->lambda);
                 array_shift($parts);
 
-                list($parameters, $returnType, $body) = $parts;
+                list($parameters, $use, $returnType, $body) = $parts;
 
                 $parameters = Collection::From(preg_split('/,\s*/', trim($parameters, '()')))
                     ->Each(function($key, $value){
@@ -45,7 +45,12 @@ namespace CPB\Utilities\Code
                     $body = 'return ' . rtrim($body, ';') . ';';
                 }
 
-                return eval('return function(' . $parameters->Join(',') . ')' . $returnType . '{' . $body . '};');
+                if(strlen($use) > 0)
+                {
+                    $use = str_replace('->', 'use(', $use) . ')';
+                }
+
+                return eval('return function(' . $parameters->Join(',') . ')' . $use . $returnType . '{' . $body . '};');
             }
             catch(\Throwable $e)
             {
