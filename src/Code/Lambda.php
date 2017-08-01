@@ -109,5 +109,15 @@ namespace CPB\Utilities\Code
 
             return static::$usePool;
         }
+
+        public static function __callStatic($name, $arguments)
+        {
+            if(count($arguments) === 0)
+            {
+                return static::GetUsePool()[$name];
+            }
+
+            static::GetUsePool()[$name] = $arguments[0];
+        }
     }
 }
