@@ -4,6 +4,7 @@ namespace CPB\Utilities\Common
 {
     use CPB\Utilities\Code\Lambda;
     use CPB\Utilities\Code\UnparsableException;
+    use CPB\Utilities\Math\Arithmetic;
 
     class Collection implements \Countable, \IteratorAggregate, \ArrayAccess, \Serializable, \JsonSerializable
     {
@@ -168,9 +169,21 @@ namespace CPB\Utilities\Common
             return $this->Keys()->Filter('is_string')->Count() > 0;
         }
 
+        public function Index(int $i)
+        {
+            $values = $this->Values();
+
+            return $values[Arithmetic::Modulus($i, count($values))] ?? null;
+        }
+
         public function First()
         {
-            return $this->Values()[0] ?? null;
+            return $this->Index(0);
+        }
+
+        public function Last()
+        {
+            return $this->Index(-1);
         }
 
         public static function From(array $items): Collection
