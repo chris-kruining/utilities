@@ -6,7 +6,9 @@ namespace CPB\Utilities\Math
     {
         public static function Modulus(int $input, int $max) : int
         {
-            return (($input % $max) + $max) % $max;
+            return $max === 0
+                ? 0
+                : (($input % $max) + $max) % $max;
         }
     }
 }
