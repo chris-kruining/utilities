@@ -212,9 +212,9 @@ namespace CPB\Utilities\Common
             return iterator_to_array($this);
         }
 
-        public function Join(string $delimitor = '') : string
+        public function Join(string $delimiter = '') : string
         {
-            return join($delimitor, $this->ToArray());
+            return join($delimiter, $this->ToArray());
         }
 
         public function count(): int
