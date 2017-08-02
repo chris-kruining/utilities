@@ -3,7 +3,6 @@
 namespace CPB\Utilities\Common
 {
     use CPB\Utilities\Code\Lambda;
-    use CPB\Utilities\Code\UnparsableException;
     use CPB\Utilities\Math\Arithmetic;
 
     class Collection implements \Countable, \IteratorAggregate, \ArrayAccess, \Serializable, \JsonSerializable
@@ -208,7 +207,7 @@ namespace CPB\Utilities\Common
                 : $callable;
         }
 
-        public function ToArray()
+        public function ToArray() : array
         {
             return iterator_to_array($this);
         }
@@ -223,12 +222,12 @@ namespace CPB\Utilities\Common
             return count($this->items);
         }
 
-        public function getIterator()
+        public function getIterator() : \Generator
         {
             yield from $this->items;
         }
 
-        public function offsetExists($offset)
+        public function offsetExists($offset) : bool
         {
             return key_exists($offset, $this->items);
         }
@@ -245,17 +244,17 @@ namespace CPB\Utilities\Common
             unset($this->items[$offset]);
         }
 
-        public function serialize()
+        public function serialize() : string
         {
             return json_encode($this->ToArray());
         }
 
-        public function unserialize($serialized)
+        public function unserialize($serialized) : Collection
         {
             return static::From(json_decode($serialized, true));
         }
 
-        function jsonSerialize()
+        function jsonSerialize() : array
         {
             return $this->ToArray();
         }
