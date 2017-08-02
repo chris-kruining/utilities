@@ -257,7 +257,7 @@ namespace CPB\Utilities\Common
 
         function jsonSerialize()
         {
-            return $this->serialize();
+            return $this->ToArray();
         }
     }
 }
