@@ -31,6 +31,11 @@ namespace CPB\Utilities\Common
             // $this argument as this is
             // considered bad practice
             $parameters = array_map(function($parameter){
+                if($parameter instanceof CollectionInterface)
+                {
+                    return $parameter->ToArray();
+                }
+
                 try
                 {
                     return static::GetCallable($parameter);
