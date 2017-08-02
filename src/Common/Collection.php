@@ -17,12 +17,12 @@ namespace CPB\Utilities\Common
         public function __call($method, $parameters)
         {
             $function = 'array' . preg_replace_callback(
-                    '/[A-Z]/',
-                    function($match) {
-                        return '_' . strtolower($match[0]);
-                    },
-                    $method
-                );
+                '/[A-Z]/',
+                function($match) {
+                    return '_' . strtolower($match[0]);
+                },
+                $method
+            );
 
             // TODO(Chris Kruining)
             // Find a way to reference the
