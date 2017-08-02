@@ -104,7 +104,7 @@ namespace CPB\Utilities\Code
         {
             if(static::$usePool === null)
             {
-                static::$usePool = new Collection();
+                static::$usePool = new Collection;
             }
 
             return static::$usePool;

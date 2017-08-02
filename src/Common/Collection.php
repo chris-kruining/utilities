@@ -3,10 +3,9 @@
 namespace CPB\Utilities\Common
 {
     use CPB\Utilities\Code\Lambda;
-    use CPB\Utilities\Code\UnparsableException;
     use CPB\Utilities\Math\Arithmetic;
 
-    class Collection implements \Countable, \IteratorAggregate, \ArrayAccess, \Serializable, \JsonSerializable
+    class Collection implements CollectionInterface
     {
         protected $items;
 
