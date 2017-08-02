@@ -133,6 +133,7 @@ namespace CPB\Utilities\Common
             return $collection->count() === 0 ? $this : $collection;
         }
 
+        // NOTE(Chris Kruining)
         // courtesy of https://stackoverflow.com/a/6092999
         public function PowerSet(int $minLength = 1) : Collection
         {
