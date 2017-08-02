@@ -14,6 +14,11 @@ namespace CPB\Utilities\Common
             $this->items = [];
         }
 
+        // TODO(Chris Kruining)
+        // Maybe all the array functions
+        // wrapped by this class should
+        // be made into explicit methods
+        // instead of utilizing __call
         public function __call($method, $parameters)
         {
             $function = 'array' . preg_replace_callback(
@@ -191,7 +196,7 @@ namespace CPB\Utilities\Common
             return $this->Index(-1);
         }
 
-        public static function From(array $items): Collection
+        public static function From(array $items): CollectionInterface
         {
             $inst = new static();
             $inst->items = $items;
