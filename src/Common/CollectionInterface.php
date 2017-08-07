@@ -2,7 +2,7 @@
 
 namespace CPB\Utilities\Common
 {
-    interface CollectionInterface extends \Countable, \IteratorAggregate, \ArrayAccess, \Serializable, \JsonSerializable, Cloneable
+    interface CollectionInterface extends \Countable, \IteratorAggregate, \ArrayAccess, \Serializable, \JsonSerializable, Cloneable, Queryable
     {
         public function toArray() : array;
 
