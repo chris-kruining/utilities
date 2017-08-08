@@ -1,6 +1,6 @@
 <?php
 
-namespace CPB\Utilities\Common
+namespace CPB\Utilities\Contracts
 {
     interface Cloneable
     {
