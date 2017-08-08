@@ -14,4 +14,6 @@ echo Renderer::Init(Collection::class, [
     ]
 ]);
 
+var_dump(Collection::From(['one', 'two', 'three'])->where('x => x[0] === \'t\''));
+
 ?>
