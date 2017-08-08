@@ -119,5 +119,19 @@ namespace CPB\Utilities\Code
 
             static::GetUsePool()[$name] = $arguments[0];
         }
+
+        public static function ToCallable($callable): callable
+        {
+            if(!is_callable($callable) && !is_string($callable))
+            {
+                throw new \InvalidArgumentException(
+                    '$callback is not a valid parameter'
+                );
+            }
+
+            return !is_callable($callable) && is_string($callable)
+                ? Lambda::From($callable)
+                : $callable;
+        }
     }
 }

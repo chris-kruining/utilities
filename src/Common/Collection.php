@@ -3,22 +3,22 @@
 namespace CPB\Utilities\Common
 {
     use CPB\Utilities\Code\Lambda;
+    use CPB\Utilities\Contracts\IsQueryable;
     use CPB\Utilities\Math\Arithmetic;
 
     class Collection implements CollectionInterface
     {
+        use IsQueryable;
+
         protected $items;
 
         public function __construct()
         {
             $this->items = [];
+
+            $this->passArray($this->items);
         }
 
-        // TODO(Chris Kruining)
-        // Maybe all the array functions
-        // wrapped by this class should
-        // be made into explicit methods
-        // instead of utilizing __call
         public function __call($method, $parameters)
         {
             $function = 'array' . preg_replace_callback(
@@ -43,7 +43,7 @@ namespace CPB\Utilities\Common
 
                 try
                 {
-                    return static::GetCallable($parameter);
+                    return Lambda::ToCallable($parameter);
                 }
                 catch(\InvalidArgumentException $e)
                 {
@@ -75,14 +75,19 @@ namespace CPB\Utilities\Common
             return Collection::From($this->items);
         }
 
-        public function __debugInfo() : array
+        public function __toString(): string
+        {
+            return $this->toString();
+        }
+
+        public function __debugInfo(): array
         {
             return $this->items;
         }
 
-        public function Map($callback): Collection
+        public function Map($callback): CollectionInterface
         {
-            $callback = static::GetCallable($callback);
+            $callback = Lambda::ToCallable($callback);
 
             return static::From(
                 array_map(
@@ -100,9 +105,9 @@ namespace CPB\Utilities\Common
         // to change key and value,
         // whereas Map only allows for
         // changes in the value
-        public function Each($callback): Collection
+        public function Each($callback): CollectionInterface
         {
-            $callback = static::GetCallable($callback);
+            $callback = Lambda::ToCallable($callback);
 
             $collection = new static;
 
@@ -145,7 +150,7 @@ namespace CPB\Utilities\Common
 
         // NOTE(Chris Kruining)
         // courtesy of https://stackoverflow.com/a/6092999
-        public function PowerSet(int $minLength = 1) : Collection
+        public function PowerSet(int $minLength = 1): Collection
         {
             $count = $this->count();
             $members = pow(2, $count);
@@ -174,7 +179,7 @@ namespace CPB\Utilities\Common
             return static::From($return);
         }
 
-        public function IsAssociative() : bool
+        public function IsAssociative(): bool
         {
             return $this->Keys()->Filter('is_string')->Count() > 0;
         }
@@ -196,34 +201,27 @@ namespace CPB\Utilities\Common
             return $this->Index(-1);
         }
 
-        public static function From(array $items): CollectionInterface
+        public static function From(iterable $items): CollectionInterface
         {
             $inst = new static();
-            $inst->items = $items;
+            $inst->items = $items instanceof \Traversable
+                ? iterator_to_array($items, true)
+                : $items;
 
             return $inst;
         }
 
-        protected static function GetCallable($callable) : callable
-        {
-            if(!is_callable($callable) && !is_string($callable))
-            {
-                throw new \InvalidArgumentException(
-                    '$callback is not a valid parameter'
-                );
-            }
-
-            return !is_callable($callable) && is_string($callable)
-                ? Lambda::From($callable)
-                : $callable;
-        }
-
         public function ToArray() : array
         {
-            return iterator_to_array($this);
+            return iterator_to_array($this, true);
         }
 
-        public function Join(string $delimiter = '') : string
+        public function toObject() : \stdClass
+        {
+            return (object)$this->ToArray();
+        }
+
+        public function toString(string $delimiter = ''): string
         {
             return join($delimiter, $this->ToArray());
         }
@@ -233,12 +231,12 @@ namespace CPB\Utilities\Common
             return count($this->items);
         }
 
-        public function getIterator() : \Generator
+        public function getIterator(): \Generator
         {
             yield from $this->items;
         }
 
-        public function offsetExists($offset) : bool
+        public function offsetExists($offset): bool
         {
             return key_exists($offset, $this->items);
         }
@@ -255,17 +253,17 @@ namespace CPB\Utilities\Common
             unset($this->items[$offset]);
         }
 
-        public function serialize() : string
+        public function serialize(): string
         {
             return json_encode($this->ToArray());
         }
 
-        public function unserialize($serialized) : Collection
+        public function unserialize($serialized): Collection
         {
             return static::From(json_decode($serialized, true));
         }
 
-        function jsonSerialize() : array
+        public function jsonSerialize(): array
         {
             return $this->ToArray();
         }
