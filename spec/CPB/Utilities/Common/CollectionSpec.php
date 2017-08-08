@@ -22,6 +22,13 @@ namespace spec\CPB\Utilities\Common
             $this->ToArray()->shouldBeArray();
         }
 
+        public function it_is_castable_to_string()
+        {
+            $this::From([ 'one', 'two', 'three' ])
+                ->toString(',')
+                ->shouldReturn('one,two,three');
+        }
+
         public function it_is_iterable()
         {
             $this->getIterator()->shouldHaveType(\Generator::class);
@@ -34,13 +41,6 @@ namespace spec\CPB\Utilities\Common
             $sorted->shouldHaveKeyWithValue(0, -38);
             $sorted->shouldHaveKeyWithValue(1, 21);
             $sorted->shouldHaveKeyWithValue(2, 42);
-        }
-
-        public function it_is_joinable()
-        {
-            $this::From([ 'one', 'two', 'three' ])
-                ->Join(',')
-                ->shouldReturn('one,two,three');
         }
 
         public function it_is_countable()
