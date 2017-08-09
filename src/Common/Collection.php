@@ -148,6 +148,34 @@ namespace CPB\Utilities\Common
             return $collection->count() === 0 ? $this : $collection;
         }
 
+        public function select($key): CollectionInterface
+        {
+            switch(true)
+            {
+                case is_numeric($key):
+                    return $this[$key];
+
+                case Lambda::isCallable($key):
+                    return $this->each($key);
+
+                case is_string($key):
+                    $keys = explode('.', $key);
+                    $results = $this;
+
+                    while(($key = array_shift($keys)) !== null)
+                    {
+                        $results = $results->each('$k, $v => yield $k => $v[\'' . $key . '\']');
+                    }
+
+                    return $results;
+
+                default:
+                    throw new \Exception(
+                        'Can\'t parse the given key'
+                    );
+            }
+        }
+
         // NOTE(Chris Kruining)
         // courtesy of https://stackoverflow.com/a/6092999
         public function PowerSet(int $minLength = 1): Collection
