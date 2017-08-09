@@ -176,6 +176,36 @@ namespace CPB\Utilities\Common
             }
         }
 
+        public function topologicalSort(string $edgeKey): CollectionInterface
+        {
+            $keys = array_fill_keys(array_keys($this->items), 0);
+
+            foreach($this->select($edgeKey) as $key => $value)
+            {
+                $edges = $value ?? [];
+
+                foreach($edges as $edge)
+                {
+                    if(key_exists($edge, $keys))
+                    {
+                        $keys[$edge]++;
+                    }
+                }
+            }
+
+            asort($keys);
+            $keys = array_reverse($keys);
+
+            foreach($keys as $key => &$value)
+            {
+                $value = $this->items[$key];
+            }
+
+            $this->items = $keys;
+
+            return $this;
+        }
+
         // NOTE(Chris Kruining)
         // courtesy of https://stackoverflow.com/a/6092999
         public function PowerSet(int $minLength = 1): Collection
