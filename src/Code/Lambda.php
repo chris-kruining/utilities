@@ -67,7 +67,7 @@ namespace CPB\Utilities\Code
                     $use = 'use(' . $use . ')';
                 }
 
-                return eval('return function(' . $parameters->Join(',') . ')' . $use . $returnType . '{' . $body . '};');
+                return eval('return function(' . $parameters->toString(',') . ')' . $use . $returnType . '{' . $body . '};');
             }
             catch(\Throwable $e)
             {
