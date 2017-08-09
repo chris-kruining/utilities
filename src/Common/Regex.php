@@ -34,5 +34,10 @@ namespace CPB\Utilities\Common
         {
             return static::MatchAll('/.*\\' . $character . '(.*)/', $subject)[1][0];
         }
+
+        public static function Split(string $pattern, string $subject, int $limit = -1 , int $flags = 0)
+        {
+            return preg_split($pattern, $subject, $limit, $flags);
+        }
     }
 }
