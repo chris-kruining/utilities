@@ -43,8 +43,10 @@ namespace CPB\Utilities\Code
 
                 if(!(strpos($body, 'yield') !== false || strpos($body, 'return') !== false))
                 {
-                    $body = 'return ' . rtrim($body, ';') . ';';
+                    $body = 'return ' . $body;
                 }
+
+                $body = rtrim($body, ';') . ';';
 
                 if(strlen($use) > 0)
                 {
