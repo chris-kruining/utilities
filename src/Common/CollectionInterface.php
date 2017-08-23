@@ -8,6 +8,7 @@ namespace CPB\Utilities\Common
     interface CollectionInterface extends \Countable, \IteratorAggregate, \ArrayAccess, \Serializable, \JsonSerializable, Cloneable, Queryable
     {
         public function map($callback): CollectionInterface;
+        public function filter($callback): CollectionInterface;
         public function each($callback): CollectionInterface;
 
         public function toArray(): array;

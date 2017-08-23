@@ -3,20 +3,16 @@
 namespace CPB\Utilities\Common
 {
     use CPB\Utilities\Code\Lambda;
-    use CPB\Utilities\Contracts\IsQueryable;
+    use CPB\Utilities\Contracts\Queryable;
     use CPB\Utilities\Math\Arithmetic;
 
     class Collection implements CollectionInterface
     {
-        use IsQueryable;
-
         protected $items;
 
         public function __construct()
         {
             $this->items = [];
-
-            $this->passArray($this->items);
         }
 
         public function __call($method, $parameters)
@@ -38,12 +34,12 @@ namespace CPB\Utilities\Common
             $parameters = array_map(function($parameter){
                 if($parameter instanceof CollectionInterface)
                 {
-                    return $parameter->ToArray();
+                    return $parameter->toArray();
                 }
 
                 try
                 {
-                    return Lambda::ToCallable($parameter);
+                    return Lambda::toCallable($parameter);
                 }
                 catch(\InvalidArgumentException $e)
                 {
@@ -56,7 +52,7 @@ namespace CPB\Utilities\Common
                 $result = $function($this->items, ...$parameters);
 
                 return is_array($result)
-                    ? static::From($result)
+                    ? static::from($result)
                     : $result;
             }
 
@@ -72,7 +68,7 @@ namespace CPB\Utilities\Common
 
         public function __clone()
         {
-            return Collection::From($this->items);
+            return static::from($this->items);
         }
 
         public function __toString(): string
@@ -85,17 +81,29 @@ namespace CPB\Utilities\Common
             return $this->items;
         }
 
-        public function Map($callback): CollectionInterface
+        public function map($callback): CollectionInterface
         {
-            $callback = Lambda::ToCallable($callback);
+            $callback = Lambda::toCallable($callback);
 
-            return static::From(
+            return static::from(
                 array_map(
                     $callback,
                     array_keys($this->items),
                     array_values($this->items)
                 )
             );
+        }
+
+        public function filter($callback): CollectionInterface
+        {
+            $this->items = array_filter($this->items, Lambda::ToCallable($callback));
+
+            return $this;
+        }
+
+        public function slice(int $start, int $length = null) : CollectionInterface
+        {
+            return static::from(array_slice($this->items, $start, $length, true));
         }
 
         // NOTE(Chris Kruining)
@@ -105,7 +113,7 @@ namespace CPB\Utilities\Common
         // to change key and value,
         // whereas Map only allows for
         // changes in the value
-        public function Each($callback): CollectionInterface
+        public function each($callback): CollectionInterface
         {
             $callback = Lambda::ToCallable($callback);
 
@@ -208,11 +216,11 @@ namespace CPB\Utilities\Common
 
         // NOTE(Chris Kruining)
         // courtesy of https://stackoverflow.com/a/6092999
-        public function PowerSet(int $minLength = 1): Collection
+        public function powerSet(int $minLength = 1): CollectionInterface
         {
             $count = $this->count();
             $members = pow(2, $count);
-            $values = $this->Values();
+            $values = $this->values();
             $return = [];
 
             for($i = 0; $i < $members; $i++)
@@ -234,34 +242,34 @@ namespace CPB\Utilities\Common
                 }
             }
 
-            return static::From($return);
+            return static::from($return);
         }
 
-        public function IsAssociative(): bool
+        public function isAssociative(): bool
         {
             return $this->Keys()->Filter('is_string')->Count() > 0;
         }
 
-        public function Index(int $i)
+        public function index(int $i)
         {
-            $values = $this->Values();
+            $values = $this->values();
 
             return $values[Arithmetic::Modulus($i, count($values))] ?? null;
         }
 
-        public function First()
+        public function first()
         {
-            return $this->Index(0);
+            return $this->index(0);
         }
 
-        public function Last()
+        public function last()
         {
-            return $this->Index(-1);
+            return $this->index(-1);
         }
 
-        public static function From(iterable $items): CollectionInterface
+        public static function from(iterable $items): CollectionInterface
         {
-            $inst = new static();
+            $inst = new static;
             $inst->items = $items instanceof \Traversable
                 ? iterator_to_array($items, true)
                 : $items;
@@ -269,7 +277,7 @@ namespace CPB\Utilities\Common
             return $inst;
         }
 
-        public function ToArray() : array
+        public function toArray() : array
         {
             return iterator_to_array($this, true);
         }
@@ -292,6 +300,152 @@ namespace CPB\Utilities\Common
         public function getIterator(): \Generator
         {
             yield from $this->items;
+        }
+
+        public function where($expression = ''): Queryable
+        {
+            return $this->filter($expression);
+        }
+
+        public function join(iterable $iterable, string $localKey, string $foreignKey, int $strategy = Queryable::JOIN_INNER): Queryable
+        {
+            $iterable = static::from($iterable)->map(function($k, $v){
+                return array_combine(
+                    array_map(
+                        function($key) {
+                            return 'right' . $key;
+                        },
+                        array_keys($v)
+                    ),
+                    $v
+                );
+            })->toArray();
+            $foreignKey = 'right' . $foreignKey;
+
+            $leftIndex = array_map(function($row) use($localKey){ return $row[$localKey]; }, $this->items);
+            $rightIndex = array_map(function($row) use($foreignKey){ return $row[$foreignKey]; }, $iterable);
+            $matchedIndexes = array_map(function($v) use ($rightIndex){ return array_search($v, $rightIndex); }, array_intersect($leftIndex, $rightIndex));
+
+            switch($strategy)
+            {
+                // both collections need to have a matching value
+                case Queryable::JOIN_INNER:
+                    $result = array_map(function($k, $v) use($iterable) {
+                        return array_merge(
+                            $this->items[$k],
+                            $iterable[$v]
+                        );
+                    }, array_keys($matchedIndexes), $matchedIndexes);
+
+                    break;
+                // all rows from both collections and intersect matching rows
+                case Queryable::JOIN_OUTER:
+                    $result = [];
+                    $usedIndexes = [];
+
+                    foreach($this->items as $i => $row)
+                    {
+                        if(key_exists($i, $matchedIndexes))
+                        {
+                            $usedIndexes[] = $matchedIndexes[$i];
+
+                            $right = $iterable[$matchedIndexes[$i]];
+                        }
+
+                        $result[] = array_merge(
+                            $row,
+                            $right ?? []
+                        );
+                    }
+
+                    $result = array_merge($result, array_filter($iterable, function($i) use($usedIndexes){ return !in_array($i, $usedIndexes); }, ARRAY_FILTER_USE_KEY));
+
+                    break;
+                // all rows from left collection and intersect matching rows
+                case Queryable::JOIN_LEFT:
+                    $result = [];
+
+                    foreach($this->items as $i => $row)
+                    {
+                        $result[] = array_merge(
+                            $row,
+                            $iterable[$matchedIndexes[$i] ?? -1] ?? []
+                        );
+                    }
+
+                    break;
+                // all rows from right collection and intersect matching rows
+                case Queryable::JOIN_RIGHT:
+                    $result = [];
+
+                    $matchedIndexes = array_flip($matchedIndexes);
+
+                    foreach($iterable as $i => $row)
+                    {
+                        $result[] = array_merge(
+                            $this->items[$matchedIndexes[$i] ?? -1] ?? [],
+                            $row
+                        );
+                    }
+
+                    break;
+            }
+
+            return static::from($result);
+        }
+
+        public function limit(int $length): Queryable
+        {
+            return $this->slice(0, $length);
+        }
+        public function offset(int $start): Queryable
+        {
+            return $this->slice($start, null);
+        }
+
+        public function union(iterable $iterable): Queryable
+        {
+            return static::from(array_merge($this->items, Collection::from($iterable)->toArray()));
+        }
+
+        public function distinct(string $key): Queryable
+        {
+            // TODO: Implement distinct() method.
+        }
+
+        public function order(string $key, int $direction): Queryable
+        {
+            // TODO: Implement order() method.
+        }
+        public function group(string $key): Queryable
+        {
+            // TODO: Implement group() method.
+        }
+
+        public function sum(string $key): float
+        {
+
+        }
+        public function average(string $key): float
+        {
+            // TODO: Implement average() method.
+        }
+        public function max(float $limit): float
+        {
+            // TODO: Implement max() method.
+        }
+        public function min(float $limit): float
+        {
+            // TODO: Implement min() method.
+        }
+        public function clamp(float $lower, float $upper): float
+        {
+            // TODO: Implement clamp() method.
+        }
+
+        public function contains($value): bool
+        {
+            // TODO: Implement contains() method.
         }
 
         public function offsetExists($offset): bool

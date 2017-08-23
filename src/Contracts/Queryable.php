@@ -13,10 +13,10 @@ namespace CPB\Utilities\Contracts
         const JOIN_RIGHT = 3;
 
         public function where(): Queryable;
-        public function join(iterable $iterable, int $strategy = self::JOIN_INNER): Queryable;
+        public function join(iterable $iterable, string $localKey, string $foreignKey, int $strategy = self::JOIN_INNER): Queryable;
         public function limit(int $length): Queryable;
         public function offset(int $start): Queryable;
-        public function union(): Queryable;
+        public function union(iterable $iterable): Queryable;
         public function distinct(string $key): Queryable;
         public function order(string $key, int $direction): Queryable;
         public function group(string $key): Queryable;
