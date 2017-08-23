@@ -24,7 +24,7 @@ namespace spec\CPB\Utilities\Common
 
         public function it_is_castable_to_string()
         {
-            $this::From([ 'one', 'two', 'three' ])
+            $this::from([ 'one', 'two', 'three' ])
                 ->toString(',')
                 ->shouldReturn('one,two,three');
         }
@@ -62,7 +62,7 @@ namespace spec\CPB\Utilities\Common
 
         public function it_can_create_a_power_set()
         {
-            $set = $this::From([ 'One', 'Two', 'Three' ])->PowerSet();
+            $set = $this::from([ 'One', 'Two', 'Three' ])->powerSet();
 
             $set->shouldContain([ 'One' ]);
             $set->shouldContain([ 'One', 'Two' ]);
