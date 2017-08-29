@@ -18,12 +18,12 @@ namespace CPB\Utilities\Common
         public function __call($method, $parameters)
         {
             $function = 'array' . preg_replace_callback(
-                '/[A-Z]/',
-                function($match) {
-                    return '_' . strtolower($match[0]);
-                },
-                $method
-            );
+                    '/[A-Z]/',
+                    function($match) {
+                        return '_' . strtolower($match[0]);
+                    },
+                    $method
+                );
 
             // TODO(Chris Kruining)
             // Find a way to reference the
@@ -81,10 +81,18 @@ namespace CPB\Utilities\Common
             return $this->items;
         }
 
-        public function map($callback): CollectionInterface
+        public function values(): CollectionInterface
         {
-            $callback = Lambda::toCallable($callback);
+            return static::from(array_values($this->items));
+        }
 
+        public function keys(): CollectionInterface
+        {
+            return static::from(array_keys($this->items));
+        }
+
+        public function map(callable $callback): CollectionInterface
+        {
             return static::from(
                 array_map(
                     $callback,
@@ -94,11 +102,9 @@ namespace CPB\Utilities\Common
             );
         }
 
-        public function filter($callback): CollectionInterface
+        public function filter(callable $callback, int $option = 0): CollectionInterface
         {
-            $this->items = array_filter($this->items, Lambda::ToCallable($callback));
-
-            return $this;
+            return static::from(array_filter($this->items, $callback, $option));
         }
 
         public function slice(int $start, int $length = null) : CollectionInterface
@@ -113,10 +119,8 @@ namespace CPB\Utilities\Common
         // to change key and value,
         // whereas Map only allows for
         // changes in the value
-        public function each($callback): CollectionInterface
+        public function each(callable $callback): CollectionInterface
         {
-            $callback = Lambda::ToCallable($callback);
-
             $collection = new static;
 
             foreach($this->items as $key => $value)
@@ -163,16 +167,13 @@ namespace CPB\Utilities\Common
                 case is_numeric($key):
                     return $this[$key];
 
-                case Lambda::isCallable($key):
-                    return $this->each($key);
-
                 case is_string($key):
                     $keys = explode('.', $key);
                     $results = $this;
 
                     while(($key = array_shift($keys)) !== null)
                     {
-                        $results = $results->each('$k, $v => yield $k => $v[\'' . $key . '\']');
+                        $results = $results->each(function($k, $v) use($key){ yield $k => $v[$key]; });
                     }
 
                     return $results;
