@@ -112,6 +112,16 @@ namespace CPB\Utilities\Common
             return static::from(array_slice($this->items, $start, $length, true));
         }
 
+        public function diff(array ...$arrays): CollectionInterface
+        {
+            return static::from(array_diff($this->items, ...$arrays));
+        }
+
+        public function diffAssoc(array ...$arrays): CollectionInterface
+        {
+            return static::from(array_diff_assoc($this->items, ...$arrays));
+        }
+
         // NOTE(Chris Kruining)
         // This function is meant to
         // take an action on each item
