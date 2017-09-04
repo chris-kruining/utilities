@@ -107,6 +107,16 @@ namespace CPB\Utilities\Common
             return static::from(array_filter($this->items, $callback, $option));
         }
 
+        public function split(callable $callback, int $option = 0, bool $assoc = false): array
+        {
+            $filtered = $this->filter($callback, $option);
+
+            return [
+                $filtered,
+                $this->{'diff' . ($assoc ? 'Assoc' : '')}($filtered->toArray()),
+            ];
+        }
+
         public function slice(int $start, int $length = null) : CollectionInterface
         {
             return static::from(array_slice($this->items, $start, $length, true));
