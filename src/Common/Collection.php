@@ -443,9 +443,12 @@ namespace CPB\Utilities\Common
             // TODO: Implement group() method.
         }
 
-        public function sum(string $key): float
+        public function sum(string $key = null): float
         {
-
+            return array_sum($key === null
+                ? $this->items
+                : $this->select($key)
+            );
         }
         public function average(string $key): float
         {
