@@ -20,7 +20,7 @@ namespace CPB\Utilities\Contracts
         public function distinct(string $key): Queryable;
         public function order(string $key, int $direction): Queryable;
         public function group(string $key): Queryable;
-        public function sum(string $key): float ;
+        public function sum(string $key = null): float ;
         public function average(string $key): float;
         public function max(float $limit): float;
         public function min(float $limit): float;
