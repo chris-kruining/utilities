@@ -9,6 +9,7 @@ namespace CPB\Utilities\Common
     class Collection implements CollectionInterface
     {
         protected $items;
+        private $groupKey;
 
         public function __construct()
         {
@@ -458,39 +459,57 @@ namespace CPB\Utilities\Common
         public function order(string $key, int $direction): Queryable
         {
             // TODO: Implement order() method.
+
+            return $this;
         }
         public function group(string $key): Queryable
         {
-            // TODO: Implement group() method.
+            $this->groupKey = $key;
+
+            return $this;
         }
 
-        public function sum(string $key = null): float
+        public function sum(string $key = null): Queryable
         {
             return array_sum($key === null
                 ? $this->items
                 : $this->select($key)
             );
         }
-        public function average(string $key): float
+        public function average(string $key): Queryable
         {
             // TODO: Implement average() method.
         }
-        public function max(float $limit): float
+        public function max(float $limit): Queryable
         {
             // TODO: Implement max() method.
         }
-        public function min(float $limit): float
+        public function min(float $limit): Queryable
         {
             // TODO: Implement min() method.
         }
-        public function clamp(float $lower, float $upper): float
+        public function clamp(float $lower, float $upper): Queryable
         {
             // TODO: Implement clamp() method.
         }
 
+        private function columnAction(callable $method, ...$args): Queryable
+        {
+            $groups = $this->groupKey !== null
+                ? $this->select($this->groupKey)->toArray()
+                : [ '' ];
+
+            foreach($groups as $group)
+            {
+
+            }
+
+            return static::from([]);
+        }
+
         public function contains($value): bool
         {
-            // TODO: Implement contains() method.
+            return array_search($value, $this->items) !== false;
         }
 
         public function offsetExists($offset): bool
