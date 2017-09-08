@@ -202,29 +202,19 @@ namespace CPB\Utilities\Common
             return $this;
         }
 
-        public function select($key): CollectionInterface
+        public function select($key): Queryable
         {
-            switch(true)
+//                    var_dump($key);
+
+            $keys = explode('.', $key);
+            $results = $this;
+
+            while(($key = array_shift($keys)) !== null)
             {
-                case is_numeric($key):
-                    return $this[$key];
-
-                case is_string($key):
-                    $keys = explode('.', $key);
-                    $results = $this;
-
-                    while(($key = array_shift($keys)) !== null)
-                    {
-                        $results = $results->each(function($k, $v) use($key){ yield $k => $v[$key]; });
-                    }
-
-                    return $results;
-
-                default:
-                    throw new \Exception(
-                        'Can\'t parse the given key'
-                    );
+                $results = $results->each(function($k, $v) use($key){ yield $k => $v[$key]; });
             }
+
+            return $results;
         }
 
         public function topologicalSort(string $edgeKey): CollectionInterface
@@ -347,7 +337,10 @@ namespace CPB\Utilities\Common
 
         public function where($expression = ''): Queryable
         {
-            return $this->filter($expression);
+            // TODO(Chris Kruining)
+            // Implement this function
+
+            return $this->filter(function($v) { return true; });
         }
 
         public function join(iterable $iterable, string $localKey, string $foreignKey, int $strategy = Queryable::JOIN_INNER): Queryable
@@ -453,7 +446,7 @@ namespace CPB\Utilities\Common
 
         public function distinct(string $key): Queryable
         {
-            // TODO: Implement distinct() method.
+            return static::from(array_unique(array_map(function($v) use($key){ return $v[$key]; }, $this->items)));
         }
 
         public function order(string $key, int $direction): Queryable
@@ -469,42 +462,44 @@ namespace CPB\Utilities\Common
             return $this;
         }
 
-        public function sum(string $key = null): Queryable
+        public function sum(string $key = null)
         {
-            return array_sum($key === null
-                ? $this->items
-                : $this->select($key)
-            );
+            return $this->columnAction('array_sum', $key ?? '');
         }
-        public function average(string $key): Queryable
+        public function average(string $key)
         {
-            // TODO: Implement average() method.
+            return $this->columnAction(function($arr){ return array_sum($arr) / count($arr); }, $key ?? '');
         }
-        public function max(float $limit): Queryable
+        public function max(string $key, float $limit)
         {
             // TODO: Implement max() method.
         }
-        public function min(float $limit): Queryable
+        public function min(string $key, float $limit)
         {
             // TODO: Implement min() method.
         }
-        public function clamp(float $lower, float $upper): Queryable
+        public function clamp(string $key, float $lower, float $upper)
         {
             // TODO: Implement clamp() method.
         }
 
-        private function columnAction(callable $method, ...$args): Queryable
+        private function columnAction(callable $method, string $key, ...$args)
         {
-            $groups = $this->groupKey !== null
-                ? $this->select($this->groupKey)->toArray()
-                : [ '' ];
+            if($this->groupKey === null)
+            {
+                return $method($this->items, ...$args);
+            }
+
+            $groups = $this->distinct($this->groupKey)->toArray();
+            $results = [];
 
             foreach($groups as $group)
             {
-
+                $set = $this->filter(function($v) use($group){ return $v[$this->groupKey] === $group; });
+                $results[] = $method($set->select($key)->toArray());
             }
 
-            return static::from([]);
+            return static::from($results);
         }
 
         public function contains($value): bool
@@ -518,7 +513,7 @@ namespace CPB\Utilities\Common
         }
         public function offsetGet($offset)
         {
-            return $this->items[$offset];
+            return $this->select($offset);
         }
         public function offsetSet($offset, $value)
         {
