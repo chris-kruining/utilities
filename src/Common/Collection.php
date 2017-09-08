@@ -180,6 +180,27 @@ namespace CPB\Utilities\Common
             return $collection->count() === 0 ? $this : $collection;
         }
 
+        public function append(iterable $data): CollectionInterface
+        {
+            $keys = $this->keys();
+
+            foreach($data as $key => $value)
+            {
+                $count = $keys->filter(
+                    function($v) use($key){ return count(Regex::Match('/^' . $key . '(\(\d\))?/', $v)) > 0; }
+                )->count();
+
+                if($count > 0)
+                {
+                    $key .= '__(' . $count . ')';
+                }
+
+                $this[$key] = $value;
+            }
+
+            return $this;
+        }
+
         public function select($key): CollectionInterface
         {
             switch(true)
