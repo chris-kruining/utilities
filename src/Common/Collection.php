@@ -97,6 +97,11 @@ namespace CPB\Utilities\Common
             return static::from(array_unique($this->items));
         }
 
+        public function merge(iterable ...$sets): CollectionInterface
+        {
+            return static::from(array_merge($this->items, ...$this->iterableToArray($sets)));
+        }
+
         public function map(callable $callback): CollectionInterface
         {
             return static::from(
@@ -226,11 +231,6 @@ namespace CPB\Utilities\Common
                 ...$this->iterableToArray($sets),
                 ...[$callback] // #LAME
             ));
-        }
-
-        private function iterableToArray(array $iterables): array
-        {
-            return array_map('iterator_to_array', $iterables);
         }
 
         // NOTE(Chris Kruining)
@@ -632,25 +632,6 @@ namespace CPB\Utilities\Common
             // TODO: Implement clamp() method.
         }
 
-        private function columnAction(callable $method, string $key, ...$args)
-        {
-            if($this->groupKey === null)
-            {
-                return $method($this->items, ...$args);
-            }
-
-            $groups = $this->distinct($this->groupKey)->toArray();
-            $results = [];
-
-            foreach($groups as $group)
-            {
-                $set = $this->filter(function($v) use($group){ return $v[$this->groupKey] === $group; });
-                $results[] = $method($set->select($key)->toArray());
-            }
-
-            return static::from($results);
-        }
-
         public function offsetExists($offset): bool
         {
             return key_exists($offset, $this->items);
@@ -684,6 +665,32 @@ namespace CPB\Utilities\Common
         public function jsonSerialize(): array
         {
             return $this->ToArray();
+        }
+
+
+
+        private function iterableToArray(array $iterables): array
+        {
+            return array_map('iterator_to_array', $iterables);
+        }
+
+        private function columnAction(callable $method, string $key, ...$args)
+        {
+            if($this->groupKey === null)
+            {
+                return $method($this->items, ...$args);
+            }
+
+            $groups = $this->distinct($this->groupKey)->toArray();
+            $results = [];
+
+            foreach($groups as $group)
+            {
+                $set = $this->filter(function($v) use($group){ return $v[$this->groupKey] === $group; });
+                $results[] = $method($set->select($key)->toArray());
+            }
+
+            return static::from($results);
         }
     }
 }

@@ -14,6 +14,8 @@ namespace CPB\Utilities\Common
         Cloneable,
         Queryable
     {
+        public function merge(iterable ...$sets): CollectionInterface;
+
         public function map(callable $callback): CollectionInterface;
 
         public function filter(callable $callback): CollectionInterface;
