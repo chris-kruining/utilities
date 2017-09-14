@@ -97,19 +97,13 @@ namespace CPB\Utilities\Common
             return static::from(array_unique($this->items));
         }
 
-        public function map(callable $callback, bool $both = true): CollectionInterface
+        public function map(callable $callback): CollectionInterface
         {
-            $arrays = [ array_values($this->items) ];
-
-            if($both)
-            {
-                array_unshift($arrays, array_keys($this->items));
-            }
-
             return static::from(
                 array_map(
                     $callback,
-                    ...$arrays
+                    array_keys($this->items),
+                    array_values($this->items)
                 )
             );
         }
@@ -333,7 +327,7 @@ namespace CPB\Utilities\Common
 
         public function isAssociative(): bool
         {
-            return $this->keys()->some('is_string');
+            return $this->keys()->some(function($k, $v) { return is_string($k); });
         }
 
         public function byIndex(int $i)
@@ -409,7 +403,12 @@ namespace CPB\Utilities\Common
             return $this->filter(function($v) { return true; });
         }
 
-        public function join(iterable $iterable, string $localKey, string $foreignKey, int $strategy = Queryable::JOIN_INNER): Queryable
+        public function join(
+            iterable $iterable,
+            string $localKey,
+            string $foreignKey,
+            int $strategy = Queryable::JOIN_INNER
+        ): Queryable
         {
             $iterable = static::from($iterable)->map(function($k, $v){
                 return array_combine(

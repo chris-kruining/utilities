@@ -14,7 +14,7 @@ namespace CPB\Utilities\Common
         Cloneable,
         Queryable
     {
-        public function map(callable $callback, bool $both = true): CollectionInterface;
+        public function map(callable $callback): CollectionInterface;
 
         public function filter(callable $callback): CollectionInterface;
 
