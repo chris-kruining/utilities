@@ -92,13 +92,24 @@ namespace CPB\Utilities\Common
             return static::from(array_keys($this->items));
         }
 
-        public function map(callable $callback): CollectionInterface
+        public function unique(): CollectionInterface
         {
+            return static::from(array_unique($this->items));
+        }
+
+        public function map(callable $callback, bool $both = true): CollectionInterface
+        {
+            $arrays = [ array_values($this->items) ];
+
+            if($both)
+            {
+                array_unshift($arrays, array_keys($this->items));
+            }
+
             return static::from(
                 array_map(
                     $callback,
-                    array_keys($this->items),
-                    array_values($this->items)
+                    ...$arrays
                 )
             );
         }
@@ -121,6 +132,22 @@ namespace CPB\Utilities\Common
         public function slice(int $start, int $length = null) : CollectionInterface
         {
             return static::from(array_slice($this->items, $start, $length, true));
+        }
+
+        // NOTE(Chris Kruining)
+        // With this implementation
+        // the extracted values are lost
+        public function splice(int $start, int $length = null, $replacement = []) : CollectionInterface
+        {
+            // NOTE(Chris Kruining)
+            // Explicitly assign
+            // items so that the
+            // array is copied
+            $items = $this->items;
+
+            array_splice($items, $start, $length, true);
+
+            return static::from($items);
         }
 
         public function diff(array ...$arrays): CollectionInterface
@@ -202,19 +229,45 @@ namespace CPB\Utilities\Common
             return $this;
         }
 
-        public function select($key): Queryable
+        public function find(callable $callback)
         {
-//                    var_dump($key);
+            return $this->filter($callback)->first();
+        }
 
-            $keys = explode('.', $key);
-            $results = $this;
-
-            while(($key = array_shift($keys)) !== null)
+        public function every(callable $callback): bool
+        {
+            foreach($this->items as $key => $item)
             {
-                $results = $results->each(function($k, $v) use($key){ yield $k => $v[$key]; });
+                if(!$callback($key, $item))
+                {
+                    return false;
+                }
             }
 
-            return $results;
+            return true;
+        }
+
+        public function some(callable $callback): bool
+        {
+            foreach($this->items as $key => $item)
+            {
+                if($callback($key, $item))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public function contains($value): bool
+        {
+            return array_search($value, $this->items) !== false;
+        }
+
+        public function has($key): bool
+        {
+            return $this->offsetExists($key);
         }
 
         public function topologicalSort(string $edgeKey): CollectionInterface
@@ -280,10 +333,10 @@ namespace CPB\Utilities\Common
 
         public function isAssociative(): bool
         {
-            return $this->Keys()->Filter('is_string')->Count() > 0;
+            return $this->keys()->some('is_string');
         }
 
-        public function index(int $i)
+        public function byIndex(int $i)
         {
             $values = $this->values();
 
@@ -292,12 +345,12 @@ namespace CPB\Utilities\Common
 
         public function first()
         {
-            return $this->index(0);
+            return $this->byIndex(0);
         }
 
         public function last()
         {
-            return $this->index(-1);
+            return $this->byIndex(-1);
         }
 
         public static function from(iterable $items): CollectionInterface
@@ -333,6 +386,19 @@ namespace CPB\Utilities\Common
         public function getIterator(): \Generator
         {
             yield from $this->items;
+        }
+
+        public function select($key): Queryable
+        {
+            $keys = explode('.', $key);
+            $results = $this;
+
+            while(($key = array_shift($keys)) !== null)
+            {
+                $results = $results->each(function($k, $v) use($key){ yield $k => $v[$key]; });
+            }
+
+            return $results;
         }
 
         public function where($expression = ''): Queryable
@@ -455,6 +521,7 @@ namespace CPB\Utilities\Common
 
             return $this;
         }
+
         public function group(string $key): Queryable
         {
             $this->groupKey = $key;
@@ -466,18 +533,22 @@ namespace CPB\Utilities\Common
         {
             return $this->columnAction('array_sum', $key ?? '');
         }
+
         public function average(string $key)
         {
             return $this->columnAction(function($arr){ return array_sum($arr) / count($arr); }, $key ?? '');
         }
+
         public function max(string $key, float $limit)
         {
             // TODO: Implement max() method.
         }
+
         public function min(string $key, float $limit)
         {
             // TODO: Implement min() method.
         }
+
         public function clamp(string $key, float $lower, float $upper)
         {
             // TODO: Implement clamp() method.
@@ -502,23 +573,21 @@ namespace CPB\Utilities\Common
             return static::from($results);
         }
 
-        public function contains($value): bool
-        {
-            return array_search($value, $this->items) !== false;
-        }
-
         public function offsetExists($offset): bool
         {
             return key_exists($offset, $this->items);
         }
+
         public function offsetGet($offset)
         {
-            return $this->select($offset);
+            return key_exists($offset, $this->items) ? $this->items[$offset] : $this->select($offset);
         }
+
         public function offsetSet($offset, $value)
         {
             $this->items[$offset] = $value;
         }
+
         public function offsetUnset($offset)
         {
             unset($this->items[$offset]);
