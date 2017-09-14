@@ -144,14 +144,93 @@ namespace CPB\Utilities\Common
             return static::from($items);
         }
 
-        public function diff(array ...$arrays): CollectionInterface
+        public function diff(iterable ...$sets): CollectionInterface
         {
-            return static::from(array_diff($this->items, ...$arrays));
+            return static::from(array_diff(
+                $this->items,
+                ...$this->iterableToArray($sets)
+            ));
         }
 
-        public function diffAssoc(array ...$arrays): CollectionInterface
+        public function diffAssoc(iterable ...$sets): CollectionInterface
         {
-            return static::from(array_diff_assoc($this->items, ...$arrays));
+            return static::from(array_diff_assoc(
+                $this->items,
+                ...$this->iterableToArray($sets)
+            ));
+        }
+
+        public function diffKey(iterable ...$sets): CollectionInterface
+        {
+            return static::from(array_diff_key(
+                $this->items,
+                ...$this->iterableToArray($sets)
+            ));
+        }
+
+        public function diffUAssoc(callable $callback, iterable ...$sets): CollectionInterface
+        {
+            return static::from(array_diff_key(
+                $this->items,
+                ...$this->iterableToArray($sets),
+                ...[$callback] // #LAME
+            ));
+        }
+
+        public function diffUKey(callable $callback, iterable ...$sets): CollectionInterface
+        {
+            return static::from(array_diff_key(
+                $this->items,
+                ...$this->iterableToArray($sets),
+                ...[$callback] // #LAME
+            ));
+        }
+
+        public function intersect(iterable ...$sets): CollectionInterface
+        {
+            return static::from(array_intersect(
+                $this->items,
+                ...$this->iterableToArray($sets)
+            ));
+        }
+
+        public function intersectAssoc(iterable ...$sets): CollectionInterface
+        {
+            return static::from(array_intersect_assoc(
+                $this->items,
+                ...$this->iterableToArray($sets)
+            ));
+        }
+
+        public function intersectKey(iterable ...$sets): CollectionInterface
+        {
+            return static::from(array_intersect_key(
+                $this->items,
+                ...$this->iterableToArray($sets)
+            ));
+        }
+
+        public function intersectUAssoc(callable $callback, iterable ...$sets): CollectionInterface
+        {
+            return static::from(array_intersect_uassoc(
+                $this->items,
+                ...$this->iterableToArray($sets),
+                ...[$callback] // #LAME
+            ));
+        }
+
+        public function intersectUKey(callable $callback, iterable ...$sets): CollectionInterface
+        {
+            return static::from(array_intersect_ukey(
+                $this->items,
+                ...$this->iterableToArray($sets),
+                ...[$callback] // #LAME
+            ));
+        }
+
+        private function iterableToArray(array $iterables): array
+        {
+            return array_map('iterator_to_array', $iterables);
         }
 
         // NOTE(Chris Kruining)
