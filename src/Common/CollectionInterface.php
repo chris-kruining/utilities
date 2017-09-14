@@ -44,9 +44,25 @@ namespace CPB\Utilities\Common
 
         public function has($key): bool;
 
-        public function diff(array ...$arrays): CollectionInterface;
+        public function diff(iterable ...$sets): CollectionInterface;
 
-        public function diffAssoc(array ...$arrays): CollectionInterface;
+        public function diffAssoc(iterable ...$sets): CollectionInterface;
+        
+        public function diffKey(iterable ...$sets): CollectionInterface;
+        
+        public function diffUAssoc(callable $callback, iterable ...$sets): CollectionInterface;
+        
+        public function diffUKey(callable $callback, iterable ...$sets): CollectionInterface;
+
+        public function intersect(iterable ...$sets): CollectionInterface;
+
+        public function intersectAssoc(iterable ...$sets): CollectionInterface;
+        
+        public function intersectKey(iterable ...$sets): CollectionInterface;
+        
+        public function intersectUAssoc(callable $callback, iterable ...$sets): CollectionInterface;
+        
+        public function intersectUKey(callable $callback, iterable ...$sets): CollectionInterface;
 
         public function byIndex(int $i);
 
