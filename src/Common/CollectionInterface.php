@@ -36,6 +36,8 @@ namespace CPB\Utilities\Common
 
         public function unique(): CollectionInterface;
 
+        public function reverse(): CollectionInterface;
+
         public function find(callable $callback);
 
         public function every(callable $callback): bool;
@@ -65,6 +67,26 @@ namespace CPB\Utilities\Common
         public function intersectUAssoc(callable $callback, iterable ...$sets): CollectionInterface;
         
         public function intersectUKey(callable $callback, iterable ...$sets): CollectionInterface;
+
+        public function sort(int $flags = SORT_REGULAR): CollectionInterface;
+
+        public function rSort(int $flags = SORT_REGULAR): CollectionInterface;
+
+        public function aSort(int $flags = SORT_REGULAR): CollectionInterface;
+
+        public function aRSort(int $flags = SORT_REGULAR): CollectionInterface;
+
+        public function kSort(int $flags = SORT_REGULAR): CollectionInterface;
+
+        public function kRSort(int $flags = SORT_REGULAR): CollectionInterface;
+
+        public function uSort(callable $callback): CollectionInterface;
+
+        public function uASort(callable $callback): CollectionInterface;
+
+        public function uKSort(callable $callback): CollectionInterface;
+
+        public function topologicalSort(string $edgeKey): CollectionInterface;
 
         public function byIndex(int $i);
 

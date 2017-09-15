@@ -97,6 +97,11 @@ namespace CPB\Utilities\Common
             return static::from(array_unique($this->items));
         }
 
+        public function reverse(): CollectionInterface
+        {
+            return static::from(array_reverse($this->items));
+        }
+
         public function merge(iterable ...$sets): CollectionInterface
         {
             return static::from(array_merge($this->items, ...$this->iterableToArray($sets)));
@@ -128,7 +133,7 @@ namespace CPB\Utilities\Common
             ];
         }
 
-        public function slice(int $start, int $length = null) : CollectionInterface
+        public function slice(int $start, int $length = null): CollectionInterface
         {
             return static::from(array_slice($this->items, $start, $length, true));
         }
@@ -136,7 +141,7 @@ namespace CPB\Utilities\Common
         // NOTE(Chris Kruining)
         // With this implementation
         // the extracted values are lost
-        public function splice(int $start, int $length = null, $replacement = []) : CollectionInterface
+        public function splice(int $start, int $length = null, $replacement = []): CollectionInterface
         {
             // NOTE(Chris Kruining)
             // Explicitly assign
@@ -341,6 +346,51 @@ namespace CPB\Utilities\Common
         public function has($key): bool
         {
             return $this->offsetExists($key);
+        }
+
+        public function sort(int $flags = SORT_REGULAR): CollectionInterface
+        {
+            return $this->sortCall('sort', $flags);
+        }
+
+        public function rSort(int $flags = SORT_REGULAR): CollectionInterface
+        {
+            return $this->sort($flags)->reverse();
+        }
+
+        public function aSort(int $flags = SORT_REGULAR): CollectionInterface
+        {
+            return $this->sortCall('asort', $flags);
+        }
+
+        public function aRSort(int $flags = SORT_REGULAR): CollectionInterface
+        {
+            return $this->aSort($flags)->reverse();
+        }
+
+        public function kSort(int $flags = SORT_REGULAR): CollectionInterface
+        {
+            return $this->sortCall('ksort', $flags);
+        }
+
+        public function kRSort(int $flags = SORT_REGULAR): CollectionInterface
+        {
+            return $this->kSort($flags)->reverse();
+        }
+
+        public function uSort(callable $callback): CollectionInterface
+        {
+            return $this->sortCall('usort', $callback);
+        }
+
+        public function uASort(callable $callback): CollectionInterface
+        {
+            return $this->sortCall('uasort', $callback);
+        }
+
+        public function uKSort(callable $callback): CollectionInterface
+        {
+            return $this->sortCall('uksort', $callback);
         }
 
         public function topologicalSort(string $edgeKey): CollectionInterface
@@ -691,6 +741,15 @@ namespace CPB\Utilities\Common
             }
 
             return static::from($results);
+        }
+
+        private function sortCall(string $function, ...$arguments): CollectionInterface
+        {
+            $items = $this->items;
+
+            $function($items, ...$arguments);
+
+            return static::from($items);
         }
     }
 }
