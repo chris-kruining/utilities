@@ -476,6 +476,20 @@ namespace CPB\Utilities\Common
             return $this->byIndex(-1);
         }
 
+        public function chunk(int $size, bool $preserveKeys = false): CollectionInterface
+        {
+            return static::from(array_chunk($this->items, $size, $preserveKeys));
+        }
+
+        public function combine(iterable $values): CollectionInterface
+        {
+            $values = $values instanceof \Traversable
+                ? iterator_to_array($values, true)
+                : $values;
+
+            return static::from(array_combine($this->items, $values));
+        }
+
         public static function from(iterable $items): CollectionInterface
         {
             $inst = new static;

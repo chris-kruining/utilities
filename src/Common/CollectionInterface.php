@@ -94,6 +94,10 @@ namespace CPB\Utilities\Common
 
         public function last();
 
+        public function chunk(int $size, bool $preserveKeys = false): CollectionInterface;
+
+        public function combine(iterable $values): CollectionInterface;
+
         public function isAssociative(): bool;
 
         public function toArray(): array;
