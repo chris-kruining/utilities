@@ -456,7 +456,7 @@ namespace CPB\Utilities\Common
 
         public function isAssociative(): bool
         {
-            return $this->keys()->some(function($k, $v) { return is_string($k); });
+            return $this->some(function($k, $v) { return is_string($k); });
         }
 
         public function byIndex(int $i)
