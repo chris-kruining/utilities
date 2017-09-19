@@ -525,17 +525,49 @@ namespace CPB\Utilities\Common
             yield from $this->items;
         }
 
-        public function select($key): Queryable
+        public function select($query): Queryable
         {
-            $keys = explode('.', $key);
-            $results = $this;
+            $resolver = function($row, $q) use(&$resolver) {
+                $keys = Collection::from(Regex::Split('/,\s*(?![^()]*(?:\([^()]*\))?\))/', $q, -1, PREG_SPLIT_NO_EMPTY));
 
-            while(($key = array_shift($keys)) !== null)
+                return $keys->each(function($k, $f) use($row, &$resolver){
+                    $function = Regex::Match('/(.*?)\((.*)\)/', $f);
+
+                    if(count($function) > 0)
+                    {
+                        $subdata = $resolver($row, $function[2]);
+
+//                        var_dump($subdata);
+
+                        // TODO(Chris Kruining)
+                        // Implement callable calls
+                        $row = null;
+                    }
+                    else
+                    {
+                        $keys = explode('.', $f);
+
+                        while(($key = array_shift($keys)) !== null && $row !== null)
+                        {
+                            $row = $row[$key] ?? null;
+                        }
+
+                    }
+
+                    yield $f => $row;
+                })
+                    ->toArray();
+            };
+
+            $results = new static;
+
+            foreach($this->items as $row)
             {
-                $results = $results->each(function($k, $v) use($key){ yield $k => $v[$key]; });
+                $results[] = $resolver($row, $query);
             }
 
-            return $results;
+            return $results
+                ->map(function($k, $v) { return count($v) === 1 ? array_values($v)[0] : $v; });
         }
 
         public function where($expression = ''): Queryable
@@ -708,7 +740,14 @@ namespace CPB\Utilities\Common
 
         public function offsetSet($offset, $value)
         {
-            $this->items[$offset] = $value;
+            if($offset === null)
+            {
+                $this->items[] = $value;
+            }
+            else
+            {
+                $this->items[$offset] = $value;
+            }
         }
 
         public function offsetUnset($offset)
