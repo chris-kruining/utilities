@@ -774,7 +774,11 @@ namespace CPB\Utilities\Common
 
         private function iterableToArray(array $iterables): array
         {
-            return array_map('iterator_to_array', $iterables);
+            return array_map(function($i) {
+                return $i instanceof \Traversable
+                    ? iterator_to_array($i)
+                    : $i;
+            }, $iterables);
         }
 
         private function columnAction(callable $method, string $key, ...$args)
