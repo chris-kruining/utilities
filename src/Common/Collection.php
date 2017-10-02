@@ -348,6 +348,11 @@ namespace CPB\Utilities\Common
             return $this->offsetExists($key);
         }
 
+        public function hasKey(string ...$keys)
+        {
+            return count(array_diff($keys, array_keys($this->items))) === 0;
+        }
+
         public function sort(int $flags = SORT_REGULAR): CollectionInterface
         {
             return $this->sortCall('sort', $flags);
