@@ -721,19 +721,57 @@ namespace CPB\Utilities\Common
             return $this->columnAction(function($arr){ return array_sum($arr) / count($arr); }, $key ?? '');
         }
 
-        public function max(string $key, float $limit)
+        public function max(string $key, float $limit = null)
         {
-            // TODO: Implement max() method.
+            $result = $this->columnAction('max', $key);
+
+            if($limit !== null)
+            {
+                if($result instanceof static)
+                {
+                    $result = $result->map(function($k, $v) use($limit){ return min($v, $limit); });
+                }
+                else
+                {
+                    $result = min($result, $limit);
+                }
+            }
+
+            return $result;
         }
 
-        public function min(string $key, float $limit)
+        public function min(string $key, float $limit = null)
         {
-            // TODO: Implement min() method.
+            $result = $this->columnAction('min', $key);
+
+            if($limit !== null)
+            {
+                if($result instanceof static)
+                {
+                    $result = $result->map(function($k, $v) use($limit){ return max($v, $limit); });
+                }
+                else
+                {
+                    $result = max($result, $limit);
+                }
+            }
+
+            return $result;
         }
 
         public function clamp(string $key, float $lower, float $upper)
         {
-            // TODO: Implement clamp() method.
+            $result = $this->min($key, $lower);
+            $map = function($k, $v) use($upper){ return min($v, $upper); };
+
+            if($result instanceof static)
+            {
+                return $result->map($map);
+            }
+            else
+            {
+                return $map(null, $result);
+            }
         }
 
         public function offsetExists($offset): bool
