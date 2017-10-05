@@ -543,13 +543,21 @@ namespace CPB\Utilities\Common
 
                     if(count($function) > 0)
                     {
-                        $subdata = $resolver($row, $function[2]);
-
-//                        var_dump($subdata);
-
                         // TODO(Chris Kruining)
                         // Implement callable calls
-                        $row = null;
+
+                        if(method_exists($this, $function[1]))
+                        {
+                            $row = $this->{$function[1]}(...explode(',', $function[2]));
+                        }
+                        else
+                        {
+                            $args = $resolver($row, $function[2]);
+
+                            var_dump($args);
+                            var_dump($function[1]);
+                            $row = null;
+                        }
                     }
                     else
                     {
