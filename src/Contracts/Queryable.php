@@ -39,9 +39,9 @@ namespace CPB\Utilities\Contracts
 
         public function average(string $key);
 
-        public function max(string $key, float $limit);
+        public function max(string $key, float $limit = null);
 
-        public function min(string $key, float $limit);
+        public function min(string $key, float $limit = null);
 
         public function clamp(string $key, float $lower, float $upper);
     }
