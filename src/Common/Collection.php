@@ -343,14 +343,17 @@ namespace CPB\Utilities\Common
             return array_search($value, $this->items) !== false;
         }
 
-        public function has($key): bool
-        {
-            return $this->offsetExists($key);
-        }
-
-        public function hasKey(string ...$keys)
+        public function has(string ...$keys): bool
         {
             return count(array_diff($keys, array_keys($this->items))) === 0;
+        }
+
+        public function get(string ...$keys): CollectionInterface
+        {
+            return $this->filter(
+                function($k) use($keys){ return in_array($k, $keys); },
+                ARRAY_FILTER_USE_KEY
+            );
         }
 
         public function sort(int $flags = SORT_REGULAR): CollectionInterface

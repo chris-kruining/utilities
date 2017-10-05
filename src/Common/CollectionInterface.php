@@ -46,7 +46,9 @@ namespace CPB\Utilities\Common
 
         public function contains($value): bool;
 
-        public function has($key): bool;
+        public function has(string ...$keys): bool;
+
+        public function get(string ...$keys): CollectionInterface;
 
         public function diff(iterable ...$sets): CollectionInterface;
 
