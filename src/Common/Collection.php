@@ -529,6 +529,11 @@ namespace CPB\Utilities\Common
             return join($delimiter, $this->ToArray());
         }
 
+        public static function fromString(string $subject, string $delimiter = ' '): CollectionInterface
+        {
+            return static::from(explode($delimiter, $subject));
+        }
+
         public function count(): int
         {
             return count($this->items);
