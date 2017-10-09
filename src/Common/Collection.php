@@ -5,6 +5,7 @@ namespace CPB\Utilities\Common
     use CPB\Utilities\Code\Lambda;
     use CPB\Utilities\Contracts\Queryable;
     use CPB\Utilities\Math\Arithmetic;
+    use Paynl\Result\Result;
 
     class Collection implements CollectionInterface
     {
@@ -100,6 +101,11 @@ namespace CPB\Utilities\Common
         public function reverse(): CollectionInterface
         {
             return static::from(array_reverse($this->items));
+        }
+
+        public function reduce(callable $callback, iterable $input = []): CollectionInterface
+        {
+            return static::from(array_reduce($this->items, $callback, $this->iterableToArray($input)) ?? []);
         }
 
         public function merge(iterable ...$sets): CollectionInterface
