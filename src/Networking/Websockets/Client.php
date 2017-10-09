@@ -19,33 +19,40 @@ namespace CPB\Utilities\Networking\Websockets
         {
             $this->disconnect();
         }
-        public function sendData($data, $type = 'text', $masked = true)
+        public function sendData($data, $type = 'text', $masked = true): ?string
         {
             if($this->_connected === false)
             {
                 trigger_error("Not connected", E_USER_WARNING);
-                return false;
+                return null;
             }
-            if( !is_string($data)) {
-                trigger_error("Not a string data was given.", E_USER_WARNING);
-                return false;
-            }
-            if (strlen($data) == 0)
+
+            if(!is_string($data))
             {
-                return false;
+                trigger_error("Not a string data was given.", E_USER_WARNING);
+                return null;
             }
+
+            if(strlen($data) === 0)
+            {
+                return null;
+            }
+
             $res = @fwrite($this->_Socket, $this->_hybi10Encode($data, $type, $masked));
+
             if($res === 0 || $res === false)
             {
-                return false;
+                return null;
             }
-            $buffer = ' ';
+
+            $buffer = null;
+
             while($buffer !== '')
             {
                 $buffer = fread($this->_Socket, 512);// drop?
             }
 
-            return true;
+            return $buffer;
         }
         public function connect($host, $port, $path, $origin = false)
         {
