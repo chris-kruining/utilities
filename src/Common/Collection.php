@@ -614,7 +614,11 @@ namespace CPB\Utilities\Common
             };
 
             return Collection::from($resolver($this->items, $query))
-                ->map(function($k, $v) { return count($v) === 1 ? array_values($v)[0] : $v; });
+                ->map(function($k, $v) {
+                    return is_iterable($v) && count($v) === 1
+                        ? array_values($v)[0]
+                        : $v;
+                });
         }
 
         public function where($expression = ''): Queryable
