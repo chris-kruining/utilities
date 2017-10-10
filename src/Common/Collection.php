@@ -126,7 +126,22 @@ namespace CPB\Utilities\Common
 
         public function filter(callable $callback = null, int $option = 0): CollectionInterface
         {
-            return static::from(array_filter($this->items, $callback, $option));
+            if($callback !== null)
+            {
+                $args = [
+                    $this->items,
+                    $callback,
+                    $option,
+                ];
+            }
+            else
+            {
+                $args = [
+                    $this->items,
+                ];
+            }
+
+            return static::from(array_filter(...$args));
         }
 
         public function split(callable $callback, int $option = 0, bool $assoc = false): array
