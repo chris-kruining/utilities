@@ -19,17 +19,11 @@ namespace CPB\Utilities\Networking\Websockets
         {
             $this->disconnect();
         }
-        public function sendData($data, $type = 'text', $masked = true): ?string
+        public function sendData(string $data, string $type = 'text', bool $masked = true): ?string
         {
             if($this->_connected === false)
             {
                 trigger_error("Not connected", E_USER_WARNING);
-                return null;
-            }
-
-            if(!is_string($data))
-            {
-                trigger_error("Not a string data was given.", E_USER_WARNING);
                 return null;
             }
 
