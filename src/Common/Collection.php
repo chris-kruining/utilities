@@ -582,7 +582,7 @@ namespace CPB\Utilities\Common
                             }
                             else
                             {
-                                $row = $row[$key] ?? ($row instanceof Collection
+                                $row = $row[$key] ?? ($row instanceof CollectionInterface
                                     ? $row->map(function($k, $v) use($key){ return $v[$key] ?? null; })->filter()
                                     : array_filter(array_map(function($v) use($key){ return $v[$key] ?? null; }, $row))
                                 );
