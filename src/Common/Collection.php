@@ -613,14 +613,7 @@ namespace CPB\Utilities\Common
                     ->toArray();
             };
 
-            $results = new static;
-
-            foreach($this->items as $row)
-            {
-                $results[] = $resolver($row, $query);
-            }
-
-            return $results
+            return Collection::from($resolver($this->items, $query))
                 ->map(function($k, $v) { return count($v) === 1 ? array_values($v)[0] : $v; });
         }
 
