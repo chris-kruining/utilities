@@ -578,7 +578,9 @@ namespace CPB\Utilities\Common
                         {
                             if($key === '*')
                             {
-                                $row = array_values($row);
+                                $row = $row instanceof CollectionInterface
+                                    ? $row->values()
+                                    : array_values($row);
                             }
                             else
                             {
