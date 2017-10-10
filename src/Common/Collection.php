@@ -576,7 +576,14 @@ namespace CPB\Utilities\Common
 
                         while(($key = array_shift($keys)) !== null && $row !== null)
                         {
-                            $row = $row[$key] ?? null;
+                            if($key === '*')
+                            {
+                                $row = array_values($row);
+                            }
+                            else
+                            {
+                                $row = $row[$key] ?? array_filter(array_map(function($v) use($key){ return $v[$key] ?? null; }, $row)) ?? null;
+                            }
                         }
 
                     }
