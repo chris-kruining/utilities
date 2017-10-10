@@ -18,7 +18,7 @@ namespace CPB\Utilities\Common
 
         public function map(callable $callback): CollectionInterface;
 
-        public function filter(callable $callback): CollectionInterface;
+        public function filter(callable $callback = null): CollectionInterface;
 
         public function each(callable $callback): CollectionInterface;
 

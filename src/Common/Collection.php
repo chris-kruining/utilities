@@ -124,7 +124,7 @@ namespace CPB\Utilities\Common
             );
         }
 
-        public function filter(callable $callback, int $option = 0): CollectionInterface
+        public function filter(callable $callback = null, int $option = 0): CollectionInterface
         {
             return static::from(array_filter($this->items, $callback, $option));
         }
