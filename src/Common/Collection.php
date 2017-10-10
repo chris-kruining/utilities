@@ -559,7 +559,7 @@ namespace CPB\Utilities\Common
             yield from $this->items;
         }
 
-        public function select($query): Queryable
+        public function select($query)
         {
             $resolver = function($row, $q) use(&$resolver) {
                 $keys = Collection::from(Regex::Split('/,\s*(?![^()]*(?:\([^()]*\))?\))/', $q, -1, PREG_SPLIT_NO_EMPTY));
@@ -613,12 +613,16 @@ namespace CPB\Utilities\Common
                     ->toArray();
             };
 
-            return Collection::from($resolver($this->items, $query))
+            $result =  Collection::from($resolver($this->items, $query))
                 ->map(function($k, $v) {
                     return is_iterable($v) && count($v) === 1
                         ? array_values($v)[0]
                         : $v;
                 });
+
+            return $result->count() > 1
+                ? $result
+                : $result->first();
         }
 
         public function where($expression = ''): Queryable

@@ -12,7 +12,7 @@ namespace CPB\Utilities\Contracts
         const JOIN_LEFT = 2;
         const JOIN_RIGHT = 3;
 
-        public function select($key): Queryable;
+        public function select($key);
 
         public function where(): Queryable;
 
