@@ -864,7 +864,7 @@ namespace CPB\Utilities\Common
             {
                 $this->items[] = $value;
             }
-            elseif(key_exists($offset, $this->items))
+            elseif(strpos($offset, '.') !== false)
             {
                 $this->items[$offset] = $value;
             }
