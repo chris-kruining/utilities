@@ -613,7 +613,7 @@ namespace CPB\Utilities\Common
                     ->toArray();
             };
 
-            $result =  Collection::from($resolver($this->items, $query))
+            $result = Collection::from($resolver($this->items, $query))
                 ->map(function($k, $v) {
                     return is_iterable($v) && count($v) === 1
                         ? array_values($v)[0]
@@ -853,7 +853,9 @@ namespace CPB\Utilities\Common
 
         public function offsetGet($offset)
         {
-            return key_exists($offset, $this->items) ? $this->items[$offset] : $this->select($offset);
+            return key_exists($offset, $this->items)
+                ? $this->items[$offset]
+                : $this->select($offset);
         }
 
         public function offsetSet($offset, $value)
