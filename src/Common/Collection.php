@@ -625,6 +625,31 @@ namespace CPB\Utilities\Common
                 : $result->first();
         }
 
+        public function insert(string $query, $value): Collection
+        {
+            $keys = explode('.', $query);
+            $row = &$this->items;
+
+            while(($key = array_shift($keys)) !== null && $row !== null)
+            {
+                $row = &$row[$key] ?? null;
+            }
+
+            if($row !== null)
+            {
+                if(is_iterable($row))
+                {
+                    $row[] = $value;
+                }
+                else
+                {
+                    $row = $value;
+                }
+            }
+
+            return $this;
+        }
+
         public function where($expression = ''): Queryable
         {
             // TODO(Chris Kruining)
@@ -837,9 +862,13 @@ namespace CPB\Utilities\Common
             {
                 $this->items[] = $value;
             }
-            else
+            elseif(key_exists($offset, $this->items))
             {
                 $this->items[$offset] = $value;
+            }
+            else
+            {
+                return $this->insert($offset, $value);
             }
         }
 
