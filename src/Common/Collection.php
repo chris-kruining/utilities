@@ -632,19 +632,16 @@ namespace CPB\Utilities\Common
 
             while(($key = array_shift($keys)) !== null && $row !== null)
             {
-                $row = &$row[$key] ?? null;
+                $row = &$row[$key] ?? new static;
             }
 
-            if($row !== null)
+            if(is_iterable($row))
             {
-                if(is_iterable($row))
-                {
-                    $row[] = $value;
-                }
-                else
-                {
-                    $row = $value;
-                }
+                $row[] = $value;
+            }
+            else
+            {
+                $row = $value;
             }
 
             return $this;
