@@ -4,21 +4,21 @@ namespace CPB\Utilities\Common
 {
     class Regex
     {
-        public static function Match(string $pattern, string $subject) : array
+        public static function match(string $pattern, string $subject) : array
         {
             preg_match($pattern, $subject, $matches);
 
             return $matches;
         }
 
-        public static function MatchAll(string $pattern, string $subject) : array
+        public static function matchAll(string $pattern, string $subject) : array
         {
             preg_match_all($pattern, $subject, $matches);
 
             return $matches;
         }
 
-        public static function Encapsulate(string $input, string $char, string $filter = null, string $lookFor = 'A-Za-z0-9_', int $limit = -1) : string
+        public static function encapsulate(string $input, string $char, string $filter = null, string $lookFor = 'A-Za-z0-9_', int $limit = -1) : string
         {
             $filter = $filter ?? $char;
 
@@ -30,12 +30,12 @@ namespace CPB\Utilities\Common
             );
         }
 
-        public static function AfterLastOccurrence(string $subject, string $character = '/') : string
+        public static function afterLastOccurrence(string $subject, string $character = '/') : string
         {
             return static::MatchAll('/.*\\' . $character . '(.*)/', $subject)[1][0];
         }
 
-        public static function Split(string $pattern, string $subject, int $limit = -1 , int $flags = 0)
+        public static function split(string $pattern, string $subject, int $limit = -1 , int $flags = 0)
         {
             return preg_split($pattern, $subject, $limit, $flags);
         }

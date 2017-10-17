@@ -3,7 +3,6 @@
 namespace CPB\Utilities\Common
 {
     use Psr\Container\NotFoundExceptionInterface;
-    use Throwable;
 
     class NotFoundException extends \Exception implements NotFoundExceptionInterface
     {

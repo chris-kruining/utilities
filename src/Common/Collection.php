@@ -314,7 +314,7 @@ namespace CPB\Utilities\Common
             foreach($data as $key => $value)
             {
                 $count = $keys->filter(
-                    function($v) use($key){ return count(Regex::Match('/^' . $key . '(\(\d\))?/', $v)) > 0; }
+                    function($v) use($key){ return count(Regex::match('/^' . $key . '(\(\d\))?/', $v)) > 0; }
                 )->count();
 
                 if($count > 0)
@@ -571,10 +571,10 @@ namespace CPB\Utilities\Common
         public function select($query)
         {
             $resolver = function($row, $q) use(&$resolver) {
-                $keys = Collection::from(Regex::Split('/,\s*(?![^()]*(?:\([^()]*\))?\))/', $q, -1, PREG_SPLIT_NO_EMPTY));
+                $keys = Collection::from(Regex::split('/,\s*(?![^()]*(?:\([^()]*\))?\))/', $q, -1, PREG_SPLIT_NO_EMPTY));
 
                 return $keys->each(function($k, $f) use($row, &$resolver){
-                    $function = Regex::Match('/(.*?)\((.*)\)/', $f);
+                    $function = Regex::match('/(.*?)\((.*)\)/', $f);
 
                     if(count($function) > 0)
                     {
