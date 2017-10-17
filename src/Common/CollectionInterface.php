@@ -7,7 +7,7 @@ namespace CPB\Utilities\Common
     use Psr\Container\ContainerInterface;
 
     interface CollectionInterface extends
-        ContainerInterface
+        ContainerInterface,
         \Countable,
         \IteratorAggregate,
         \ArrayAccess,
