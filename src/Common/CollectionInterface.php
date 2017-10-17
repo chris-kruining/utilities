@@ -4,8 +4,10 @@ namespace CPB\Utilities\Common
 {
     use CPB\Utilities\Contracts\Cloneable;
     use CPB\Utilities\Contracts\Queryable;
+    use Psr\Container\ContainerInterface;
 
     interface CollectionInterface extends
+        ContainerInterface
         \Countable,
         \IteratorAggregate,
         \ArrayAccess,

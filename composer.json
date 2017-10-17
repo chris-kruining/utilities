@@ -20,6 +20,9 @@
         "phpunit/phpunit": "~5.4",
         "phpspec/phpspec": "^3.0"
     },
+    "provide": {
+        "psr/container": "1.0.0"
+    },
     "config": {
       "bin-dir": "bin"
     },

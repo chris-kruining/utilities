@@ -371,6 +371,11 @@ namespace CPB\Utilities\Common
 
         public function get(string ...$keys): CollectionInterface
         {
+            if(!$this->has(...$keys))
+            {
+                throw new NotFoundException;
+            }
+
             return $this->filter(
                 function($k) use($keys){ return in_array($k, $keys); },
                 ARRAY_FILTER_USE_KEY
