@@ -4,6 +4,8 @@ namespace CPB\Utilities\Common
 {
     use CPB\Utilities\Code\Lambda;
     use CPB\Utilities\Contracts\Queryable;
+    use CPB\Utilities\Enums\JoinStrategy;
+    use CPB\Utilities\Enums\SortDirection;
     use CPB\Utilities\Math\Arithmetic;
     use Paynl\Result\Result;
 
@@ -589,8 +591,9 @@ namespace CPB\Utilities\Common
                         {
                             $args = $resolver($row, $function[2]);
 
-                            var_dump($args);
-                            var_dump($function[1]);
+//                            var_dump($args);
+//                            var_dump($function[1]);
+
                             $row = null;
                         }
                     }
@@ -668,7 +671,7 @@ namespace CPB\Utilities\Common
             iterable $iterable,
             string $localKey,
             string $foreignKey,
-            int $strategy = Queryable::JOIN_INNER
+            JoinStrategy $strategy = null
         ): Queryable
         {
             $iterable = static::from($iterable)->map(function($k, $v){
@@ -688,7 +691,7 @@ namespace CPB\Utilities\Common
             $rightIndex = array_map(function($row) use($foreignKey){ return $row[$foreignKey]; }, $iterable);
             $matchedIndexes = array_map(function($v) use ($rightIndex){ return array_search($v, $rightIndex); }, array_intersect($leftIndex, $rightIndex));
 
-            switch($strategy)
+            switch($strategy ?? JoinStrategy::INNER)
             {
                 // both collections need to have a matching value
                 case Queryable::JOIN_INNER:
@@ -775,11 +778,16 @@ namespace CPB\Utilities\Common
             return static::from(array_unique(array_map(function($v) use($key){ return $v[$key]; }, $this->items)));
         }
 
-        public function order(string $key, int $direction): Queryable
+        public function order(string $key, SortDirection $direction = null): Queryable
         {
-            // TODO: Implement order() method.
+            return $this->uASort(function($a, $b) use($key, $direction){
+                if($direction ?? SortDirection::ASC === SortDirection::DESC)
+                {
+                    [$b, $a] = [$a, $b];
+                }
 
-            return $this;
+                return $a[$key] ?? null <=> $b[$key] ?? null;
+            });
         }
 
         public function group(string $key): Queryable

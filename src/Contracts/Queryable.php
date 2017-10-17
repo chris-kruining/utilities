@@ -2,16 +2,11 @@
 
 namespace CPB\Utilities\Contracts
 {
+    use CPB\Utilities\Enums\JoinStrategy;
+    use CPB\Utilities\Enums\SortDirection;
+
     interface Queryable extends \Countable
     {
-        const DIRECTION_ASC = 0;
-        const DIRECTION_DESC = 1;
-
-        const JOIN_INNER = 0;
-        const JOIN_OUTER = 1;
-        const JOIN_LEFT = 2;
-        const JOIN_RIGHT = 3;
-
         public function select($key);
 
         public function where(): Queryable;
@@ -24,14 +19,14 @@ namespace CPB\Utilities\Contracts
             iterable $iterable,
             string $localKey,
             string $foreignKey,
-            int $strategy = self::JOIN_INNER
+            JoinStrategy $strategy = null
         ): Queryable;
 
         public function union(iterable $iterable): Queryable;
 
         public function distinct(string $key): Queryable;
 
-        public function order(string $key, int $direction): Queryable;
+        public function order(string $key, SortDirection $direction = null): Queryable;
 
         public function group(string $key): Queryable;
 
