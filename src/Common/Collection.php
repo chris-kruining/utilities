@@ -364,13 +364,17 @@ namespace CPB\Utilities\Common
             return array_search($value, $this->items) !== false;
         }
 
-        public function has(string ...$keys): bool
+        public function has($key, string ...$keys): bool
         {
+            $keys = \array_merge([ $key ], $keys);
+
             return count(array_diff($keys, array_keys($this->items))) === 0;
         }
 
-        public function get(string ...$keys): CollectionInterface
+        public function get($key, string ...$keys): CollectionInterface
         {
+            $keys = \array_merge([ $key ], $keys);
+
             if(!$this->has(...$keys))
             {
                 throw new NotFoundException;
