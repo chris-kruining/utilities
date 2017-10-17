@@ -1,7 +1,7 @@
 {
     "name": "chris-kruining/utilities",
     "type": "Utilities",
-    "description": "Utilities for PHP 7^",
+    "description": "Utilities for PHP 7.1^",
     "keywords": ["Utilities","PHP"],
     "homepage": "https://github.com/chris-kruining/utilities",
     "license": "GPL-3.0",
