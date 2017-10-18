@@ -12,3 +12,5 @@ before_script:
   - chmod -R +x ./bin
 script:
   - ./bin/phpspec run
+after_success:
+  - travis_retry php vendor/bin/coveralls -v
