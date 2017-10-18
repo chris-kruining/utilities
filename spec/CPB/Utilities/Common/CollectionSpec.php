@@ -33,7 +33,7 @@ namespace spec\CPB\Utilities\Common
         {
             $this::from([ 'one', 'two', 'three' ])
                 ->toObject(',')
-                ->shouldReturn((object)[ 'one', 'two', 'three' ]);
+                ->shouldBeLike((object)[ 'one', 'two', 'three' ]);
         }
 
         public function it_is_iterable()
