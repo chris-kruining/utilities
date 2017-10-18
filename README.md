@@ -1,3 +1,6 @@
+[![Latest Stable Version](https://poser.pugx.org/chris-kruining/utilities/v/stable)](https://packagist.org/packages/chris-kruining/utilities)
+[![Latest Unstable Version](https://poser.pugx.org/chris-kruining/utilities/v/unstable)](https://packagist.org/packages/chris-kruining/utilities)
+[![License](https://poser.pugx.org/chris-kruining/utilities/license)](https://packagist.org/packages/chris-kruining/utilities)
 [![Build Status](https://travis-ci.org/chris-kruining/utilities.svg?branch=master)](https://travis-ci.org/chris-kruining/utilities)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/14a870b9-f364-4030-971b-048cbe19cdd5/mini.png)](https://insight.sensiolabs.com/projects/14a870b9-f364-4030-971b-048cbe19cdd5)
 
