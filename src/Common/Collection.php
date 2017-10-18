@@ -581,7 +581,7 @@ namespace CPB\Utilities\Common
                     if(count($function) > 0)
                     {
                         // TODO(Chris Kruining)
-                        // Implement callable calls
+                        // Implement external parser
 
                         if(method_exists($this, $function[1]))
                         {
@@ -589,11 +589,6 @@ namespace CPB\Utilities\Common
                         }
                         else
                         {
-                            $args = $resolver($row, $function[2]);
-
-//                            var_dump($args);
-//                            var_dump($function[1]);
-
                             $row = null;
                         }
                     }
