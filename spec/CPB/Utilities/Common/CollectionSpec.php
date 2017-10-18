@@ -12,14 +12,14 @@ namespace spec\CPB\Utilities\Common
             $this->shouldHaveType(Collection::class);
         }
 
-        public function it_is_stattically_initializable()
+        public function it_is_statically_initializable()
         {
-            $this::From([])->shouldHaveType(Collection::class);
+            $this::from([])->shouldHaveType(Collection::class);
         }
 
         public function it_is_castable_to_array()
         {
-            $this->ToArray()->shouldBeArray();
+            $this->toArray()->shouldBeArray();
         }
 
         public function it_is_castable_to_string()
@@ -29,6 +29,13 @@ namespace spec\CPB\Utilities\Common
                 ->shouldReturn('one,two,three');
         }
 
+        public function it_is_castable_to_object()
+        {
+            $this::from([ 'one', 'two', 'three' ])
+                ->toObject(',')
+                ->shouldReturn((object)[ 'one', 'two', 'three' ]);
+        }
+
         public function it_is_iterable()
         {
             $this->getIterator()->shouldHaveType(\Generator::class);
@@ -36,7 +43,7 @@ namespace spec\CPB\Utilities\Common
 
         public function it_is_sortable()
         {
-            $sorted = $this::From([ 21, 42, -38 ])->Sort();
+            $sorted = $this::from([ 21, 42, -38 ])->sort();
 
             $sorted->shouldHaveKeyWithValue(0, -38);
             $sorted->shouldHaveKeyWithValue(1, 21);
@@ -45,7 +52,7 @@ namespace spec\CPB\Utilities\Common
 
         public function it_is_countable()
         {
-            $this::From([ 'one', 'two', 'three' ])
+            $this::from([ 'one', 'two', 'three' ])
                 ->shouldHaveCount(3);
         }
 
@@ -75,7 +82,7 @@ namespace spec\CPB\Utilities\Common
 
         public function it_can_read_items()
         {
-            $this::From([
+            $this::from([
                 'one',
                 'two',
                 'three',
