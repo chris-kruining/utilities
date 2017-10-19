@@ -618,10 +618,14 @@ namespace CPB\Utilities\Common
                         ? array_values($v)[0]
                         : $v;
                 });
-
-            return $result->count() > 1
+    
+            $result = $result->count() > 1
                 ? $result
                 : $result->first();
+    
+            return \is_iterable($result) && !$result instanceof self::class
+                ? static::from($result)
+                : $result;
         }
 
         public function insert(string $query, $value): Collection
