@@ -2,7 +2,9 @@
 
 namespace CPB\Utilities\Enums
 {
-    class JoinStrategy
+    use CPB\Utilities\Common\Enum;
+    
+    final class JoinStrategy extends Enum
     {
         public const
             INNER = 0,

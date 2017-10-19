@@ -623,7 +623,7 @@ namespace CPB\Utilities\Common
                 ? $result
                 : $result->first();
     
-            return \is_iterable($result) && !$result instanceof self::class
+            return \is_iterable($result) && !$result instanceof self
                 ? static::from($result)
                 : $result;
         }
