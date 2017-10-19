@@ -2,7 +2,6 @@
 
 namespace CPB\Utilities\Common
 {
-    use CPB\Utilities\Code\Lambda;
     use CPB\Utilities\Contracts\Queryable;
     use CPB\Utilities\Enums\JoinStrategy;
     use CPB\Utilities\Enums\SortDirection;
@@ -40,15 +39,8 @@ namespace CPB\Utilities\Common
                 {
                     return $parameter->toArray();
                 }
-
-                try
-                {
-                    return Lambda::toCallable($parameter);
-                }
-                catch(\InvalidArgumentException $e)
-                {
-                    return $parameter;
-                }
+                
+                return $parameter;
             }, $parameters);
 
             if(function_exists($function))
