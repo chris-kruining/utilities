@@ -92,9 +92,9 @@ namespace CPB\Utilities\Common
             return static::from(array_unique($this->items));
         }
 
-        public function reverse(): CollectionInterface
+        public function reverse(bool $preserveKeys = false): CollectionInterface
         {
-            return static::from(array_reverse($this->items));
+            return static::from(array_reverse($this->items, $preserveKeys));
         }
 
         public function reduce(callable $callback, iterable $input = []): CollectionInterface
