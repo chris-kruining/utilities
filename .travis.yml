@@ -1,14 +1,23 @@
 notifications:
   email: false
+
 language: php
+
 php:
   - 7.1
-  - 7.2.0RC4
+  - 7.2
+  - hhvm
+  - nightly
+
 matrix:
   allow_failures:
-    - php: 7.2.0RC4
+    - php: - 7.2
+    - php: - hhvm
+    - php: - nightly
+
 before_script:
   - composer install
   - chmod -R +x ./bin
+
 script:
   - ./bin/phpspec run
