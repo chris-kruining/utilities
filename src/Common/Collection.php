@@ -500,12 +500,12 @@ namespace CPB\Utilities\Common
 
         public function first()
         {
-            return $this->byIndex(0);
+            return reset($this->items);
         }
 
         public function last()
         {
-            return $this->byIndex(-1);
+            return reset(\array_reverse($this->items));
         }
 
         public function chunk(int $size, bool $preserveKeys = false): CollectionInterface
