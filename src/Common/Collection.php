@@ -99,7 +99,11 @@ namespace CPB\Utilities\Common
 
         public function reduce(callable $callback, $input = null): CollectionInterface
         {
-            return static::from(array_reduce($this->items, $callback, $input ?? []) ?? []);
+            $result = array_reduce($this->items, $callback, $input ?? []) ?? [];
+            
+            return \is_iterable($result) ?
+                static::from($result)
+                : $result;
         }
 
         public function merge(iterable ...$sets): CollectionInterface
