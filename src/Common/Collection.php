@@ -99,7 +99,11 @@ namespace CPB\Utilities\Common
 
         public function reduce(callable $callback, $input = null)
         {
-            $result = array_reduce($this->items, $callback, $input ?? []) ?? [];
+            $result = array_reduce(
+                \array_keys($this->items),
+                function($t, $i) use($callback){ return $callback($t, $i, $this->items[$i]); },
+                $input ?? []
+            ) ?? [];
             
             return \is_iterable($result) ?
                 static::from($result)
