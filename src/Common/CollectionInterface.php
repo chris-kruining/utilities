@@ -40,7 +40,7 @@ namespace CPB\Utilities\Common
 
         public function reverse(): CollectionInterface;
         
-        public function reduce(callable $callback, $input = null): CollectionInterface;
+        public function reduce(callable $callback, $input = null);
 
         public function find(callable $callback);
 
