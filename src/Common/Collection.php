@@ -97,9 +97,9 @@ namespace CPB\Utilities\Common
             return static::from(array_reverse($this->items, $preserveKeys));
         }
 
-        public function reduce(callable $callback, iterable $input = []): CollectionInterface
+        public function reduce(callable $callback, $input = null): CollectionInterface
         {
-            return static::from(array_reduce($this->items, $callback, $this->iterableToArray($input)) ?? []);
+            return static::from(array_reduce($this->items, $callback, $input ?? []) ?? []);
         }
 
         public function merge(iterable ...$sets): CollectionInterface

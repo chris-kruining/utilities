@@ -39,6 +39,8 @@ namespace CPB\Utilities\Common
         public function unique(): CollectionInterface;
 
         public function reverse(): CollectionInterface;
+        
+        public function reduce(callable $callback, $input = null): CollectionInterface;
 
         public function find(callable $callback);
 
