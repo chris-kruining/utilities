@@ -23,10 +23,22 @@ namespace CPB\Utilities\Tools
             var_dump((float)number_format(microtime(true) - $this->start, 10) * 1000 . 'ms');
         }
         
-        public static function Measure(callable $cb)
+        public static function Measure(callable $cb, int $repeat = null)
         {
             $inst = static::Start();
-            $result = $cb();
+            
+            if($repeat !== null)
+            {
+                for($i = 0; $i < $repeat; $i++)
+                {
+                    $result = $cb($i);
+                }
+            }
+            else
+            {
+                $result = $cb(0);
+            }
+            
             $inst->Stop();
             
             return $result;
