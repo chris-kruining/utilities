@@ -1417,12 +1417,14 @@ namespace CPB\Utilities\Common
             }
             else
             {
+                \var_dump($args);
+                
                 while(($i = \array_search(self::ITEMS, $args)) !== false)
                 {
                     $args[$i] = $this->items;
                 }
                 
-                \var_dump($args);
+                \var_dump($args, $function);
                 
                 return new static($function(...$args));
             }
