@@ -720,31 +720,33 @@ namespace CPB\Utilities\Common
          */
         public function powerSet(int $minLength = 1): CollectionInterface
         {
-            $count = $this->count();
-            $members = pow(2, $count);
-            $values = $this->values();
-            $return = [];
-            
-            for($i = 0; $i < $members; $i++)
-            {
-                $b = sprintf("%0" . $count . "b", $i);
-                $out = [];
-                
-                for($j = 0; $j < $count; $j++)
+            return $this->chainOrExecute(function($items) use($minLength){
+                $count = count($this);
+                $members = 2**$count;
+                $values = \array_values($items);
+                $return = [];
+    
+                for($i = 0; $i < $members; $i++)
                 {
-                    if($b{$j} == '1')
+                    $b = sprintf("%0" . $count . "b", $i);
+                    $out = [];
+        
+                    for($j = 0; $j < $count; $j++)
                     {
-                        $out[] = $values[$j];
+                        if($b{$j} == '1')
+                        {
+                            $out[] = $values[$j];
+                        }
+                    }
+        
+                    if(count($out) >= $minLength)
+                    {
+                        $return[] = $out;
                     }
                 }
-                
-                if(count($out) >= $minLength)
-                {
-                    $return[] = $out;
-                }
-            }
-            
-            return static::from($return);
+    
+                return $return;
+            }, self::ITEMS);
         }
         
         /**
@@ -1419,6 +1421,8 @@ namespace CPB\Utilities\Common
                 {
                     $args[$i] = $this->items;
                 }
+                
+                \var_dump($args);
                 
                 return new static($function(...$args));
             }
