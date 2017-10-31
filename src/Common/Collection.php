@@ -39,7 +39,12 @@ namespace CPB\Utilities\Common
             return $this->toString();
         }
         
-        public function __invoke(...$args)
+        /**
+         * Executes lazy chain
+         *
+         * @lazy-chainable false
+         */
+        public function end(...$args)
         {
             if($this->lazy === false)
             {
@@ -52,9 +57,12 @@ namespace CPB\Utilities\Common
             
             foreach($this->chain as [ $function, $args])
             {
-                while(($i = \array_search(self::ITEMS, $args)) !== false)
+                foreach($args as &$arg)
                 {
-                    $args[$i] = $items;
+                    if($arg === self::ITEMS)
+                    {
+                        $arg = $items;
+                    }
                 }
                 
                 $items = $function(...$args);
@@ -720,33 +728,31 @@ namespace CPB\Utilities\Common
          */
         public function powerSet(int $minLength = 1): CollectionInterface
         {
-            return $this->chainOrExecute(function($items) use($minLength){
-                $count = count($this);
-                $members = 2**$count;
-                $values = \array_values($items);
-                $return = [];
-    
-                for($i = 0; $i < $members; $i++)
+            $count = $this->count();
+            $members = pow(2, $count);
+            $values = $this->values();
+            $return = [];
+            
+            for($i = 0; $i < $members; $i++)
+            {
+                $b = sprintf("%0" . $count . "b", $i);
+                $out = [];
+                
+                for($j = 0; $j < $count; $j++)
                 {
-                    $b = sprintf("%0" . $count . "b", $i);
-                    $out = [];
-        
-                    for($j = 0; $j < $count; $j++)
+                    if($b{$j} == '1')
                     {
-                        if($b{$j} == '1')
-                        {
-                            $out[] = $values[$j];
-                        }
-                    }
-        
-                    if(count($out) >= $minLength)
-                    {
-                        $return[] = $out;
+                        $out[] = $values[$j];
                     }
                 }
-    
-                return $return;
-            }, self::ITEMS);
+                
+                if(count($out) >= $minLength)
+                {
+                    $return[] = $out;
+                }
+            }
+            
+            return static::from($return);
         }
         
         /**
@@ -1401,7 +1407,11 @@ namespace CPB\Utilities\Common
         
         private function sortCall(string $function, ...$arguments): CollectionInterface
         {
-            return $this->chainOrExecute($function, self::ITEMS, ...$arguments);
+            return $this->chainOrExecute(function($items) use($function, $arguments){
+                $function($items, ...$arguments);
+                
+                return $items;
+            }, self::ITEMS);
         }
         
         private function chainOrExecute(callable $function, ...$args)
@@ -1417,14 +1427,13 @@ namespace CPB\Utilities\Common
             }
             else
             {
-                \var_dump($args);
-                
-                while(($i = \array_search(self::ITEMS, $args)) !== false)
+                foreach($args as &$arg)
                 {
-                    $args[$i] = $this->items;
+                    if($arg === self::ITEMS)
+                    {
+                        $arg = $this->items;
+                    }
                 }
-                
-                \var_dump($args, $function);
                 
                 return new static($function(...$args));
             }
