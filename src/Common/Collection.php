@@ -1025,7 +1025,16 @@ namespace CPB\Utilities\Common
             
             while(($key = array_shift($keys)) !== null && $row !== null)
             {
-                $row = &$row[$key] ?? new static;
+                if(\is_array($row) && !\key_exists($key, $row))
+                {
+                    $row[$key] = new static;
+                }
+                elseif($row instanceof static && !$row->has($key))
+                {
+                    $row->items[$key] = new static;
+                }
+    
+                $row = &$row[$key];
             }
             
             if(is_iterable($row))
