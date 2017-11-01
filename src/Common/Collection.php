@@ -857,7 +857,12 @@ namespace CPB\Utilities\Common
          */
         public function toArray() : array
         {
-            return iterator_to_array($this, true);
+            \array_walk($this->items, function(&$i){ $i = $i instanceof static ? $i->toArray() : $i; });
+            
+            return iterator_to_array(
+                $this,
+                true
+            );
         }
         
         /**
@@ -867,7 +872,7 @@ namespace CPB\Utilities\Common
          */
         public function toObject() : \stdClass
         {
-            return (object)$this->ToArray();
+            return (object)$this->toArray();
         }
         
         /**
@@ -878,7 +883,7 @@ namespace CPB\Utilities\Common
          */
         public function toString(string $delimiter = ''): string
         {
-            return join($delimiter, $this->ToArray());
+            return join($delimiter, $this->toArray());
         }
         
         /**
