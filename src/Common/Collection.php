@@ -416,7 +416,7 @@ namespace CPB\Utilities\Common
         public function each(callable $callback): CollectionInterface
         {
             return $this->chainOrExecute(function($items) use($callback){
-                $newItems = [];
+                $collection = [];
                 
                 foreach($items as $key => $value)
                 {
@@ -452,7 +452,7 @@ namespace CPB\Utilities\Common
                     }
                 }
                 
-                return $newItems;
+                return $collection;
             }, self::ITEMS);
         }
         
@@ -839,9 +839,13 @@ namespace CPB\Utilities\Common
         public static function from(iterable $items): CollectionInterface
         {
             $inst = new static;
-            $inst->items = $items instanceof \Traversable
+            $items = $items instanceof \Traversable
                 ? iterator_to_array($items, true)
                 : $items;
+            
+            \array_walk($items, function(&$v) { $v = \is_iterable($v) ? static::from($v) : $v; });
+            
+            $inst->items = $items;
             
             return $inst;
         }
@@ -948,9 +952,15 @@ namespace CPB\Utilities\Common
                             }
                             else
                             {
+                                $map = function($k, $v) use($key){ return $v[$key] ?? null; };
+                                $filter = function($v) { return $v !== null; };
+                                
                                 $row = $row[$key] ?? ($row instanceof CollectionInterface
-                                        ? $row->map(function($k, $v) use($key){ return $v[$key] ?? null; })->filter()
-                                        : array_filter(array_map(function($v) use($key){ return $v[$key] ?? null; }, $row))
+                                        ? $row->map($map)->filter($filter)
+                                        : array_filter(
+                                            array_map($map, \array_keys($row), \array_values($row)),
+                                            $filter
+                                        )
                                     ) ?? null;
                             }
                         }
@@ -1390,24 +1400,28 @@ namespace CPB\Utilities\Common
         {
             if($this->groupKey === null)
             {
-                return $method($this->items, ...$args);
+                return $method($this->select($key)->toArray(), ...$args);
             }
-            
-            $groups = $this->distinct($this->groupKey)->toArray();
-            $results = [];
-            
-            foreach($groups as $group)
+            else
             {
-                $set = $this->filter(function($v) use($group){ return $v[$this->groupKey] === $group; });
-                $results[] = $method($set->select($key)->toArray());
+                return $this->chainOrExecute(function() use($method, $key, $args){
+                    $groups = $this->distinct($this->groupKey)->toArray();
+                    $results = [];
+                    
+                    foreach($groups as $group)
+                    {
+                        $set = $this->filter(function($v) use($group){ return $v[$this->groupKey] === $group; });
+                        $results[] = $method($set->select($key)->toArray());
+                    }
+                    
+                    return $results;
+                });
             }
-            
-            return static::from($results);
         }
         
         private function sortCall(string $function, ...$arguments): CollectionInterface
         {
-            return $this->chainOrExecute(function($items) use($function, $arguments){
+            return $this->chainOrExecute(function(&$items) use($function, $arguments){
                 $function($items, ...$arguments);
                 
                 return $items;
@@ -1435,7 +1449,7 @@ namespace CPB\Utilities\Common
                     }
                 }
                 
-                return new static($function(...$args));
+                return static::from($function(...$args));
             }
         }
     }
