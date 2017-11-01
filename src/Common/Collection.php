@@ -196,6 +196,24 @@ namespace CPB\Utilities\Common
         }
         
         /**
+         * Applies a callback to each item
+         *
+         * @lazy-chainable true
+         * @wraps array_walk
+         */
+        public function walk(callable $callback): CollectionInterface
+        {
+            return $this->chainOrExecute(
+                function(array &$items) use($callback){
+                    \array_walk($items, $callback);
+                    
+                    return $items;
+                },
+                self::ITEMS
+            );
+        }
+        
+        /**
          * Filters through the items
          *
          * the callback is applied to each item and a boolean
