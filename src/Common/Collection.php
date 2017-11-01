@@ -845,7 +845,7 @@ namespace CPB\Utilities\Common
                 ? iterator_to_array($items, true)
                 : $items;
             
-            \array_walk($items, function(&$v) { $v = \is_iterable($v) ? static::from($v) : $v; });
+            \array_walk($items, function(&$v) { $v = \is_array($v) ? static::from($v) : $v; });
             
             $inst->items = $items;
             
