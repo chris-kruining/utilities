@@ -69,7 +69,7 @@ namespace spec\CPB\Utilities\Common
 
         public function it_can_create_a_power_set()
         {
-            $set = $this::from([ 'One', 'Two', 'Three' ])->powerSet();
+            $set = $this::from([ 'One', 'Two', 'Three' ])->powerSet()->toArray();
 
             $set->shouldContain([ 'One' ]);
             $set->shouldContain([ 'One', 'Two' ]);
