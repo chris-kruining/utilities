@@ -71,6 +71,8 @@ namespace spec\CPB\Utilities\Common
         {
             $set = $this::from([ 'One', 'Two', 'Three' ])->powerSet()->toArray();
 
+            \var_dump($set);
+            
             $set->shouldContain([ 'One' ]);
             $set->shouldContain([ 'One', 'Two' ]);
             $set->shouldContain([ 'One', 'Three' ]);
