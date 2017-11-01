@@ -10,7 +10,7 @@ namespace CPB\Utilities\Tools
         {
         }
         
-        public static function Start()
+        public static function start()
         {
             $inst = new static();
             $inst->start = microtime(true);
@@ -18,14 +18,14 @@ namespace CPB\Utilities\Tools
             return $inst;
         }
         
-        public function Stop()
+        public function stop()
         {
-            var_dump((float)number_format(microtime(true) - $this->start, 10) * 1000 . 'ms');
+            echo (float)number_format(microtime(true) - $this->start, 10) * 1000 . 'ms';
         }
         
-        public static function Measure(callable $cb, int $repeat = null)
+        public static function measure(callable $cb, int $repeat = null)
         {
-            $inst = static::Start();
+            $inst = static::start();
             
             if($repeat !== null)
             {
@@ -39,7 +39,7 @@ namespace CPB\Utilities\Tools
                 $result = $cb(0);
             }
             
-            $inst->Stop();
+            $inst->stop();
             
             return $result;
         }

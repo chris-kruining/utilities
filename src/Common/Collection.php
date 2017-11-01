@@ -1418,7 +1418,7 @@ namespace CPB\Utilities\Common
                     foreach($groups as $group)
                     {
                         $set = $this->filter(function($v) use($group){ return $v[$this->groupKey] === $group; });
-                        $results[] = $method($set->select($key)->toArray());
+                        $results[] = $method($set->select($key)->toArray(), ...$args);
                     }
                     
                     return $results;
