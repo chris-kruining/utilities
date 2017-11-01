@@ -1425,7 +1425,20 @@ namespace CPB\Utilities\Common
         {
             if($this->groupKey === null)
             {
-                return $method($this->select($key)->toArray(), ...$args);
+                $items = $this->select($key);
+                
+                switch(true)
+                {
+                    case $items instanceof static:
+                        $items = $items->toArray();
+                        break;
+                        
+                    case !\is_array($items):
+                        $items = [ $items ];
+                        break;
+                }
+                
+                return $method($items, ...$args);
             }
             else
             {
