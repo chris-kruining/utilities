@@ -1025,11 +1025,15 @@ namespace CPB\Utilities\Common
     
             while(($key = array_shift($keys)) !== null && $row !== null)
             {
-                $newVal = \count($keys) > 0
+                $newVal = \count($keys) > 0 || $key === '+'
                     ? new static
                     : null;
-        
-                if(\is_array($row) && !\key_exists($key, $row))
+    
+                if($key === '+')
+                {
+                    $key = null;
+                }
+                elseif(\is_array($row) && !\key_exists($key, $row))
                 {
                     $row[$key] = $newVal;
                 }
