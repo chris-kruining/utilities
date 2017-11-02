@@ -1000,7 +1000,11 @@ namespace CPB\Utilities\Common
             $result = Collection::from($resolver($this->items, $query))
                 ->map(function($k, $v) {
                     return is_iterable($v) && count($v) === 1
-                        ? array_values($v)[0]
+                        ? array_values(
+                            $v instanceof \Traversable
+                                ? \iterator_to_array($v)
+                                : $v
+                        )[0]
                         : $v;
                 });
             
