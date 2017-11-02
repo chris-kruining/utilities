@@ -63,3 +63,12 @@ What I hope to accomplish is querying over a collection
 ```php
 $collction['max(ID), Name, City where Name startswith "Chris" limit 3, 5']
 ```
+
+# Roadmap
+
+- [X] Implement basic features to `Collection`
+- [X] Bloat `Collection` with features :P
+- [ ] Split of features into an inheritance tree
+- [ ] Split lazy mode from `Collection` into `LazyCollection` and implent PHP's array functions as generators
+- [ ] Look into the possibility of turning the lib into an PHP extension with PHP-CPP (simply to improve performance)
+- [ ] (Better) implement the `Queryable` interface in a new class so the `Collection` doesn't become bloated 
