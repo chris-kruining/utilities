@@ -1022,22 +1022,37 @@ namespace CPB\Utilities\Common
         {
             $keys = explode('.', $query);
             $row = &$this->items;
-            
+    
             while(($key = array_shift($keys)) !== null && $row !== null)
             {
+                $newVal = \count($keys) > 0
+                    ? new static
+                    : null;
+        
                 if(\is_array($row) && !\key_exists($key, $row))
                 {
-                    $row[$key] = new static;
+                    $row[$key] = $newVal;
                 }
                 elseif($row instanceof static && !$row->has($key))
                 {
-                    $row->items[$key] = new static;
+                    $row->items[$key] = $newVal;
                 }
-    
-                $row = &$row[$key];
+        
+                if(!(count($keys) === 0 && $row instanceof static))
+                {
+                    $row = &$row[$key];
+                }
+                elseif(count($keys) === 0 && $row instanceof static)
+                {
+                    break;
+                }
             }
-            
-            if(is_iterable($row))
+    
+            if($row instanceof static && $key !== null)
+            {
+                $row[$key] = $value;
+            }
+            elseif(is_iterable($row))
             {
                 $row[] = $value;
             }
@@ -1045,7 +1060,7 @@ namespace CPB\Utilities\Common
             {
                 $row = $value;
             }
-            
+    
             return $this;
         }
         
@@ -1366,17 +1381,19 @@ namespace CPB\Utilities\Common
          */
         public function offsetSet($offset, $value)
         {
-            if($offset === null)
+            switch(\gettype($offset))
             {
-                $this->items[] = $value;
-            }
-            elseif(strpos($offset, '.') !== false)
-            {
-                $this->items[$offset] = $value;
-            }
-            else
-            {
-                return $this->insert($offset, $value);
+                case 'string':
+                case 'integer':
+                    $this->insert($offset, $value);
+                    break;
+                    
+                case 'NULL':
+                    $this->items[] = $value;
+                    break;
+                    
+                default:
+                    throw new \InvalidArgumentException;
             }
         }
         
