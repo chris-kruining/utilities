@@ -931,9 +931,12 @@ namespace CPB\Utilities\Common
          *
          * @lazy-chainable false
          */
-        public function getIterator(): \Generator
+        public function &getIterator(): \Generator
         {
-            yield from $this->items;
+            foreach($this->items as $key => &$value)
+            {
+                yield $key => $value;
+            }
         }
         
         /**
