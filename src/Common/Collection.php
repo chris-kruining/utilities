@@ -239,6 +239,24 @@ namespace CPB\Utilities\Common
         }
         
         /**
+         * Filters through the items
+         *
+         * the callback is applied to each item and a boolean
+         * return value is expected, iterations that return
+         * false stay in the Collection, true is removed
+         *
+         * @lazy-chainable true
+         */
+        public function reject(callable $callback, int $option = 0): CollectionInterface
+        {
+            return $this->chainOrExecute('array_filter',
+                self::ITEMS,
+                function($v) use($callback){ return !$callback($v); },
+                $option
+            );
+        }
+        
+        /**
          * Filters through the items, returning both filtered
          * and removed Collections
          *
