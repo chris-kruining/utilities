@@ -1042,6 +1042,11 @@ namespace CPB\Utilities\Common
          * Inserts value into the Items based on provided query
          *
          * @lazy-chainable false
+         *
+         * TODO(Chris Kruining)
+         * Rethink implementation to
+         * properly support overriding
+         * existing keys...
          */
         public function insert(string $query, $value): Collection
         {
