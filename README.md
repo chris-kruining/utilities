@@ -2,6 +2,8 @@
 [![Latest Unstable Version](https://poser.pugx.org/chris-kruining/utilities/v/unstable)](https://packagist.org/packages/chris-kruining/utilities)
 [![License](https://poser.pugx.org/chris-kruining/utilities/license)](https://packagist.org/packages/chris-kruining/utilities)
 [![Build Status](https://travis-ci.org/chris-kruining/utilities.svg?branch=master)](https://travis-ci.org/chris-kruining/utilities)
+[![Maintainability](https://api.codeclimate.com/v1/badges/107d203ddf629c8f2f8f/maintainability)](https://codeclimate.com/github/chris-kruining/utilities/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/107d203ddf629c8f2f8f/test_coverage)](https://codeclimate.com/github/chris-kruining/utilities/test_coverage)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/14a870b9-f364-4030-971b-048cbe19cdd5/mini.png)](https://insight.sensiolabs.com/projects/14a870b9-f364-4030-971b-048cbe19cdd5)
 
 # Utilities
