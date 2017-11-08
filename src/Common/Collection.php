@@ -731,19 +731,14 @@ namespace CPB\Utilities\Common
         {
             $keys = array_fill_keys(array_keys($this->items), 0);
             
-            foreach($this->select($edgeKey) as $key => $value)
+            foreach($this[$edgeKey] as $edge)
             {
-                $edges = $value ?? [];
-                
-                foreach($edges as $edge)
+                if(key_exists($edge, $keys))
                 {
-                    if(key_exists($edge, $keys))
-                    {
-                        $keys[$edge]++;
-                    }
+                    $keys[$edge]++;
                 }
             }
-            
+    
             asort($keys);
             $keys = array_reverse($keys);
             
