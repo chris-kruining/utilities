@@ -852,7 +852,9 @@ namespace CPB\Utilities\Common
          */
         public function last()
         {
-            return reset(\array_reverse($this->items));
+            $items = \array_reverse($this->items);
+            
+            return reset($items);
         }
         
         /**
