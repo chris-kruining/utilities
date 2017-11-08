@@ -125,6 +125,17 @@ namespace CPB\Utilities\Common
         {
             return $this->chainOrExecute('array_keys', self::ITEMS);
         }
+    
+        /**
+         * Exchanges all keys with their associated values
+         *
+         * @lazy-chainable true
+         * @wraps array_flip
+         */
+        public function flip(): CollectionInterface
+        {
+            return $this->chainOrExecute('array_flip', self::ITEMS);
+        }
         
         /**
          * Fetches all unique values

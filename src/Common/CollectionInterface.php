@@ -35,6 +35,8 @@ namespace CPB\Utilities\Common
         public function keys(): CollectionInterface;
 
         public function values(): CollectionInterface;
+    
+        public function flip(): CollectionInterface;
 
         public function unique(): CollectionInterface;
 
