@@ -31,7 +31,10 @@ namespace CPB\Utilities\Common
         
         public function __clone()
         {
-            return static::from($this->items);
+            foreach($this->items as &$item)
+            {
+                $item = clone $item;
+            }
         }
         
         public function __toString(): string
