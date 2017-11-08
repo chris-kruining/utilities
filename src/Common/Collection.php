@@ -741,12 +741,18 @@ namespace CPB\Utilities\Common
         public function topologicalSort(string $edgeKey): CollectionInterface
         {
             $keys = array_fill_keys(array_keys($this->items), 0);
-            
-            foreach($this[$edgeKey] as $edge)
+            $values = $this->map(function($k, $v) use($edgeKey){ return $v[$edgeKey]; });
+    
+            foreach($values as $key => $value)
             {
-                if(key_exists($edge, $keys))
+                $edges = $value ?? [];
+        
+                foreach($edges as $edge)
                 {
-                    $keys[$edge]++;
+                    if(key_exists($edge, $keys))
+                    {
+                        $keys[$edge]++;
+                    }
                 }
             }
     
