@@ -20,6 +20,10 @@ namespace CPB\Utilities\Common
             ITEMS = '__ITEMS__'
         ;
         
+        public const
+            UNDEFINED = '__UNDEFINED__'
+        ;
+        
         private
             $groupKey
         ;
@@ -832,7 +836,7 @@ namespace CPB\Utilities\Common
         {
             $values = $this->values();
             
-            return $values[Arithmetic::Modulus($i, count($values))] ?? null;
+            return $values[Arithmetic::Modulus($i, count($values))] ?? self::UNDEFINED;
         }
         
         /**
@@ -842,7 +846,7 @@ namespace CPB\Utilities\Common
          */
         public function first()
         {
-            return reset($this->items);
+            return $this->byIndex(0);
         }
         
         /**
@@ -852,9 +856,7 @@ namespace CPB\Utilities\Common
          */
         public function last()
         {
-            $items = \array_reverse($this->items);
-            
-            return reset($items);
+            return $this->byIndex(-1);
         }
         
         /**
