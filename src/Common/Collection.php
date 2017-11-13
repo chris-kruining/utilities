@@ -37,13 +37,42 @@ namespace CPB\Utilities\Common
         {
             foreach($this->items as &$item)
             {
-                $item = clone $item;
+                $item = \is_object($item)
+                    ? clone $item
+                    : $item;
             }
         }
         
         public function __toString(): string
         {
             return $this->toString();
+        }
+    
+        public function __debugInfo(): array
+        {
+            return $this->items;
+        }
+    
+        /**
+         * Sets the collection into lazy mode
+         *
+         * A Collection that is in lazy mode will store all
+         * its method calls in a buffer to be executed when
+         * thew Collection is invoked
+         *
+         * @lazy-chainable false
+         */
+        public function lazy(): CollectionInterface
+        {
+            $this->lazy = true;
+        
+            // TODO(Chris Kruining)
+            // Check if the chain
+            // actually needs to be
+            // cleared here
+            $this->chain = [];
+        
+            return $this;
         }
         
         /**
@@ -79,33 +108,6 @@ namespace CPB\Utilities\Common
             $this->lazy = false;
             
             return static::from($items);
-        }
-        
-        public function __debugInfo(): array
-        {
-            return $this->items;
-        }
-        
-        /**
-         * Sets the collection into lazy mode
-         *
-         * A Collection that is in lazy mode will store all
-         * its method calls in a buffer to be executed when
-         * thew Collection is invoked
-         *
-         * @lazy-chainable false
-         */
-        public function lazy(): CollectionInterface
-        {
-            $this->lazy = true;
-            
-            // TODO(Chris Kruining)
-            // Check if the chain
-            // actually needs to be
-            // cleared here
-            $this->chain = [];
-            
-            return $this;
         }
         
         /**
@@ -753,6 +755,11 @@ namespace CPB\Utilities\Common
         
                 foreach($edges as $edge)
                 {
+                    if(!\is_string($edge))
+                    {
+                        \var_dump($edge, $this);
+                    }
+                    
                     if(key_exists($edge, $keys))
                     {
                         $keys[$edge]++;
@@ -899,7 +906,7 @@ namespace CPB\Utilities\Common
             $items = $items instanceof \Traversable
                 ? iterator_to_array($items, true)
                 : $items;
-            
+    
             \array_walk($items, function(&$v) { $v = \is_array($v) ? static::from($v) : $v; });
             
             $inst->items = $items;
@@ -914,10 +921,12 @@ namespace CPB\Utilities\Common
          */
         public function toArray() : array
         {
-            \array_walk($this->items, function(&$i){ $i = $i instanceof static ? $i->toArray() : $i; });
+            $self = clone $this;
+            
+            \array_walk($self->items, function(&$i){ $i = $i instanceof static ? $i->toArray() : $i; });
             
             return iterator_to_array(
-                $this,
+                $self,
                 true
             );
         }
@@ -1487,7 +1496,7 @@ namespace CPB\Utilities\Common
          */
         public function jsonSerialize(): array
         {
-            return $this->ToArray();
+            return $this->toArray();
         }
         
         
