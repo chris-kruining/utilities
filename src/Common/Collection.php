@@ -35,12 +35,16 @@ namespace CPB\Utilities\Common
         
         public function __clone()
         {
-            foreach($this->items as &$item)
+            $items = [];
+            
+            foreach($this->items as $key => $item)
             {
-                $item = \is_object($item)
+                $items[$key] = \is_object($item)
                     ? clone $item
                     : $item;
             }
+            
+            $this->items = $items;
         }
         
         public function __toString(): string
@@ -187,12 +191,31 @@ namespace CPB\Utilities\Common
         /**
          * Merges the values of multiple iterables into a single Collection
          *
-         * @lazy-chainable false
+         * @lazy-chainable true
          * @wraps array_merge
          */
         public function merge(iterable ...$sets): CollectionInterface
         {
             return $this->chainOrExecute('array_merge', self::ITEMS, ...$this->iterableToArray($sets));
+        }
+        
+        /**
+         * Merges the values of multiple iterables into a single Collection recursively
+         *
+         * @lazy-chainable true
+         * @wraps array_merge_recursive
+         */
+        public function mergeRecursive(iterable ...$sets): CollectionInterface
+        {
+            try
+            {
+                return $this->chainOrExecute('array_merge_recursive', self::ITEMS, ...$this->iterableToArray($sets));
+            }
+            catch(\Throwable $e)
+            {
+                \var_dump($sets);
+                die;
+            }
         }
         
         /**
@@ -213,6 +236,17 @@ namespace CPB\Utilities\Common
                 },
                 self::ITEMS
             );
+        }
+        
+        /**
+         * Pad Collection to the specified length with a value
+         *
+         * @lazy-chainable true
+         * @wraps array_pad
+         */
+        public function pad(int $size, $value): CollectionInterface
+        {
+            return $this->chainOrExecute('array_pad', self::ITEMS, $size, $value);
         }
         
         /**
@@ -352,6 +386,22 @@ namespace CPB\Utilities\Common
         public function diffKey(iterable ...$sets): CollectionInterface
         {
             return $this->chainOrExecute('array_diff_key', self::ITEMS, ...$this->iterableToArray($sets));
+        }
+    
+        /**
+         * Computes the difference of iterables by using a callback function for data comparison
+         *
+         * @lazy-chainable true
+         * @wraps array_udiff
+         */
+        public function uDiff(callable $callback, iterable ...$sets): CollectionInterface
+        {
+            return $this->chainOrExecute(
+                'array_udiff',
+                self::ITEMS,
+                ...$this->iterableToArray($sets),
+                ...[$callback]
+            );
         }
         
         /**

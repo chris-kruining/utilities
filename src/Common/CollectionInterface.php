@@ -22,6 +22,8 @@ namespace CPB\Utilities\Common
 
         public function filter(callable $callback = null): CollectionInterface;
 
+        public function reject(callable $callback): CollectionInterface;
+
         public function each(callable $callback): CollectionInterface;
 
         public function append(iterable $data): CollectionInterface;
