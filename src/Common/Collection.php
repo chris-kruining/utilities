@@ -350,7 +350,7 @@ namespace CPB\Utilities\Common
          */
         public function splice(int $start, int $length = null, $replacement = []): CollectionInterface
         {
-            return $this->chainOrExecute('array_splice', self::ITEMS, $start, $length, true);
+            return $this->chainOrExecute('array_splice', self::ITEMS, $start, $length, $replacement);
         }
         
         /**
