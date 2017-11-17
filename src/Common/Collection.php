@@ -250,6 +250,18 @@ namespace CPB\Utilities\Common
         }
         
         /**
+         * Searches the Collection for a given value and
+         * returns the first corresponding key if successful
+         *
+         * @lazy-chainable true
+         * @wraps array_search
+         */
+        public function search($value): CollectionInterface
+        {
+            return $this->chainOrExecute('array_search', self::ITEMS, $value);
+        }
+        
+        /**
          * Applies a callback to each item
          *
          * @lazy-chainable true
