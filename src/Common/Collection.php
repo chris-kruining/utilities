@@ -253,12 +253,16 @@ namespace CPB\Utilities\Common
          * Searches the Collection for a given value and
          * returns the first corresponding key if successful
          *
-         * @lazy-chainable true
+         * @lazy-chainable false
          * @wraps array_search
          */
-        public function search($value): CollectionInterface
+        public function search($needle): ?int
         {
-            return $this->chainOrExecute('array_search', self::ITEMS, $value);
+            $result = array_search($needle, $this->items);
+            
+            return $result === false
+                ? null
+                : $result;
         }
         
         /**
@@ -680,6 +684,18 @@ namespace CPB\Utilities\Common
             $keys = \array_merge([ $key ], $keys);
             
             return count(array_diff($keys, array_keys($this->items))) === 0;
+        }
+        
+        /**
+         * Checks if any passed key exists in the Collection
+         *
+         * @lazy-chainable false
+         */
+        public function hasAny($key, string ...$keys): bool
+        {
+            \array_unshift($keys, $key);
+            
+            return count(array_diff($keys, array_keys($this->items))) < count($keys);
         }
         
         /**
