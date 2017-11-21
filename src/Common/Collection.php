@@ -1119,24 +1119,11 @@ namespace CPB\Utilities\Common
                     ->toArray();
             };
             
-            $result = Collection::from($resolver($this->items, $query))
-                ->map(function($k, $v) {
-                    return is_iterable($v) && count($v) === 1
-                        ? array_values(
-                            $v instanceof \Traversable
-                                ? \iterator_to_array($v)
-                                : $v
-                        )[0]
-                        : $v;
-                });
+            $data = Collection::from($resolver($this->items, $query));
             
-            $result = $result->count() > 1
-                ? $result
-                : $result->first();
-            
-            return \is_iterable($result) && !$result instanceof self
-                ? static::from($result)
-                : $result;
+            return count($data) === 1
+                ? $data[0]
+                : $data;
         }
         
         /**
