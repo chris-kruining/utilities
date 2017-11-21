@@ -833,11 +833,6 @@ namespace CPB\Utilities\Common
         
                 foreach($edges as $edge)
                 {
-                    if(!\is_string($edge))
-                    {
-                        \var_dump($edge, $this);
-                    }
-                    
                     if(key_exists($edge, $keys))
                     {
                         $keys[$edge]++;
