@@ -54,7 +54,7 @@ namespace CPB\Utilities\Common
     
         public function __debugInfo(): array
         {
-            return $this->items;
+            return $this->items ?? [];
         }
     
         /**
@@ -112,6 +112,21 @@ namespace CPB\Utilities\Common
             $this->lazy = false;
             
             return static::from($items);
+        }
+        
+        /**
+         * Push one or more elements onto the end of Collection
+         *
+         * @lazy-chainable true
+         * @wraps array_push
+         */
+        public function push($item, ...$items): CollectionInterface
+        {
+            \array_unshift($items, $item);
+    
+            \array_push($this->items, ...$items);
+            
+            return $this;
         }
         
         /**
@@ -321,7 +336,13 @@ namespace CPB\Utilities\Common
         {
             return $this->chainOrExecute('array_filter',
                 self::ITEMS,
-                function($v) use($callback){ return !$callback($v); },
+                function($v, $k = null) use($callback){
+                    $args = $k === null
+                        ? [ $v ]
+                        : [ $v, $k ];
+                    
+                    return !$callback(...$args);
+                },
                 $option
             );
         }
@@ -914,9 +935,12 @@ namespace CPB\Utilities\Common
          */
         public function byIndex(int $i)
         {
-            $values = $this->values();
+            $values = $this->values()->items;
+            $key = Arithmetic::Modulus($i, count($values));
             
-            return $values[Arithmetic::Modulus($i, count($values))] ?? self::UNDEFINED;
+            return \key_exists($key, $values)
+                ? $values[$key]
+                : self::UNDEFINED;
         }
         
         /**
@@ -980,7 +1004,15 @@ namespace CPB\Utilities\Common
                 ? iterator_to_array($items, true)
                 : $items;
     
-            \array_walk($items, function(&$v) { $v = \is_array($v) ? static::from($v) : $v; });
+            try
+            {
+                \array_walk($items, function(&$v) { $v = \is_array($v) ? static::from($v) : $v; });
+            }
+            catch(\Throwable $e)
+            {
+                \var_dump($e->getMessage(), $items);
+                die;
+            }
             
             $inst->items = $items;
             
@@ -1020,9 +1052,18 @@ namespace CPB\Utilities\Common
          * @lazy-chainable false
          * @wraps join
          */
-        public function toString(string $delimiter = ''): string
+        public function toString(string $delimiter = '', string $format = null): string
         {
-            return join($delimiter, $this->toArray());
+            $parts = $this->toArray();
+            
+            if($format !== null)
+            {
+                $parts = \array_map(function($p) use($format){
+                    return \sprintf($format, $p);
+                }, $parts);
+            }
+            
+            return join($delimiter, $parts);
         }
         
         /**
@@ -1101,7 +1142,7 @@ namespace CPB\Utilities\Common
                             {
                                 $map = function($k, $v) use($key){ return $v[$key] ?? null; };
                                 $filter = function($v) { return $v !== null; };
-                                
+    
                                 $row = $row[$key] ?? ($row instanceof CollectionInterface
                                         ? $row->map($map)->filter($filter)
                                         : array_filter(
@@ -1481,13 +1522,18 @@ namespace CPB\Utilities\Common
          */
         public function offsetGet($offset)
         {
+            if((\is_string($offset) || \is_numeric($offset)) && \key_exists($offset, $this->items))
+            {
+                return $this->items[$offset];
+            }
+            
             switch(\gettype($offset))
             {
                 case 'string':
-                    return $this->items[$offset] ?? $this->select($offset);
+                    return $this->select($offset);
                 
                 case 'integer':
-                    return $this->items[$offset] ?? $this->byIndex($offset);
+                    return $this->byIndex($offset);
                 
                 default:
                     throw new \Exception(
@@ -1536,7 +1582,7 @@ namespace CPB\Utilities\Common
          */
         public function serialize(): string
         {
-            return json_encode($this->ToArray());
+            return json_encode($this);
         }
         
         /**
@@ -1556,7 +1602,7 @@ namespace CPB\Utilities\Common
          */
         public function jsonSerialize(): array
         {
-            return $this->toArray();
+            return $this->items ?? [];
         }
         
         
@@ -1573,7 +1619,9 @@ namespace CPB\Utilities\Common
         {
             if($this->groupKey === null)
             {
-                $items = $this->select($key);
+                $items = $key === ''
+                    ? $this->items
+                    : $this->select($key);
                 
                 switch(true)
                 {
