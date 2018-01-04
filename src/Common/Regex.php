@@ -39,5 +39,31 @@ namespace CPB\Utilities\Common
         {
             return preg_split($pattern, $subject, $limit, $flags);
         }
+        
+        public static function replace(
+            $pattern,
+            string $subject,
+            $replacement = '$1',
+            int $limit = -1 ,
+            int &$count = 0
+        ) {
+            switch(\gettype($pattern))
+            {
+                case 'array':
+                    return \preg_replace_callback_array($pattern, $subject, $limit, $count);
+                    
+                case 'string':
+                    $function = \is_string($replacement)
+                        ? 'preg_replace'
+                        : 'preg_replace_callback';
+                    
+                    return $function($pattern, $replacement, $subject, $limit, $count);
+                    
+                default:
+                    throw new \InvalidArgumentException(
+                        'Pattern provided is of a unsupported type'
+                    );
+            }
+        }
     }
 }
