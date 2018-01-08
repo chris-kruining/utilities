@@ -2,10 +2,11 @@
 
 namespace CPB\Utilities\Contracts
 {
+    use CPB\Utilities\Common\CollectionInterface;
     use CPB\Utilities\Enums\JoinStrategy;
     use CPB\Utilities\Enums\SortDirection;
 
-    interface Queryable extends \Countable
+    interface Queryable extends \Countable, CollectionInterface
     {
         public function select($key);
 

@@ -13,8 +13,7 @@ namespace CPB\Utilities\Common
         \ArrayAccess,
         \Serializable,
         \JsonSerializable,
-        Cloneable,
-        Queryable
+        Cloneable
     {
         public function merge(iterable ...$sets): CollectionInterface;
 
@@ -25,8 +24,6 @@ namespace CPB\Utilities\Common
         public function reject(callable $callback): CollectionInterface;
 
         public function each(callable $callback): CollectionInterface;
-
-        public function append(iterable $data): CollectionInterface;
 
         public function split(callable $callback, int $option = 0, bool $assoc = false): array;
 
@@ -52,7 +49,7 @@ namespace CPB\Utilities\Common
 
         public function some(callable $callback): bool;
 
-        public function contains($value): bool;
+        public function includes($value): bool;
 
         public function has($key, string ...$keys): bool;
 
