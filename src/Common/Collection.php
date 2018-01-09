@@ -11,10 +11,10 @@ namespace CPB\Utilities\Common
         {
             parent::__construct();
             
-//            \trigger_error(\sprintf(\join('', [
-//                '%s is deprecated in favor of an inheritance structure to shrink the classes,',
-//                'use \'CPB\Utilities\Collections\*\' instead'
-//            ]), static::class), \E_USER_WARNING);
+            \trigger_error(\sprintf(\join('', [
+                '%s is deprecated in favor of an inheritance structure to shrink the classes,',
+                'use \'CPB\Utilities\Collections\*\' instead'
+            ]), static::class), \E_USER_WARNING);
         }
     
         /**
