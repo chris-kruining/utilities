@@ -8,7 +8,7 @@ namespace CPB\Utilities\Contracts
 
     interface Queryable extends \Countable, CollectionInterface
     {
-        public function select($key);
+        public function select(string $key);
 
         public function where(): Queryable;
 

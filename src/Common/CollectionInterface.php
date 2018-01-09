@@ -4,10 +4,11 @@ namespace CPB\Utilities\Common
 {
     use CPB\Utilities\Contracts\Cloneable;
     use CPB\Utilities\Contracts\Queryable;
+    use CPB\Utilities\Contracts\Resolvable;
     use Psr\Container\ContainerInterface;
 
     interface CollectionInterface extends
-        ContainerInterface,
+        Resolvable,
         \Countable,
         \IteratorAggregate,
         \ArrayAccess,
@@ -50,10 +51,6 @@ namespace CPB\Utilities\Common
         public function some(callable $callback): bool;
 
         public function includes($value): bool;
-
-        public function has($key, string ...$keys): bool;
-
-        public function get($key, string ...$keys): CollectionInterface;
 
         public function diff(iterable ...$sets): CollectionInterface;
 

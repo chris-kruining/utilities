@@ -2,9 +2,9 @@
 
 namespace CPB\Utilities\Common
 {
-    use CPB\Utilities\Collections\Table;
+    use CPB\Utilities\Collections\Map;
     
-    final class Collection extends Table
+    final class Collection extends Map
     {
         /** @deprecated In favor of an inheritance structure */
         public function __construct()

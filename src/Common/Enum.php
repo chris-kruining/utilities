@@ -43,6 +43,7 @@ namespace CPB\Utilities\Common
             
             $constants = self::$map[static::class];
             
+            
             if(!\key_exists($key, $constants) && \array_search($key, $constants) === false)
             {
                 throw new \InvalidArgumentException(\sprintf(

@@ -2,7 +2,7 @@
 
 namespace spec\CPB\Utilities\Common
 {
-    use CPB\Utilities\Common\Collection;
+    use CPB\Utilities\Collections\Collection;
     use PhpSpec\ObjectBehavior;
 
     class CollectionSpec extends ObjectBehavior

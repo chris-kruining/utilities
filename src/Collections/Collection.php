@@ -4,6 +4,8 @@ namespace CPB\Utilities\Collections
 {
     use Core\Utility\Exception\Deprecated;
     use CPB\Utilities\Common\CollectionInterface;
+    use CPB\Utilities\Common\Regex;
+    use CPB\Utilities\Contracts\Resolvable;
     use CPB\Utilities\Math\Arithmetic;
     
     class Collection implements CollectionInterface
@@ -795,7 +797,7 @@ namespace CPB\Utilities\Collections
         /**
          * returns the values of the provided keys
          */
-        public function get($key, string ...$keys): CollectionInterface
+        public function get($key, string ...$keys): Resolvable
         {
             $keys = \array_merge([ $key ], $keys);
         
@@ -904,6 +906,8 @@ namespace CPB\Utilities\Collections
             {
                 yield $key => $value;
             }
+            
+            unset($value);
         }
     
         /**
@@ -927,9 +931,31 @@ namespace CPB\Utilities\Collections
             switch(\gettype($offset))
             {
                 case 'string':
-                    \var_dump($offset);
+                    $queries = static::from(Regex::split('/\s*,\s*/', $offset))
+                        ->each(function($k, $query){
+                            $parts = \explode('.', $query);
+                            $container = $this->items;
+    
+                            while(($key = \array_shift($parts)) !== null)
+                            {
+                                if(
+                                    (\is_array($container) && !\key_exists($key, $container)) ||
+                                    ($container instanceof CollectionInterface && !$container->has($key))
+                                ) {
+                                    yield $query => self::UNDEFINED;
+                                    
+                                    return;
+                                }
+        
+                                $container = $container[$key];
+                            }
+                            
+                            yield $query => $container;
+                        });
                     
-                    return $offset;
+                    return $queries->count() === 1
+                        ? $queries->first()
+                        : $queries;
                     
                 case 'integer':
                     return $this->byIndex($offset);
@@ -949,6 +975,24 @@ namespace CPB\Utilities\Collections
             switch(\gettype($offset))
             {
                 case 'string':
+                    $parts = \explode('.', $offset);
+                    $container = &$this->items;
+    
+                    while(($key = \array_shift($parts)) !== null && \count($parts) > 0)
+                    {
+                        if(
+                            (\is_array($container) && !\key_exists($key, $container)) ||
+                            ($container instanceof CollectionInterface && !$container->has($key))
+                        ) {
+                            $container[$key] = new static;
+                        }
+    
+                        $container = &$container[$key];
+                    }
+                    
+                    $container[$key] = $value;
+                    break;
+                    
                 case 'integer':
                     $this->items[$offset] = $value;
                     break;

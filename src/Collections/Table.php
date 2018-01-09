@@ -2,82 +2,111 @@
 
 namespace CPB\Utilities\Collections
 {
+    use Core\Utility\Exception\NotImplemented;
     use CPB\Utilities\Common\CollectionInterface;
-    use CPB\Utilities\Common\Regex;
+    use CPB\Utilities\Common\NotFoundException;
     use CPB\Utilities\Contracts\Queryable;
+    use CPB\Utilities\Contracts\Resolvable;
     use CPB\Utilities\Enums\JoinStrategy;
     use CPB\Utilities\Enums\SortDirection;
+    use CPB\Utilities\Parser\Expression;
     
     class Table extends Map implements Queryable
     {
+        public function has($key, string ...$keys): bool
+        {
+            \array_unshift($keys, $key);
+            
+            return $this->some(function($i, $row) use($keys){
+                if($row instanceof Resolvable)
+                {
+                    return $row->has(...$keys);
+                }
+                elseif($row instanceof \Traversable)
+                {
+                    $exists = true;
+    
+                    foreach($keys as $key)
+                    {
+                        $exists &= isset($row[$key]);
+                    }
+                    
+                    return (bool)$exists;
+                }
+                elseif(\is_object($row))
+                {
+                    $exists = true;
+                    
+                    foreach($keys as $key)
+                    {
+                        $exists &= \property_exists($row, $key);
+                    }
+                    
+                    return (bool)$exists;
+                }
+                elseif(\is_array($row))
+                {
+                    return count(array_diff($keys, array_keys($row))) === 0;
+                }
+                
+                return false;
+            });
+        }
+        
+        public function get($key, string ...$keys): Resolvable
+        {
+            \array_unshift($keys, $key);
+            
+            if(!$this->has(...$keys))
+            {
+                throw new NotFoundException;
+            }
+            
+            return $this->map(function($i, $row) use($keys){
+                if($row instanceof Resolvable)
+                {
+                    return $row->get(...$keys);
+                }
+                elseif(\is_object($row))
+                {
+                    $res = [];
+            
+                    foreach($keys as $key)
+                    {
+                        $res[$key] = $row->$key;
+                    }
+    
+                    return $res;
+                }
+                elseif(\is_array($row))
+                {
+                    $res = [];
+    
+                    foreach($keys as $key)
+                    {
+                        \var_dump($row);
+                        
+                        $res[$key] = $row[$key];
+                    }
+    
+                    return $res;
+                }
+            });
+        }
+    
         /**
          * Queries over the items
-         *
-         * @lazy-chainable false
          */
-        public function select($query)
+        public function select(string $query)
         {
-//            \var_dump($query, \debug_backtrace(0));
+            $result = Expression::init($query, $this)();
             
-            $resolver = function($row, $q) use(&$resolver) {
-                $keys = Collection::from(Regex::split('/,\s*(?![^()]*(?:\([^()]*\))?\))/', $q, -1, PREG_SPLIT_NO_EMPTY));
+            if(!$result instanceof CollectionInterface)
+            {
+                $result = static::from([ [ $query => $result] ]);
+            }
             
-                return $keys->each(function($k, $f) use($row, &$resolver){
-                    $function = Regex::match('/(.*?)\((.*)\)/', $f);
-                
-                    if(count($function) > 0)
-                    {
-                        // TODO(Chris Kruining)
-                        // Implement external parser
-                    
-                        if(method_exists($this, $function[1]))
-                        {
-                            $row = $this->{$function[1]}(...explode(',', $function[2]));
-                        }
-                        else
-                        {
-                            $row = null;
-                        }
-                    }
-                    else
-                    {
-                        $keys = explode('.', $f);
-                    
-                        while(($key = array_shift($keys)) !== null && $row !== null)
-                        {
-                            if($key === '*')
-                            {
-                                $row = $row instanceof CollectionInterface
-                                    ? $row->values()
-                                    : array_values($row);
-                            }
-                            else
-                            {
-                                $map = function($k, $v) use($key){ return $v[$key] ?? null; };
-                                $filter = function($v) { return $v !== null; };
-                            
-                                $row = $row[$key] ?? ($row instanceof CollectionInterface
-                                        ? $row->map($map)->filter($filter)
-                                        : array_filter(
-                                            array_map($map, \array_keys($row), \array_values($row)),
-                                            $filter
-                                        )
-                                    ) ?? null;
-                            }
-                        }
-                    
-                    }
-                
-                    yield $f => $row;
-                })
-                    ->toArray();
-            };
-        
-            $data = Map::from($resolver($this->items, $query));
-        
-            return count($data) === 1
-                ? $data[0]
-                : $data;
+            return $result;
         }
     
         /**
@@ -90,50 +119,7 @@ namespace CPB\Utilities\Collections
          */
         public function insert(string $query, $value): Queryable
         {
-            $keys = explode('.', $query);
-            $row = &$this->items;
-        
-            while(($key = array_shift($keys)) !== null && $row !== null)
-            {
-                $newVal = \count($keys) > 0 || $key === '+'
-                    ? new static
-                    : null;
-            
-                if($key === '+')
-                {
-                    $key = null;
-                }
-                elseif(\is_array($row) && !\key_exists($key, $row))
-                {
-                    $row[$key] = $newVal;
-                }
-                elseif($row instanceof static && !$row->has($key))
-                {
-                    $row->items[$key] = $newVal;
-                }
-            
-                if(!(count($keys) === 0 && $row instanceof static))
-                {
-                    $row = &$row[$key];
-                }
-                elseif(count($keys) === 0 && $row instanceof static)
-                {
-                    break;
-                }
-            }
-        
-            if($row instanceof static && $key !== null)
-            {
-                $row[$key] = $value;
-            }
-            elseif(is_iterable($row))
-            {
-                $row[] = $value;
-            }
-            else
-            {
-                $row = $value;
-            }
+            throw new NotImplemented;
         
             return $this;
         }
@@ -146,9 +132,9 @@ namespace CPB\Utilities\Collections
          */
         public function where($expression = ''): Queryable
         {
-            // TODO(Chris Kruining)
-            // Implement method
-            return $this->filter(function($v) { return true; });
+            throw new NotImplemented;
+    
+            return $this;
         }
     
         /**
@@ -163,6 +149,8 @@ namespace CPB\Utilities\Collections
             JoinStrategy $strategy = null
         ): Queryable
         {
+            throw new NotImplemented;
+    
             $iterable = static::from($iterable)->map(function($k, $v){
                 return array_combine(
                     array_map(
@@ -251,7 +239,6 @@ namespace CPB\Utilities\Collections
         /**
          * Return sub-selection of items
          *
-         * @lazy-chainable true
          * @alias slice
          */
         public function limit(int $length): Queryable
@@ -262,7 +249,6 @@ namespace CPB\Utilities\Collections
         /**
          * Return sub-selection of items
          *
-         * @lazy-chainable true
          * @alias slice
          */
         public function offset(int $start): Queryable
@@ -273,7 +259,6 @@ namespace CPB\Utilities\Collections
         /**
          * Executes a mysql'esc UNION on Collction
          *
-         * @lazy-chainable true
          * @alias merge
          */
         public function union(iterable $iterable): Queryable
@@ -283,8 +268,6 @@ namespace CPB\Utilities\Collections
     
         /**
          * Fetches all unique values of provided key
-         *
-         * @lazy-chainable true
          */
         public function distinct(string $key): Queryable
         {
@@ -293,8 +276,6 @@ namespace CPB\Utilities\Collections
     
         /**
          * Sort items by provided key and direction
-         *
-         * @lazy-chainable true
          */
         public function order(string $key, SortDirection $direction = null): Queryable
         {
@@ -314,8 +295,6 @@ namespace CPB\Utilities\Collections
          * This method sets the key by which the results
          * of: sum, average, max, min and clamp, will
          * group by
-         *
-         * @lazy-chainable true
          */
         public function group(string $key): Queryable
         {

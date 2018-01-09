@@ -19,7 +19,7 @@ The main component of the library is the `Collection` at the moment. The goal of
 
 for example
 ```php
-CPB\Utilities\Common\Collection::From([ 'these', 'are', null, null, 'some', null, 'test', 'values', null ])
+CPB\Utilities\Collections\Collection::from([ 'these', 'are', null, null, 'some', null, 'test', 'values', null ])
   ->filter()
   ->toString(' ');
 ```
@@ -36,7 +36,7 @@ join(' ', array_filter([ 'these', 'are', null, null, 'some', null, 'test', 'valu
 
 I agree, the vannilla way is shorter now but the strength really comes into play when we start adding callbacks and increase the chain length
 ```php
-CPB\Utilities\Common\Collection::From([ 'these', '', '', 'are', null, 'some', null, 'test', '', 'values', '' ])
+CPB\Utilities\Collections\Collection::from([ 'these', '', '', 'are', null, 'some', null, 'test', '', 'values', '' ])
   ->filter(function($v){ return $v !== null && strlen($v) > 0; })
   ->map(function($k, $v){ return $k . '::' . $v; })
   ->toString('|');
@@ -63,14 +63,17 @@ As you can see the collection version maintains readability whereas the vannilla
 
 What I hope to accomplish is querying over a collection
 ```php
-$collction['max(ID), Name, City where Name startswith "Chris" limit 3, 5']
+$collction['max($ID), $Name, $City where $Name startswith "Chris" limit 3, 5']
 ```
 
 # Roadmap
 
 - [X] Implement basic features to `Collection`
 - [X] Bloat `Collection` with features :P
-- [ ] Split of features into an inheritance tree
-- [ ] Split lazy mode from `Collection` into `LazyCollection` and implent PHP's array functions as generators
+- [X] Split of features into an inheritance tree
+- [X] Split lazy mode from `Collection` into `LazyCollection` and implement PHP's array functions as generators
+- [ ] Finish inheritance structure
+- [ ] Implement `LazyCollection`
 - [ ] Look into the possibility of turning the lib into an PHP extension with PHP-CPP (simply to improve performance)
-- [ ] (Better) implement the `Queryable` interface in a new class so the `Collection` doesn't become bloated 
+- [ ] Write an SQL syntax parser to allow querying over `Queryable`
+- [X] (Better) implement the `Queryable` interface in a new class so the `Collection` doesn't become bloated 

@@ -2,7 +2,7 @@
 
 namespace CPB\Utilities\Math
 {
-    use CPB\Utilities\Common\Collection;
+    use CPB\Utilities\Collections\Collection;
 
     class Matrix implements \JsonSerializable
     {
