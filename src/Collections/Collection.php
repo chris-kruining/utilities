@@ -256,7 +256,7 @@ namespace CPB\Utilities\Collections
         
             return [
                 $filtered,
-                $this->{'diff' . ($assoc ? 'Assoc' : '')}($filtered->toArray()),
+                $this->{($assoc ? 'diffKey' : 'diff')}($filtered->toArray()),
             ];
         }
     
