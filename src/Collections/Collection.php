@@ -25,16 +25,26 @@ namespace CPB\Utilities\Collections
     
         public function __clone()
         {
-            $items = [];
-        
-            foreach($this->items as $key => $item)
+            $iterator = function($arr) use(&$iterator): array
             {
-                $items[$key] = \is_object($item)
-                    ? clone $item
-                    : $item;
-            }
-        
-            $this->items = $items;
+                foreach($arr as &$item)
+                {
+                    if(\is_object($item))
+                    {
+                        $item = clone $item;
+                    }
+                    elseif(\is_array($item))
+                    {
+                        $item = $iterator($item);
+                    }
+                }
+                
+                unset($item);
+                
+                return $arr;
+            };
+    
+            $this->items = $iterator($this->items);
         }
     
         public function __toString(): string
