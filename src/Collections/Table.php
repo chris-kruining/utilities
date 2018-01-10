@@ -5,6 +5,7 @@ namespace CPB\Utilities\Collections
     use Core\Utility\Exception\NotImplemented;
     use CPB\Utilities\Common\CollectionInterface;
     use CPB\Utilities\Common\NotFoundException;
+    use CPB\Utilities\Common\Regex;
     use CPB\Utilities\Contracts\Queryable;
     use CPB\Utilities\Contracts\Resolvable;
     use CPB\Utilities\Enums\JoinStrategy;
@@ -13,6 +14,23 @@ namespace CPB\Utilities\Collections
     
     class Table extends Map implements Queryable
     {
+        protected
+            $type
+        ;
+        
+        public function __construct(string $type = null)
+        {
+            $this->type = $type;
+        }
+        
+        public static function from(iterable $items, string $type = null): CollectionInterface
+        {
+            $inst = parent::from($items);
+            $inst->type = $type;
+            
+            return $inst;
+        }
+    
         public function has($key, string ...$keys): bool
         {
             \array_unshift($keys, $key);
@@ -99,7 +117,7 @@ namespace CPB\Utilities\Collections
          */
         public function select(string $query)
         {
-            $result = Expression::init($query, $this)();
+            $result = Expression::init($query)($this);
             
             if(!$result instanceof CollectionInterface)
             {
@@ -130,11 +148,22 @@ namespace CPB\Utilities\Collections
          * @lazy-chainable true
          * @alias filter
          */
-        public function where($expression = ''): Queryable
+        public function where(string $query, iterable $variables = []): Queryable
         {
-            throw new NotImplemented;
-    
-            return $this;
+            $query = Expression::init(Regex::replace('/:([A-Za-z_][A-Za-z0-9_]*)/', $query, '{{$1}}'));
+            
+            return $this->filter(function($row) use($query, $variables){
+                if($row instanceof Resolvable)
+                {
+                    return $query($row, $variables);
+                }
+                elseif(\is_iterable($row))
+                {
+                    return $query(Collection::from($row), $variables);
+                }
+                
+                return false;
+            });
         }
     
         /**
@@ -234,6 +263,12 @@ namespace CPB\Utilities\Collections
             }
         
             return static::from($result);
+        }
+        
+        public function in(...$args)
+        {
+            \var_dump($args);
+            die;
         }
     
         /**

@@ -10,7 +10,7 @@ namespace CPB\Utilities\Contracts
     {
         public function select(string $key);
 
-        public function where(): Queryable;
+        public function where(string $query, iterable $variables = []): Queryable;
 
         public function limit(int $length): Queryable;
 

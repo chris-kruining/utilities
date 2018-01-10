@@ -6,16 +6,23 @@ namespace CPB\Utilities\Parser
     use CPB\Utilities\Common\Regex;
     use CPB\Utilities\Contracts\Resolvable;
     
-    class Expression implements ResolverInterface
+    // TODO(Chris Kruining)
+    //  - Add a proper class that tokenize's
+    //    the query string, this in now an
+    //    in-class method(`split`).
+    final class Expression implements ResolverInterface
     {
         private
             $query = null,
-            $resolvable = null
+            $resolvable = null,
+            $variables = null,
+            $keys = null
         ;
     
         private static
             $booted = false,
-            $operators
+            $operators,
+            $longestOperator
         ;
         
         public function __construct()
@@ -23,23 +30,24 @@ namespace CPB\Utilities\Parser
             $this->boot();
         }
         
-        public function __invoke()
+        public function __invoke(Resolvable $resolvable, iterable $variables = [])
         {
             if(\strlen($this->query) === 0)
             {
                 return $this->query;
             }
     
-            $keys = $this->split($this->query);
-            
-            return $this->{$keys->includes('?') ? 'resolveTernary' : 'resolve'}($keys);
+            $this->resolvable = $resolvable;
+            $this->variables = Collection::from($variables);
+    
+            return $this->{$this->keys->includes('?') ? 'resolveTernary' : 'resolve'}($this->keys);
         }
     
-        public static function init(string $query, Resolvable $resolvable): ResolverInterface
+        public static function init(string $query): ResolverInterface
         {
             $inst = new self;
             $inst->query = $query;
-            $inst->resolvable = $resolvable;
+            $inst->keys = $inst->split($query);
             
             return $inst;
         }
@@ -48,12 +56,28 @@ namespace CPB\Utilities\Parser
         {
             if(self::$booted === false)
             {
-                self::$operators = Collection::from([
-                    '+', '*', '-', '/', '%' , '**',            // Math operators
-                    '<', '>', '<=', '>=', '==', '!=',          // Comparison operators
-                    '??', '?:', '?', ':',                      // Other operators
-                    '(', ')', '{{', '}}', '\\', '[', ']', '\'' // Custom operators
-                ]);
+                $operators = [
+                    '+', '*', '-', '/', '%' , '**',              // Math operators
+                    '<', '>', '<=', '>=', '==', '!=',            // Comparison operators
+                    '??', '?:', '?', ':',                        // Other operators
+                    '(', ')', '[', ']',                          // Nesting operators
+                    '{{', '}}', '\*', '*\\', '\\', '\'',          // Custom operators
+                    'in', 'where', 'limit', 'and', 'or', 'from', // Keyword operators
+                ];
+                
+                // NOTE(Chris Kruining)
+                // The operators are reversed
+                // so that when searching over
+                // the collection larger operators
+                // are tested first, otherwise
+                // larger operators which contain
+                // smaller would never get matched.
+                self::$operators = Collection::from($operators)->reverse();
+                
+                // Note(Chris Kruining)
+                // Largest size is stored
+                // for optimization
+                self::$longestOperator = \max(\array_map('strlen', $operators));
             
                 self::$booted = true;
             }
@@ -78,22 +102,28 @@ namespace CPB\Utilities\Parser
             
                 // Write preparations
                 $character = $query[$i];
-            
-                if(self::$operators->includes($character . ($query[$i + 1] ?? '')))
+                
+                // Match for operator
+                $subQuery = strtolower(\substr($query, $i, self::$longestOperator));
+                $operator = self::$operators->find(function($v) use($subQuery){ return \strpos($subQuery, $v) === 0; });
+                
+                if($operator !== Collection::UNDEFINED)
                 {
-                    $i++;
-                    $character .= $query[$i] ?? '';
+                    $i += \strlen($operator) - 1;
+                    $character = $operator;
                 }
             
                 if(self::$operators->includes($character) && $escaped > -1)
                 {
                     switch($character)
                     {
+                        case '\*':
                         case '{{':
                             $group++;
                             $escaped = $group;
                             break;
                     
+                        case '*\\':
                         case '}}':
                             if($group === $escaped)
                             {
@@ -189,10 +219,6 @@ namespace CPB\Utilities\Parser
                 );
             }
         
-            // NOTE(Chris Kruining)
-            // When all is parsed and done,
-            // remove all escape constructs
-        
             return $value;
         }
         private function resolveTernary(Collection $keys)
@@ -224,7 +250,7 @@ namespace CPB\Utilities\Parser
         
             $callable = $parts[0] ?? '';
             $parameters = $this->parseParameters($parts[1] ?? '')
-                ->map(function($k, $v){ return static::init($v, $this->resolvable)(); })
+                ->map(function($k, $v){ return static::init($v)($this->resolvable, $this->variables); })
                 ->toArray();
         
             switch(true)
@@ -236,12 +262,12 @@ namespace CPB\Utilities\Parser
                 // Parse arrays
                 case ($match = Regex::match('/^\[(.*)\]$/', $trimmed)[1] ?? null) !== null:
                     return $this->parseParameters($match)
-                        ->map(function($k, $v){ return static::init($v, $this->resolvable)(); })
+                        ->map(function($k, $v){ return static::init($v)($this->resolvable, $this->variables); })
                         ->toArray();
             
                 // Parse 'sub-queries'
                 case $trimmed[0] === '(' && $trimmed[-1] === ')':
-                    return static::init(substr($trimmed, 1, -1), $this->resolvable)();
+                    return static::init(substr($trimmed, 1, -1))($this->resolvable, $this->variables);
     
                 case \is_callable($callable):
                     return $callable(...$parameters);
@@ -250,12 +276,21 @@ namespace CPB\Utilities\Parser
                 case method_exists($this->resolvable, $callable):
                     return $this->resolvable->$callable(...$parameters);
             
+                // Fetch the variable
+                case substr($trimmed, 0, 2) === '{{' && substr($trimmed, -2, 2) === '}}':
+                    if($this->variables === null || !$this->variables->has(substr($trimmed, 2, -2)))
+                    {
+                        return null;
+                    }
+                    
+                    return $this->variables[substr($trimmed, 2, -2)];
+            
                 // Fetch the field
-                case substr($trimmed, 0, 1) === '$' && $this->resolvable->has(substr($trimmed, 1)):
-                    return $this->resolvable->get(substr($trimmed, 1));
+                case $trimmed[0] === '$':
+                    return $this->resolvable->resolve(substr($trimmed, 1));
             
                 // Fetch property
-                case substr($trimmed, 0, 1) === '#':
+                case $trimmed[0] === '#':
                     return $this->resolvable->{substr($trimmed, 1)};
             
                 // just return the key as is
@@ -325,7 +360,17 @@ namespace CPB\Utilities\Parser
                         : \sprintf('\'%s\'', \addslashes($right));
                 
                     return eval(\sprintf('return %s %s %s;', $left ?? 'null', $operator, $right));
-            
+                    
+                case 'in':
+                    if(!\is_iterable($right))
+                    {
+                        throw new \InvalidArgumentException(
+                            'in operator expected right hand value to be iterable'
+                        );
+                    }
+                    
+                    return Collection::from($right)->includes($left);
+                    
                 default:
                     return $right;
             }
