@@ -1050,6 +1050,11 @@ namespace CPB\Utilities\Collections
             return $this->items ?? [];
         }
     
+        public function resolve(string $key)
+        {
+            return $this[$key];
+        }
+    
     
         private function iterableToArray(array $iterables): array
         {

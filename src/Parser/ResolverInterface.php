@@ -6,8 +6,8 @@ namespace CPB\Utilities\Parser
     
     interface ResolverInterface
     {
-        public function __invoke();
+        public function __invoke(Resolvable $resolvable, iterable $variables = []);
         
-        public static function init(string $query, Resolvable $resolvable): ResolverInterface;
+        public static function init(string $query): ResolverInterface;
     }
 }

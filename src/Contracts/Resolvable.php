@@ -2,12 +2,8 @@
 
 namespace CPB\Utilities\Contracts
 {
-    use Psr\Container\ContainerInterface;
-    
-    interface Resolvable extends ContainerInterface
+    interface Resolvable
     {
-        public function has($key, string ...$keys): bool;
-        
-        public function get($key, string ...$keys): Resolvable;
+        public function resolve(string $key);
     }
 }
