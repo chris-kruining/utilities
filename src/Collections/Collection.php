@@ -833,16 +833,12 @@ namespace CPB\Utilities\Collections
             $items = $items instanceof \Traversable
                 ? iterator_to_array($items, true)
                 : $items;
-        
-            try
-            {
-                \array_walk($items, function(&$v) { $v = \is_array($v) ? static::from($v) : $v; });
-            }
-            catch(\Throwable $e)
-            {
-                \var_dump($e->getMessage(), $items);
-                die;
-            }
+    
+            $items = \array_map(function($v) {
+                return \is_array($v)
+                    ? static::from($v)
+                    : $v;
+            }, $items);
         
             $inst->items = $items;
         
