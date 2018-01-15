@@ -184,6 +184,16 @@ namespace CPB\Utilities\Collections
         }
     
         /**
+         * Sums all values
+         *
+         * @wraps array_sum
+         */
+        public function sum() //: int TODO(Chris Kruining) Enable return type when minimum version is php 7.2.0 - type widening is required
+        {
+            return array_sum($this->items);
+        }
+    
+        /**
          * Searches the Collection for a given value and
          * returns the first corresponding key if successful
          *
