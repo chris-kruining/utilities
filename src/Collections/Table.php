@@ -137,6 +137,22 @@ namespace CPB\Utilities\Collections
          */
         public function insert(string $query, $value): Queryable
         {
+            if($this->type !== null && \is_object($value)
+                ? !$value instanceof $this->type
+                : \gettype($value) !== $this->type)
+            {
+                throw new \InvalidArgumentException(\sprintf(
+                    'expected value of type %s, got %s',
+                    $this->type,
+                    \is_object($value)
+                        ? \get_class($value)
+                        : \gettype($value)
+                ));
+            }
+            
+            \var_dump($query, $value);
+            die;
+            
             throw new NotImplemented;
         
             return $this;
