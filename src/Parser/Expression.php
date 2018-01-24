@@ -7,9 +7,9 @@ namespace CPB\Utilities\Parser
     use CPB\Utilities\Contracts\Resolvable;
     
     // TODO(Chris Kruining)
-    //  - Add a proper class that tokenize's
-    //    the query string, this in now an
-    //    in-class method(`split`).
+    // - Add a proper class that tokenize's
+    //   the query string, this in now an
+    //   in-class method(`split`).
     final class Expression implements ResolverInterface
     {
         private
@@ -58,10 +58,10 @@ namespace CPB\Utilities\Parser
             {
                 $operators = [
                     '+', '*', '-', '/', '%' , '**',              // Math operators
-                    '<', '>', '<=', '>=', '==', '!=',            // Comparison operators
+                    '<', '>', '<=', '>=', '==', '!=', '=',       // Comparison operators
                     '??', '?:', '?', ':',                        // Other operators
                     '(', ')', '[', ']',                          // Nesting operators
-                    '{{', '}}', '\*', '*\\', '\\', '\'',          // Custom operators
+                    '{{', '}}', '\*', '*\\', '\\', '\'',         // Custom operators
                     'in', 'where', 'limit', 'and', 'or', 'from', // Keyword operators
                 ];
                 
@@ -250,7 +250,9 @@ namespace CPB\Utilities\Parser
         
             $callable = $parts[0] ?? '';
             $parameters = $this->parseParameters($parts[1] ?? '')
-                ->map(function($k, $v){ return static::init($v)($this->resolvable, $this->variables); })
+                ->map(function($k, $v){
+                    return (static::init($v)($this->resolvable, $this->variables))->first();
+                })
                 ->toArray();
         
             switch(true)
@@ -268,13 +270,13 @@ namespace CPB\Utilities\Parser
                 // Parse 'sub-queries'
                 case $trimmed[0] === '(' && $trimmed[-1] === ')':
                     return static::init(substr($trimmed, 1, -1))($this->resolvable, $this->variables);
-    
-                case \is_callable($callable):
-                    return $callable(...$parameters);
             
                 // Parse function
                 case method_exists($this->resolvable, $callable):
                     return $this->resolvable->$callable(...$parameters);
+    
+                case \is_callable($callable):
+                    return $callable(...$parameters);
             
                 // Fetch the variable
                 case substr($trimmed, 0, 2) === '{{' && substr($trimmed, -2, 2) === '}}':
@@ -340,7 +342,17 @@ namespace CPB\Utilities\Parser
                             \gettype($right)
                         ));
                     }
-            
+    
+                // NOTE(Chris Kruining)
+                // Parse the assignment operator
+                // to a strict equals operator
+                // since the expression does not
+                // work with assignment syntax,
+                // this way I can also support
+                // sql-esc syntax
+                case '=':
+                    $operator = '===';
+    
                 // NOTE(Chris Kruining)
                 // These are all comparison operators
                 case '<':
