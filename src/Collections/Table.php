@@ -135,11 +135,11 @@ namespace CPB\Utilities\Collections
          * properly support overriding
          * existing keys...
          */
-        public function insert(string $query, $value): Queryable
+        public function insert(string $query, $value, &$newValue = null): Queryable
         {
-            if($this->type !== null && \is_object($value)
+            if($this->type !== null && (\is_object($value)
                 ? !$value instanceof $this->type
-                : \gettype($value) !== $this->type)
+                : \gettype($value) !== $this->type))
             {
                 throw new \InvalidArgumentException(\sprintf(
                     'expected value of type %s, got %s',
@@ -150,10 +150,9 @@ namespace CPB\Utilities\Collections
                 ));
             }
             
-            \var_dump($query, $value);
-            die;
-            
-            throw new NotImplemented;
+            $this->items[] = $value;
+    
+            $newValue = $this->count() - 1;
         
             return $this;
         }
@@ -167,7 +166,7 @@ namespace CPB\Utilities\Collections
         public function where(string $query, iterable $variables = []): Queryable
         {
             $query = Expression::init(Regex::replace('/:([A-Za-z_][A-Za-z0-9_]*)/', $query, '{{$1}}'));
-            
+    
             return $this->filter(function($row) use($query, $variables){
                 if($row instanceof Resolvable)
                 {
@@ -354,6 +353,20 @@ namespace CPB\Utilities\Collections
             return $this;
         }
         
+        public function count(string $key = null): int
+        {
+            if($key === null)
+            {
+                return parent::count();
+            }
+            
+            // TODO(Chris Kruining)
+            // Implement the usage
+            // of the key argument.
+            
+            return count($this->items);
+        }
+    
         public function offsetGet($offset)
         {
             return \is_string($offset) && !\key_exists($offset, $this->items)
@@ -376,6 +389,15 @@ namespace CPB\Utilities\Collections
                 default:
                     throw new \InvalidArgumentException;
             }
+        }
+    
+        public function resolve(string $key)
+        {
+            $result = $this->select($key);
+        
+            return count($result) === 1 && $result->toArray()[0] === [ $key => $key]
+                ? new Collection
+                : $result;
         }
     }
 }
