@@ -661,7 +661,7 @@ namespace CPB\Utilities\Collections
          */
         public function byIndex(int $i)
         {
-            $values = $this->values()->items;
+            $values = \array_values($this->items);
             $key = Arithmetic::Modulus($i, count($values));
         
             return \key_exists($key, $values)
@@ -886,14 +886,14 @@ namespace CPB\Utilities\Collections
         public function toString(string $delimiter = '', string $format = null): string
         {
             $parts = $this->toArray();
-        
+            
             if($format !== null)
             {
-                $parts = \array_map(function($p) use($format){
+                $parts = \array_map(function($p) use ($format){
                     return \sprintf($format, $p);
                 }, $parts);
             }
-        
+    
             return join($delimiter, $parts);
         }
     
