@@ -178,7 +178,7 @@ namespace CPB\Utilities\Collections
                 }
                 
                 return false;
-            });
+            })->values();
         }
     
         /**
