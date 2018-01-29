@@ -270,14 +270,33 @@ namespace CPB\Utilities\Collections
          * and removed Collections
          *
          */
-        public function split(callable $callback, int $option = 0, bool $assoc = false): array
+        public function split(callable $callback, int $option = 0): array
         {
-            $filtered = $this->filter($callback, $option);
-        
-            return [
-                $filtered,
-                $this->{($assoc ? 'diffKey' : 'diff')}($filtered->toArray()),
-            ];
+            $res = [ new static, new static ];
+            
+            foreach($this->items as $key => $value)
+            {
+                switch($option)
+                {
+                    case \ARRAY_FILTER_USE_BOTH:
+                        $args = [ $key, $value ];
+                        break;
+    
+                    case \ARRAY_FILTER_USE_KEY:
+                        $args = [ $key ];
+                        break;
+                        
+                    default:
+                        $args = [ $value ];
+                        break;
+                }
+                
+                $result = $callback(...$args);
+                
+                $res[(int)!$result][$key] = $value;
+            }
+            
+            return $res;
         }
     
         /**
@@ -1027,6 +1046,11 @@ namespace CPB\Utilities\Collections
          */
         public function offsetUnset($offset)
         {
+            if($offset === null)
+            {
+                return;
+            }
+            
             unset($this->items[$offset]);
         }
     
@@ -1065,6 +1089,11 @@ namespace CPB\Utilities\Collections
         private function iterableToArray(array $iterables): array
         {
             return array_map(function($i) {
+                if($i instanceof Collection)
+                {
+                    return $i->items;
+                }
+                
                 return $i instanceof \Traversable
                     ? iterator_to_array($i)
                     : $i;

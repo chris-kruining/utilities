@@ -26,7 +26,7 @@ namespace CPB\Utilities\Common
 
         public function each(callable $callback): CollectionInterface;
 
-        public function split(callable $callback, int $option = 0, bool $assoc = false): array;
+        public function split(callable $callback, int $option = 0): array;
 
         public function slice(int $start, int $length = null) : CollectionInterface;
 
