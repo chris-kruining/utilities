@@ -272,7 +272,7 @@ namespace CPB\Utilities\Collections
          */
         public function split(callable $callback, int $option = 0): array
         {
-            $res = [ new static, new static ];
+            $res = [ [], [] ];
             
             foreach($this->items as $key => $value)
             {
@@ -296,7 +296,10 @@ namespace CPB\Utilities\Collections
                 $res[(int)!$result][$key] = $value;
             }
             
-            return $res;
+            return [
+                static::from($res[0]),
+                static::from($res[1]),
+            ];
         }
     
         /**
