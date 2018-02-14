@@ -64,9 +64,10 @@ namespace CPB\Utilities\Collections
          */
         public function shift(&$shifted = null): CollectionInterface
         {
-            $shifted = \array_shift($this->items);
+            $inst = static::from($this->items);
+            $shifted = \array_shift($inst->items);
         
-            return $this;
+            return $inst;
         }
     
         /**
@@ -76,9 +77,10 @@ namespace CPB\Utilities\Collections
          */
         public function pop(&$shifted = null): CollectionInterface
         {
-            $shifted = \array_pop($this->items);
-        
-            return $this;
+            $inst = static::from($this->items);
+            $shifted = \array_pop($inst->items);
+    
+            return $inst;
         }
     
         /**
