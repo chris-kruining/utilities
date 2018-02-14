@@ -3,7 +3,6 @@
 namespace CPB\Utilities\Decorations
 {
     use CPB\Utilities\Collections\Collection;
-    use CPB\Utilities\Common\Exceptions\MethodNotAvailable;
     
     trait Marcoable
     {
@@ -50,5 +49,6 @@ namespace CPB\Utilities\Decorations
         {
             return self::$classes->has(self::class) && self::$classes[self::class]->includes($method);
         }
+        
     }
 }

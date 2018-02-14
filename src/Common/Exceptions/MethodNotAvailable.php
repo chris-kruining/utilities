@@ -1,6 +1,6 @@
 <?php
 
-namespace CPB\Utilities\Common\Exceptions
+namespace Core\Utility\Exception
 {
     class MethodNotAvailable extends \BadMethodCallException
     {
