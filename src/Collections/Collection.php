@@ -58,6 +58,30 @@ namespace CPB\Utilities\Collections
         }
     
         /**
+         * Shift an element off the beginning of the Collection
+         *
+         * @wraps array_shift
+         */
+        public function shift(&$shifted = null): CollectionInterface
+        {
+            $shifted = \array_shift($this->items);
+        
+            return $this;
+        }
+    
+        /**
+         * Shift an element off the end of the Collection
+         *
+         * @wraps array_pop
+         */
+        public function pop(&$shifted = null): CollectionInterface
+        {
+            $shifted = \array_pop($this->items);
+        
+            return $this;
+        }
+    
+        /**
          * Push one or more elements onto the end of Collection
          *
          * @wraps array_push
