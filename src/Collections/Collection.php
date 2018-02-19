@@ -225,9 +225,9 @@ namespace CPB\Utilities\Collections
          *
          * @wraps array_search
          */
-        public function search($needle): ?int
+        public function search($needle, bool $strict = null): ?int
         {
-            $result = array_search($needle, $this->items);
+            $result = array_search($needle, $this->items, $strict);
         
             return $result === false
                 ? null
@@ -926,7 +926,7 @@ namespace CPB\Utilities\Collections
         {
             $self = clone $this;
         
-            \array_walk($self->items, function(&$i){ $i = $i instanceof static ? $i->toArray() : $i; });
+            \array_walk($self->items, function(&$i){ $i = $i instanceof CollectionInterface ? $i->toArray() : $i; });
         
             return iterator_to_array(
                 $self,
