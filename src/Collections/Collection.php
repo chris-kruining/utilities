@@ -794,6 +794,22 @@ namespace CPB\Utilities\Collections
         }
     
         /**
+         * Searches for an index in the items via callback
+         */
+        public function findIndex(callable $callback)
+        {
+            foreach($this->items as $i => $v)
+            {
+                if($callback($i, $v) === true)
+                {
+                    return $i;
+                }
+            }
+            
+            return null;
+        }
+    
+        /**
          * Executes check on every item
          *
          * Iterates over each item applying the callback,
