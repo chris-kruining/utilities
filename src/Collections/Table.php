@@ -156,6 +156,13 @@ namespace CPB\Utilities\Collections
         
             return $this;
         }
+        
+        public function delete(): Queryable
+        {
+            $this->items = [];
+            
+            return $this;
+        }
     
         /**
          * Filters items
