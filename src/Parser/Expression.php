@@ -251,7 +251,11 @@ namespace CPB\Utilities\Parser
             $callable = $parts[0] ?? '';
             $parameters = $this->parseParameters($parts[1] ?? '')
                 ->map(function($k, $v){
-                    return (static::init($v)($this->resolvable, $this->variables))->first();
+                    $res = static::init($v)($this->resolvable, $this->variables);
+    
+                    return $res instanceof Resolvable
+                        ? $res->first()
+                        : $res ?? [];
                 })
                 ->toArray();
         

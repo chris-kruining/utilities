@@ -630,7 +630,7 @@ namespace CPB\Utilities\Collections
             $keys = array_fill_keys(array_keys($this->items), 0);
             $values = $this->map(function($k, $v) use($edgeKey){ return $v[$edgeKey]; });
         
-            foreach($values as $key => $value)
+            foreach($values as $value)
             {
                 $edges = $value ?? [];
             
