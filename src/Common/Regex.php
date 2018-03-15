@@ -46,7 +46,7 @@ namespace CPB\Utilities\Common
             $replacement = '$1',
             int $limit = -1 ,
             int &$count = 0
-        ) {
+        ): ?string {
             switch(\gettype($pattern))
             {
                 case 'array':
