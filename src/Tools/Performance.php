@@ -10,7 +10,7 @@ namespace CPB\Utilities\Tools
         {
         }
         
-        public static function start()
+        public static function start(): Performance
         {
             $inst = new static();
             $inst->start = microtime(true);
@@ -18,9 +18,9 @@ namespace CPB\Utilities\Tools
             return $inst;
         }
         
-        public function stop()
+        public function stop(): void
         {
-            echo (float)number_format(microtime(true) - $this->start, 10) * 1000 . 'ms';
+            echo \sprintf('<p>%sms</p>', (float)number_format(microtime(true) - $this->start, 10) * 1000);
         }
         
         public static function measure(callable $cb, int $repeat = null)
