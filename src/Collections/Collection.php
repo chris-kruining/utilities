@@ -908,6 +908,10 @@ namespace CPB\Utilities\Collections
                 ? iterator_to_array($items, true)
                 : $items;
     
+            // TODO(Chris Kruining)
+            // This map makes this method
+            // very expensive, maybe split
+            // this of into another method
             $items = \array_map(function($v) {
                 return \is_array($v)
                     ? static::from($v)
@@ -917,6 +921,14 @@ namespace CPB\Utilities\Collections
             $inst->items = $items;
         
             return $inst;
+        }
+    
+        /**
+         * Create Collection from JSON string
+         */
+        public static function fromJson(string $items): CollectionInterface
+        {
+            return static::from(\json_decode($items, true));
         }
     
         /**
@@ -1011,27 +1023,31 @@ namespace CPB\Utilities\Collections
             switch(\gettype($offset))
             {
                 case 'string':
-                    $queries = static::from(Regex::split('/\s*,\s*/', $offset))
-                        ->each(function($k, $query){
-                            $parts = \explode('.', $query);
-                            $container = $this->items;
+                    $queries = \array_flip(\preg_split('/\s*,\s*/', $offset));
+                    
+                    foreach($queries as $query => &$container)
+                    {
+                        $parts = \explode('.', $query);
+                        $container = $this->items;
     
-                            while(($key = \array_shift($parts)) !== null)
-                            {
-                                if(
-                                    (\is_array($container) && !\key_exists($key, $container)) ||
-                                    ($container instanceof CollectionInterface && !$container->has($key))
-                                ) {
-                                    yield $query => self::UNDEFINED;
-                                    
-                                    return;
-                                }
-        
-                                $container = $container[$key];
+                        while(($key = \array_shift($parts)) !== null)
+                        {
+                            if(
+                                (\is_array($container) && !\key_exists($key, $container)) ||
+                                ($container instanceof CollectionInterface && !$container->has($key))
+                            ) {
+                                $container = self::UNDEFINED;
+            
+                                continue 2;
                             }
-                            
-                            yield $query => $container;
-                        });
+        
+                            $container = $container[$key];
+                        }
+                    }
+                    
+                    unset($container);
+                    
+                    $queries = static::from($queries);
                     
                     return $queries->count() === 1
                         ? $queries->first()
