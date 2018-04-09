@@ -56,9 +56,9 @@ namespace CPB\Utilities\Collections
          *
          * optionally a upper bound can be set
          */
-        public function max(string $key, float $limit = null)
+        public function max(string $key = null, float $limit = null)
         {
-            $result = $this->columnAction('max', $key);
+            $result = $this->columnAction('max', $key ?? '');
         
             if($limit !== null)
             {
@@ -80,9 +80,9 @@ namespace CPB\Utilities\Collections
          *
          * optionally a lower bound can be set
          */
-        public function min(string $key, float $limit = null)
+        public function min(string $key = null, float $limit = null)
         {
-            $result = $this->columnAction('min', $key);
+            $result = $this->columnAction('min', $key ?? '');
         
             if($limit !== null)
             {
