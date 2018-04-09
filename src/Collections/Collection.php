@@ -4,7 +4,7 @@ namespace CPB\Utilities\Collections
 {
     use Core\Utility\Exception\Deprecated;
     use CPB\Utilities\Common\CollectionInterface;
-    use CPB\Utilities\Common\Regex;
+    use CPB\Utilities\Common\NotFoundException;
     use CPB\Utilities\Contracts\Resolvable;
     use CPB\Utilities\Math\Arithmetic;
     
