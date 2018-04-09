@@ -16,12 +16,12 @@ namespace CPB\Utilities\Common
         {
             \array_unshift($periods, $period);
             
-            foreach($periods as $period)
-            {
-                \var_dump($this->periods->filter(function(\DatePeriod $p) use($period){ $period->getEndDate() >= $p->getStartDate() || $period->getStartDate() <= $p->getEndDate(); }));
-            }
-            
-            die;
+//            foreach($periods as $period)
+//            {
+//                \var_dump($this->periods->filter(function(\DatePeriod $p) use($period){ $period->getEndDate() >= $p->getStartDate() || $period->getStartDate() <= $p->getEndDate(); }));
+//            }
+//
+//            die;
             
             return $this;
         }

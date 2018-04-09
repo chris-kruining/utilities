@@ -2,6 +2,7 @@
 
 namespace CPB\Utilities\Decorations
 {
+    use Core\Utility\Exception\MethodNotAvailable;
     use CPB\Utilities\Collections\Collection;
     
     trait Marcoable
@@ -19,8 +20,10 @@ namespace CPB\Utilities\Decorations
             
             $class = self::class;
             $methods = Collection::from((new \ReflectionClass($class))->getMethods())
-                ->filter(function($m) { return \strpos($m->getDocComment() ?: '', '@macro') !== false; })
-                ->map(function($k, $v){ return $v->name; });
+                ->filter(function(\ReflectionMethod $m) {
+                    return \strpos($m->getDocComment() ?: '', '@macro') !== false;
+                })
+                ->map(function(int $k, \ReflectionMethod $v){ return $v->name; });
     
             self::$classes[$class] = $methods;
         }

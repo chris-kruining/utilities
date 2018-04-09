@@ -102,8 +102,6 @@ namespace CPB\Utilities\Collections
     
                     foreach($keys as $key)
                     {
-                        \var_dump($row);
-                        
                         $res[$key] = $row[$key];
                     }
     
@@ -289,8 +287,6 @@ namespace CPB\Utilities\Collections
         
         public function in(...$args)
         {
-            \var_dump($args);
-            die;
         }
     
         /**

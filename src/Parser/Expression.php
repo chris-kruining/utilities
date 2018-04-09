@@ -45,7 +45,7 @@ namespace CPB\Utilities\Parser
     
         public static function init(string $query): ResolverInterface
         {
-            $inst = new self;
+            $inst = new Expression;
             $inst->query = $query;
             $inst->keys = $inst->split($query);
             
@@ -92,8 +92,9 @@ namespace CPB\Utilities\Parser
             $group = 0;
             $shift = false;
             $string = -1;
-        
-            for($i = 0; $i < \strlen($query); $i++)
+            $length = \strlen($query);
+            
+            for($i = 0; $i < $length; $i++)
             {
                 if(!\key_exists($pos, $out))
                 {
@@ -396,8 +397,9 @@ namespace CPB\Utilities\Parser
             $out = [];
             $pos = 0;
             $level = 0;
+            $length = \strlen($parameters);
         
-            for($i = 0; $i < \strlen($parameters); $i++)
+            for($i = 0; $i < $length; $i++)
             {
                 if(!\key_exists($pos, $out))
                 {

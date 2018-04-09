@@ -30,7 +30,7 @@ namespace CPB\Utilities\Math
 
         public function toArray(): array
         {
-            return $this->data->reduce(function($t, $k, $v)
+            return $this->data->reduce(function(array $t, int $k, Collection $v)
             {
                 return array_merge($t, $v->toArray());
             });
