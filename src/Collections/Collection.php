@@ -210,6 +210,26 @@ namespace CPB\Utilities\Collections
         }
     
         /**
+         * Find highest value
+         *
+         * @wraps max
+         */
+        public function max()
+        {
+            return \max($this->items);
+        }
+    
+        /**
+         * Find lowest value
+         *
+         * @wraps min
+         */
+        public function min()
+        {
+            return \min($this->items);
+        }
+    
+        /**
          * Sums all values
          *
          * @wraps array_sum
