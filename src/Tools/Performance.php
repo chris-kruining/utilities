@@ -23,23 +23,24 @@ namespace CPB\Utilities\Tools
             echo \sprintf('<p>%sms</p>', (float)number_format(microtime(true) - $this->start, 10) * 1000);
         }
         
-        public static function measure(callable $cb, int $repeat = null)
+        public static function measure(callable $cb, int ...$repeat)
         {
-            $inst = static::start();
-            
-            if($repeat !== null)
+            if(count($repeat) === 0)
             {
-                for($i = 0; $i < $repeat; $i++)
+                $repeat[] = 1;
+            }
+            
+            foreach($repeat as $iterations)
+            {
+                $inst = static::start();
+    
+                for($i = 0; $i < $iterations; $i++)
                 {
                     $result = $cb($i);
                 }
+    
+                $inst->stop();
             }
-            else
-            {
-                $result = $cb(0);
-            }
-            
-            $inst->stop();
             
             return $result;
         }
