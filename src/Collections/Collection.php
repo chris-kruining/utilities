@@ -449,6 +449,16 @@ namespace CPB\Utilities\Collections
         }
     
         /**
+         * Computes the difference of iterables, compares data by a callback function
+         *
+         * @wraps array_uintersect
+         */
+        public function uIntersect(callable $callback, iterable ...$sets): CollectionInterface
+        {
+            return static::from(array_uintersect($this->items, ...$this->iterableToArray($sets), ...[ $callback ]));
+        }
+    
+        /**
          * Computes the intersection of iterables with
          * additional index check
          *
@@ -808,9 +818,19 @@ namespace CPB\Utilities\Collections
         /**
          * Searches for a value in the items via callback
          */
-        public function find(callable $callback)
+        public function find(callable $callback, bool $returnNull = false)
         {
-            return $this->filter($callback)->first();
+            foreach($this->items as $item)
+            {
+                if($callback($item) === true)
+                {
+                    return $item;
+                }
+            }
+
+            return $returnNull === true
+                ? null
+                : self::UNDEFINED;
         }
     
         /**
