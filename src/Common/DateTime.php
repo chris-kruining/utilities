@@ -17,13 +17,33 @@ namespace CPB\Utilities\Common
             
             return parent::__get($name);
         }
+        
+        public function setDate($year, $month = null, $day = null): DateTime
+        {
+            $this->dayOfWeek = -1;
+            
+            if($year instanceof DateTime)
+            {
+                $month = $year->month;
+                $day = $year->day;
+                
+                $year = $year->year;
+            }
+            
+            return parent::setDate($year, $month, $day);
+        }
     
         public function setDayOfWeek(int $day): DateTime
         {
-            $this->setDate(1, 1, 1);
+            parent::setDate(1, 1, 1);
             $this->dayOfWeek = $day;
             
             return $this;
+        }
+    
+        public function dayOfWeekIsset(): bool
+        {
+            return $this->dayOfWeek !== -1;
         }
     }
 }
