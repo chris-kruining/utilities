@@ -29,6 +29,12 @@ namespace CPB\Utilities\Common
                     
                 case 'interval':
                     return $this->interval;
+                    
+                case 'start':
+                    return $this->periods->uSort(function($a, $b){ return $a->start <=> $b->start; })->first()->start ?? null;
+                    
+                case 'end':
+                    return $this->periods->uSort(function($a, $b){ return $a->end <=> $b->end; })->last()->end ?? null;
             
                 default:
                     $format = $name;
