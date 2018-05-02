@@ -2,33 +2,28 @@
 
 namespace CPB\Utilities\Common
 {
-    class DateTime extends \DateTime
+    use Carbon\Carbon;
+    
+    class DateTime extends Carbon
     {
-        private const
-            FORMATS = [
-                'N', 'H', 'i', 's'
-            ],
-            N = '[0-6]',
-            H = '[0-2][0-9]',
-            i = '[0-5][0-9]',
-            s = '[0-5][0-9]'
-        ;
-        
         private $dayOfWeek = -1;
         
-        public static function createFromFormat($format, $time, ?\DateTimeZone $timezone = null)
+        public function __get($name)
         {
-            $regex = Regex::replace(
-                \sprintf('/%s/', \join('|', self::FORMATS)),
-                $format,
-                function($m){ return sprintf('(?P<%s>%s)', $m[0], \constant('self::' . $m[0])); }
-            );
+            if($name=== 'dayOfWeek' && $this->dayOfWeek !== -1)
+            {
+                return $this->dayOfWeek;
+            }
             
-            $matched = Regex::match(\sprintf('/%s/', $regex), $time);
-            
-            \var_dump($matched['N'] ?? -1);
+            return parent::__get($name);
+        }
     
-            return parent::createFromFormat($format, $time, $timezone);
+        public function setDayOfWeek(int $day): DateTime
+        {
+            $this->setDate(1, 1, 1);
+            $this->dayOfWeek = $day;
+            
+            return $this;
         }
     }
 }
