@@ -35,10 +35,9 @@ namespace CPB\Utilities\Common
                     break;
             }
             
-            foreach($this->periods as $period)
-            {
-                yield from new \DatePeriod($period->start, new \DateInterval('P' . $format), $period->end);
-            }
+            $this->interval = new \DateInterval('P' . $format);
+            
+            return $this;
         }
     
         public function __set($name, $value)
