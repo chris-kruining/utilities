@@ -2,9 +2,7 @@
 
 namespace CPB\Utilities\Common
 {
-    use function MongoDB\BSON\fromJSON;
-    
-    class DateRange implements \IteratorAggregate
+    class DateRange implements \IteratorAggregate, \JsonSerializable
     {
         protected
             $periods,
@@ -21,10 +19,40 @@ namespace CPB\Utilities\Common
         {
             switch($name)
             {
+                case 'years':
+                case 'year':
+                case 'y':
+                    $format = '1Y';
+                    break;
+                    
+                case 'months':
+                case 'month':
+                case 'm':
+                    $format = '1M';
+                    break;
+                    
                 case 'days':
                 case 'day':
                 case 'd':
                     $format = '1D';
+                    break;
+                    
+                case 'hours':
+                case 'hour':
+                case 'h':
+                    $format = 'T1H';
+                    break;
+                    
+                case 'minutes':
+                case 'minute':
+                case 'i':
+                    $format = 'T1M';
+                    break;
+                    
+                case 'seconds':
+                case 'second':
+                case 's':
+                    $format = 'T1S';
                     break;
                     
                 case 'interval':
@@ -90,12 +118,21 @@ namespace CPB\Utilities\Common
     
         public function getIterator()
         {
-            yield from $this->periods->reduce(
-                function($t, $k, $v){
-                    return \array_merge($t, \iterator_to_array(new \DatePeriod($v->start, $this->interval, $v->end)));
-                },
-                []
-            );
+            yield from $this->periods->reduce(function($t, $k, $v){
+                return \array_merge($t, \iterator_to_array(new \DatePeriod($v->start, $this->interval, $v->end)));
+            });
+        }
+        
+        public function jsonSerialize()
+        {
+            return [
+                'periods' => $this->periods->map(function($k, $v){ return [
+                    'start' => $v->start->format('Y-m-d H:i'),
+                    'end' => $v->end->format('Y-m-d H:i'),
+                ]; }),
+                'format' => 'Y-m-d H:i',
+                'interval' => $this->interval->format('%r%Y-%M-%D %H:%I:%S'),
+            ];
         }
     }
 }
