@@ -21,7 +21,14 @@ namespace CPB\Utilities\Collections
             foreach($data as $key => $value)
             {
                 $count = $keys->filter(
-                    function($v) use($key){ return count(Regex::match('/^' . $key . '(\(\d\))?/', $v)) > 0; }
+                    function($v) use($key){
+                        return count(Regex::match(
+                            \sprintf(
+                                '/^%s(\(\d\))?/',
+                                \str_replace('/', '\\/', \preg_quote($key))
+                            ),
+                            $v
+                        )) > 0; }
                 )->count();
             
                 if($count > 0)
