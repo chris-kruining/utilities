@@ -968,7 +968,7 @@ namespace CPB\Utilities\Collections
          */
         public static function fromJson(string $items): CollectionInterface
         {
-            return static::from(\json_decode($items, true));
+            return static::from(\json_decode($items, true) ?? []);
         }
     
         /**
