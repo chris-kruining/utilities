@@ -289,6 +289,18 @@ namespace CPB\Utilities\Collections
         }
     
         /**
+         * Filters through the keys of items
+         *
+         * the callback is applied to each key and a boolean
+         * return value is expected, iterations that return
+         * true stay in the Collection, false is removed
+         */
+        public function filterKeys(callable $callback = null): CollectionInterface
+        {
+            return static::filter($callback, \ARRAY_FILTER_USE_KEY);
+        }
+    
+        /**
          * Filters through the items
          *
          * the callback is applied to each item and a boolean
