@@ -57,7 +57,7 @@ $filtered = array_filter(
 join('|', array_map(function($k, $v){ return $k . '::' . $v; }, array_keys($filtered), $filtered));
 ```
 
-As you can see the collection version maintains readability whereas the vannilla version loses in my opinion it's charm because to achie a single goal you need to spread it out over multiple variables
+As you can see the collection version maintains readability whereas the vannilla version loses in my opinion it's charm because to achieve a single goal you need to spread it out over multiple variables
 
 # The future
 
