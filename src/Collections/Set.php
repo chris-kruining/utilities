@@ -2,7 +2,7 @@
 
 namespace CPB\Utilities\Collections
 {
-    class Set
+    class Set extends Collection
     {
     }
 }
