@@ -848,7 +848,7 @@ namespace CPB\Utilities\Collections
         /**
          * Searches for an index in the items via callback
          */
-        public function findIndex(callable $callback)
+        public function findIndex(callable $callback): ?int
         {
             foreach($this->items as $i => $v)
             {
@@ -936,18 +936,13 @@ namespace CPB\Utilities\Collections
         public function get($key, string ...$keys): Resolvable
         {
             $keys = \array_merge([ $key ], $keys);
-        
+            
             if(!$this->has(...$keys))
             {
                 throw new NotFoundException;
             }
         
-            return Collection::from($keys)
-                ->flip()
-                ->merge($this->filter(
-                    function($k) use($keys){ return in_array($k, $keys); },
-                    ARRAY_FILTER_USE_KEY
-                ));
+            return static::from(\array_intersect_key($this->items, \array_flip($keys)));
         }
     
         /**
