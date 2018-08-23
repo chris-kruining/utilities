@@ -176,6 +176,16 @@ namespace CPB\Utilities\Collections
         }
     
         /**
+         * Merges the values of multiple iterables into a single Collection
+         *
+         * @wraps array_replace
+         */
+        public function replace(iterable ...$sets): CollectionInterface
+        {
+            return static::from(array_replace($this->items, ...$this->iterableToArray($sets)));
+        }
+    
+        /**
          * Merges the values of multiple iterables into a single Collection recursively
          *
          * @wraps array_merge_recursive
@@ -234,7 +244,7 @@ namespace CPB\Utilities\Collections
          *
          * @wraps array_sum
          */
-        public function sum() //: int TODO(Chris Kruining) Enable return type when minimum version is php 7.2.0 - type widening is required
+        public function sum(): int
         {
             return array_sum($this->items);
         }

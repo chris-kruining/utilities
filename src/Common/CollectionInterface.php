@@ -18,6 +18,8 @@ namespace CPB\Utilities\Common
     {
         public function merge(iterable ...$sets): CollectionInterface;
 
+        public function replace(iterable ...$sets): CollectionInterface;
+
         public function map(callable $callback): CollectionInterface;
 
         public function filter(callable $callback = null): CollectionInterface;
