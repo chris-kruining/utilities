@@ -45,10 +45,10 @@ namespace CPB\Utilities\Collections
         /**
          * Sums all values by key
          */
-        public function sum(string $key = null)
-        {
-            return $this->columnAction('array_sum', $key ?? '');
-        }
+//        public function sum(string $key = null)
+//        {
+//            return $this->columnAction('array_sum', $key ?? '');
+//        }
     
         /**
          * Averages all values by key
