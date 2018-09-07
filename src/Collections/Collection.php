@@ -244,7 +244,7 @@ namespace CPB\Utilities\Collections
          *
          * @wraps array_sum
          */
-        public function sum(): int
+        public function sum()
         {
             return array_sum($this->items);
         }

@@ -31,7 +31,7 @@ namespace CPB\Utilities\Contracts
 
         public function group(string $key): Queryable;
 
-//        public function sum(string $key = null);
+        public function sum(string $key = null);
 
         public function average(string $key);
 
