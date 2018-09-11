@@ -956,6 +956,16 @@ namespace CPB\Utilities\Collections
         }
     
         /**
+         * sets the value of the given key
+         */
+        public function set(string $key, $value = self::UNDEFINED): Resolvable
+        {
+            $this[$key] = $value;
+            
+            return $this;
+        }
+    
+        /**
          * Create Collection from iterable
          */
         public static function from(iterable $items): CollectionInterface
