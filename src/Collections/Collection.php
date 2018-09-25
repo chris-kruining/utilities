@@ -248,6 +248,40 @@ namespace CPB\Utilities\Collections
             
             return \min($this->items);
         }
+        
+        public function minFromCallback(callable $callback)
+        {
+            $v = null;
+            $i = null;
+    
+            foreach($this->items as $item)
+            {
+                if(($r = $callback($item)) <= $v || $v === null)
+                {
+                    $v = $r;
+                    $i = $item;
+                }
+            }
+            
+            return $i;
+        }
+        
+        public function maxFromCallback(callable $callback)
+        {
+            $v = null;
+            $i = null;
+    
+            foreach($this->items as $item)
+            {
+                if(($r = $callback($item)) >= $v || $v === null)
+                {
+                    $v = $r;
+                    $i = $item;
+                }
+            }
+            
+            return $i;
+        }
     
         /**
          * Sums all values
