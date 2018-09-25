@@ -803,9 +803,11 @@ namespace CPB\Utilities\Collections
          * index of -2 would yield the second last
          * item
          */
-        public function byIndex(int $i)
+        public function byIndex(int $i, bool $key = false)
         {
-            $values = \array_values($this->items);
+            $values = $key === false
+                ? \array_values($this->items)
+                : \array_keys($this->items);
             $key = Arithmetic::Modulus($i, count($values));
         
             return \key_exists($key, $values)
@@ -816,17 +818,17 @@ namespace CPB\Utilities\Collections
         /**
          * Returns the first item
          */
-        public function first()
+        public function first(bool $key = false)
         {
-            return $this->byIndex(0);
+            return $this->byIndex(0, $key);
         }
     
         /**
          * Returns the last item
          */
-        public function last()
+        public function last(bool $key = false)
         {
-            return $this->byIndex(-1);
+            return $this->byIndex(-1, $key);
         }
     
         /**
