@@ -226,6 +226,11 @@ namespace CPB\Utilities\Collections
          */
         public function max()
         {
+            if(count($this->items) === 0)
+            {
+                return null;
+            }
+    
             return \max($this->items);
         }
     
@@ -236,6 +241,11 @@ namespace CPB\Utilities\Collections
          */
         public function min()
         {
+            if(count($this->items) === 0)
+            {
+                return null;
+            }
+            
             return \min($this->items);
         }
     
