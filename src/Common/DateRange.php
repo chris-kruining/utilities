@@ -2,7 +2,9 @@
 
 namespace CPB\Utilities\Common
 {
-    class DateRange implements \IteratorAggregate, \JsonSerializable
+    use CPB\Utilities\Common\Exceptions\NotImplemented;
+    
+    class DateRange implements \IteratorAggregate, \JsonSerializable, \ArrayAccess
     {
         protected
             $periods,
@@ -84,10 +86,8 @@ namespace CPB\Utilities\Common
             }
         }
         
-        public function add(DatePeriod $period, DatePeriod ...$periods): DateRange
+        public function add(DatePeriod ...$periods): DateRange
         {
-            \array_unshift($periods, $period);
-            
             foreach($periods as $period)
             {
                 \var_dump($this->periods->filter(function(\DatePeriod $p) use($period){
@@ -96,6 +96,16 @@ namespace CPB\Utilities\Common
             }
 
             die;
+            
+            return $this;
+        }
+        
+        public function subtract(DatePeriod ...$periods): DateRange
+        {
+            foreach($periods as $period)
+            {
+                var_dump($this->periods->filter(function($p) use($period){ return $period->intersectsWith($p); }));
+            }
             
             return $this;
         }
@@ -115,6 +125,16 @@ namespace CPB\Utilities\Common
             
             return $inst;
         }
+        
+        public function &iterator()
+        {
+            var_dump($this->periods);
+            
+            foreach($this->periods as $i => &$period)
+            {
+                yield $i => $period;
+            }
+        }
     
         public function getIterator()
         {
@@ -133,6 +153,22 @@ namespace CPB\Utilities\Common
                 'format' => 'Y-m-d H:i',
                 'interval' => $this->interval->format('%r%Y-%M-%D %H:%I:%S'),
             ];
+        }
+    
+        public function offsetExists($offset)
+        {
+            return key_exists($offset, $this->periods);
+        }
+        public function offsetGet($offset)
+        {
+            throw new NotImplemented;
+        }
+        public function offsetSet($offset, $value)
+        {
+            throw new NotImplemented;
+        }
+        public function offsetUnset($offset) {
+            unset($this->periods[$offset]);
         }
     }
 }
