@@ -2,8 +2,7 @@
 
 namespace CPB\Utilities\Common
 {
-    use Core\Utility\Exception\NoIntersection;
-    use Traversable;
+    use CPB\Utilities\Common\Exceptions\NoIntersection;
     
     class DatePeriod implements \IteratorAggregate
     {
