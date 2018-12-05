@@ -23,13 +23,10 @@ namespace CPB\Utilities\Common
             $this->interval = $interval ?? new \DateInterval('P1D');
         }
     
-        public static function instance(\DatePeriod $period)
+        public function __clone()
         {
-            return new static(
-                DateTime::instance($period->start),
-                $period->interval,
-                DateTime::instance($period->end)
-            );
+            $this->start = DateTime::instance($this->start);
+            $this->end = DateTime::instance($this->end);
         }
         
         public function containsDayOfWeek(int $day): bool
