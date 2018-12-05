@@ -128,8 +128,6 @@ namespace CPB\Utilities\Common
         
         public function &iterator()
         {
-            var_dump($this->periods);
-            
             foreach($this->periods as $i => &$period)
             {
                 yield $i => $period;
