@@ -1012,14 +1012,22 @@ namespace CPB\Utilities\Collections
         }
     
         /**
+         * Sanitize iterable to array
+         */
+        public static function sanitize(iterable $items): array
+        {
+            return $items instanceof \Traversable
+                ? iterator_to_array($items, true)
+                : $items;
+        }
+    
+        /**
          * Create Collection from iterable
          */
         public static function from(iterable $items): CollectionInterface
         {
             $inst = new static;
-            $items = $items instanceof \Traversable
-                ? iterator_to_array($items, true)
-                : $items;
+            $items = static::sanitize($items);
     
             // TODO(Chris Kruining)
             // This map makes this method
