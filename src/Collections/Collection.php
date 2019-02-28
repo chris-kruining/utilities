@@ -158,7 +158,7 @@ namespace CPB\Utilities\Collections
                 \array_keys($this->items),
                 function($t, $i) use($callback){ return $callback($t, $i, $this->items[$i]); },
                 $input ?? []
-            ) ?? [];
+            );
         
             return \is_iterable($result) ?
                 static::from($result)
