@@ -7,22 +7,22 @@ namespace CPB\Utilities\Collections
     use CPB\Utilities\Common\NotFoundException;
     use CPB\Utilities\Contracts\Resolvable;
     use CPB\Utilities\Math\Arithmetic;
-    
+
     class Collection implements CollectionInterface
     {
         protected
             $items
         ;
-    
+
         public const
             UNDEFINED = '__UNDEFINED__'
         ;
-    
+
         public function __construct()
         {
             $this->items = [];
         }
-    
+
         public function __clone()
         {
             $iterator = function($arr) use(&$iterator): array
@@ -38,25 +38,25 @@ namespace CPB\Utilities\Collections
                         $item = $iterator($item);
                     }
                 }
-                
+
                 unset($item);
-                
+
                 return $arr;
             };
-    
+
             $this->items = $iterator($this->items);
         }
-    
+
         public function __toString(): string
         {
             return $this->toString();
         }
-    
+
         public function __debugInfo(): array
         {
             return $this->items ?? [];
         }
-    
+
         /**
          * Shift an element off the beginning of the Collection
          *
@@ -66,10 +66,10 @@ namespace CPB\Utilities\Collections
         {
             $inst = static::from($this->items);
             $shifted = \array_shift($inst->items);
-        
+
             return $inst;
         }
-    
+
         /**
          * Shift an element off the end of the Collection
          *
@@ -79,10 +79,10 @@ namespace CPB\Utilities\Collections
         {
             $inst = static::from($this->items);
             $shifted = \array_pop($inst->items);
-    
+
             return $inst;
         }
-    
+
         /**
          * Push one or more elements onto the end of Collection
          *
@@ -91,12 +91,12 @@ namespace CPB\Utilities\Collections
         public function push($item, ...$items): CollectionInterface
         {
             \array_unshift($items, $item);
-        
+
             \array_push($this->items, ...$items);
-        
+
             return $this;
         }
-    
+
         /**
          * Fetches the values
          *
@@ -106,7 +106,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(\array_values($this->items));
         }
-    
+
         /**
          * Fetches the keys
          *
@@ -116,7 +116,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(\array_keys($this->items));
         }
-    
+
         /**
          * Exchanges all keys with their associated values
          *
@@ -126,7 +126,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_flip($this->items));
         }
-    
+
         /**
          * Fetches all unique values
          *
@@ -136,7 +136,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_unique($this->items));
         }
-    
+
         /**
          * Reverses the order of the items
          *
@@ -146,7 +146,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_reverse($this->items, $preserveKeys));
         }
-    
+
         /**
          * Iteratively reduce the array to a single value using a callback function
          *
@@ -159,12 +159,12 @@ namespace CPB\Utilities\Collections
                 function($t, $i) use($callback){ return $callback($t, $i, $this->items[$i]); },
                 $input ?? []
             );
-        
+
             return \is_iterable($result) ?
                 static::from($result)
                 : $result;
         }
-    
+
         /**
          * Merges the values of multiple iterables into a single Collection
          *
@@ -174,7 +174,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_merge($this->items, ...$this->iterableToArray($sets)));
         }
-    
+
         /**
          * Merges the values of multiple iterables into a single Collection
          *
@@ -184,7 +184,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_replace($this->items, ...$this->iterableToArray($sets)));
         }
-    
+
         /**
          * Merges the values of multiple iterables into a single Collection recursively
          *
@@ -194,7 +194,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_merge_recursive($this->items, ...$this->iterableToArray($sets)));
         }
-    
+
         /**
          * Applies a callback to each item
          *
@@ -208,7 +208,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_map($callback, \array_keys($this->items), \array_values($this->items)));
         }
-    
+
         /**
          * Pad Collection to the specified length with a value
          *
@@ -218,7 +218,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_pad($this->items, $size, $value));
         }
-    
+
         /**
          * Find highest value
          *
@@ -230,10 +230,10 @@ namespace CPB\Utilities\Collections
             {
                 return null;
             }
-    
+
             return \max($this->items);
         }
-    
+
         /**
          * Find lowest value
          *
@@ -245,15 +245,15 @@ namespace CPB\Utilities\Collections
             {
                 return null;
             }
-            
+
             return \min($this->items);
         }
-        
+
         public function minFromCallback(callable $callback)
         {
             $v = null;
             $i = null;
-    
+
             foreach($this->items as $item)
             {
                 if(($r = $callback($item)) <= $v || $v === null)
@@ -262,15 +262,15 @@ namespace CPB\Utilities\Collections
                     $i = $item;
                 }
             }
-            
+
             return $i;
         }
-        
+
         public function maxFromCallback(callable $callback)
         {
             $v = null;
             $i = null;
-    
+
             foreach($this->items as $item)
             {
                 if(($r = $callback($item)) >= $v || $v === null)
@@ -279,10 +279,10 @@ namespace CPB\Utilities\Collections
                     $i = $item;
                 }
             }
-            
+
             return $i;
         }
-    
+
         /**
          * Sums all values
          *
@@ -292,7 +292,7 @@ namespace CPB\Utilities\Collections
         {
             return array_sum($this->items);
         }
-    
+
         /**
          * Searches the Collection for a given value and
          * returns the first corresponding key if successful
@@ -302,12 +302,12 @@ namespace CPB\Utilities\Collections
         public function search($needle, bool $strict = null): ?int
         {
             $result = array_search($needle, $this->items, $strict);
-        
+
             return $result === false
                 ? null
                 : $result;
         }
-    
+
         /**
          * Applies a callback to each item
          *
@@ -317,7 +317,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_walk($this->items, $callback));
         }
-    
+
         /**
          * Filters through the items
          *
@@ -338,10 +338,10 @@ namespace CPB\Utilities\Collections
                 : [
                     $this->items,
                 ];
-        
+
             return static::from(array_filter(...$args));
         }
-    
+
         /**
          * Filters through the keys of items
          *
@@ -353,7 +353,7 @@ namespace CPB\Utilities\Collections
         {
             return static::filter($callback, \ARRAY_FILTER_USE_KEY);
         }
-    
+
         /**
          * Filters through the items
          *
@@ -370,13 +370,13 @@ namespace CPB\Utilities\Collections
                     $args = $k === null
                         ? [ $v ]
                         : [ $v, $k ];
-        
+
                     return !$callback(...$args);
                 },
                 $option
             ));
         }
-    
+
         /**
          * Filters through the items, returning both filtered
          * and removed Collections
@@ -385,7 +385,7 @@ namespace CPB\Utilities\Collections
         public function split(callable $callback, int $option = 0): array
         {
             $res = [ [], [] ];
-            
+
             foreach($this->items as $key => $value)
             {
                 switch($option)
@@ -393,27 +393,27 @@ namespace CPB\Utilities\Collections
                     case \ARRAY_FILTER_USE_BOTH:
                         $args = [ $key, $value ];
                         break;
-    
+
                     case \ARRAY_FILTER_USE_KEY:
                         $args = [ $key ];
                         break;
-                        
+
                     default:
                         $args = [ $value ];
                         break;
                 }
-                
+
                 $result = $callback(...$args);
-                
+
                 $res[(int)!$result][$key] = $value;
             }
-            
+
             return [
                 static::from($res[0]),
                 static::from($res[1]),
             ];
         }
-    
+
         /**
          * Extract a slice of the array
          *
@@ -423,7 +423,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_slice($this->items, $start, $length, true));
         }
-    
+
         /**
          * Remove a portion of the array and replace it with
          * something else
@@ -438,7 +438,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_splice($this->items, $start, $length, $replacement));
         }
-    
+
         /**
          * Computes the difference of iterables
          *
@@ -448,7 +448,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_diff($this->items, ...$this->iterableToArray($sets)));
         }
-    
+
         /**
          * Computes the difference of iterables with
          * additional index check
@@ -459,7 +459,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_diff_assoc($this->items, ...$this->iterableToArray($sets)));
         }
-    
+
         /**
          * Computes the difference of iterables using
          * keys for comparison
@@ -470,7 +470,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_diff_key($this->items, ...$this->iterableToArray($sets)));
         }
-    
+
         /**
          * Computes the difference of iterables by using a callback function for data comparison
          *
@@ -480,7 +480,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_udiff($this->items, ...$this->iterableToArray($sets), ...[$callback]));
         }
-    
+
         /**
          * Computes the difference of iterables with
          * additional index check which is performed
@@ -492,7 +492,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_diff_uassoc($this->items, ...$this->iterableToArray($sets), ...[$callback]));
         }
-    
+
         /**
          * Computes the difference of iterables using a
          * callback function on the keys for comparison
@@ -503,7 +503,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_intersect_ukey($this->items, ...$this->iterableToArray($sets), ...[$callback]));
         }
-    
+
         /**
          * Computes the difference of iterables
          *
@@ -513,7 +513,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_intersect($this->items, ...$this->iterableToArray($sets)));
         }
-    
+
         /**
          * Computes the difference of iterables, compares data by a callback function
          *
@@ -523,7 +523,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_uintersect($this->items, ...$this->iterableToArray($sets), ...[ $callback ]));
         }
-    
+
         /**
          * Computes the intersection of iterables with
          * additional index check
@@ -534,7 +534,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_intersect_assoc($this->items, ...$this->iterableToArray($sets)));
         }
-    
+
         /**
          * Computes the intersection of iterables using
          * keys for comparison
@@ -545,7 +545,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_intersect_key($this->items, ...$this->iterableToArray($sets)));
         }
-    
+
         /**
          * Computes the intersection of iterables with
          * additional index check, compares indexes by
@@ -557,7 +557,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_intersect_uassoc($this->items, ...$this->iterableToArray($sets), ...[$callback]));
         }
-    
+
         /**
          * Computes the intersection of iterables using a
          * callback function on the keys for comparison
@@ -568,7 +568,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_intersect_ukey($this->items, ...$this->iterableToArray($sets), ...[$callback]));
         }
-    
+
         /**
          * Applies callback to each item which yields a key => value pair
          *
@@ -581,11 +581,11 @@ namespace CPB\Utilities\Collections
         public function each(callable $callback): CollectionInterface
         {
             $collection = [];
-    
+
             foreach($this->items as $key => $value)
             {
                 $result = $callback($key, $value);
-        
+
                 // TODO(Chris Kruining)
                 // Implement more methods of
                 // transferring key => value pairs
@@ -599,26 +599,26 @@ namespace CPB\Utilities\Collections
                                 {
                                     $collection[$key] = $value;
                                 }
-                        
+
                                 break 2;
                         }
-            
+
                     case 'array':
                         foreach($result as $key => $value)
                         {
                             $collection[$key] = $value;
                         }
-                
+
                         break;
-            
+
                     default:
                         break;
                 }
             }
-    
+
             return static::from($collection);
         }
-    
+
         /**
          * Sort items
          *
@@ -629,7 +629,7 @@ namespace CPB\Utilities\Collections
         {
             return $this->sortCall('sort', $flags);
         }
-    
+
         /**
          * Sort items in reverse
          *
@@ -640,7 +640,7 @@ namespace CPB\Utilities\Collections
         {
             return $this->sortCall('rsort', $flags);
         }
-    
+
         /**
          * Sorts items and maintain index association
          *
@@ -651,7 +651,7 @@ namespace CPB\Utilities\Collections
         {
             return $this->sortCall('asort', $flags);
         }
-    
+
         /**
          * Sort items in reverse and maintain index association
          *
@@ -662,7 +662,7 @@ namespace CPB\Utilities\Collections
         {
             return $this->sortCall('arsort', $flags);
         }
-    
+
         /**
          * Sort items by key
          *
@@ -673,7 +673,7 @@ namespace CPB\Utilities\Collections
         {
             return $this->sortCall('ksort', $flags);
         }
-    
+
         /**
          * Sort items by key in reverse
          *
@@ -684,7 +684,7 @@ namespace CPB\Utilities\Collections
         {
             return $this->sortCall('krsort', $flags);
         }
-    
+
         /**
          * Sort items by values using a user-defined comparison function
          *
@@ -695,7 +695,7 @@ namespace CPB\Utilities\Collections
         {
             return $this->sortCall('usort', $callback);
         }
-    
+
         /**
          * Sort items with a user-defined comparison function and maintain index association
          *
@@ -706,7 +706,7 @@ namespace CPB\Utilities\Collections
         {
             return $this->sortCall('uasort', $callback);
         }
-    
+
         /**
          * Sort items by keys using a user-defined comparison function
          *
@@ -717,7 +717,7 @@ namespace CPB\Utilities\Collections
         {
             return $this->sortCall('uksort', $callback);
         }
-    
+
         /**
          * Topologically sort items
          */
@@ -725,11 +725,11 @@ namespace CPB\Utilities\Collections
         {
             $keys = array_fill_keys(array_keys($this->items), 0);
             $values = $this->map(function($k, $v) use($edgeKey){ return $v[$edgeKey]; });
-        
+
             foreach($values as $value)
             {
                 $edges = $value ?? [];
-            
+
                 foreach($edges as $edge)
                 {
                     if(key_exists($edge, $keys))
@@ -738,20 +738,20 @@ namespace CPB\Utilities\Collections
                     }
                 }
             }
-        
+
             asort($keys);
             $keys = array_reverse($keys);
-        
+
             foreach($keys as $key => &$value)
             {
                 $value = $this->items[$key];
             }
-        
+
             $this->items = $keys;
-        
+
             return $this;
         }
-    
+
         /**
          * Returns a power set of all the values
          *
@@ -764,12 +764,12 @@ namespace CPB\Utilities\Collections
             $members = 2**$count;
             $values = \array_values($this->items);
             $return = [];
-    
+
             for($i = 0; $i < $members; $i++)
             {
                 $b = sprintf("%0" . $count . "b", $i);
                 $out = [];
-        
+
                 for($j = 0; $j < $count; $j++)
                 {
                     if($b{$j} == '1')
@@ -777,16 +777,16 @@ namespace CPB\Utilities\Collections
                         $out[] = $values[$j];
                     }
                 }
-        
+
                 if(count($out) >= $minLength)
                 {
                     $return[] = $out;
                 }
             }
-    
+
             return static::from($return);
         }
-    
+
         /**
          * Returns if the collection has any keys that are a string
          */
@@ -794,7 +794,7 @@ namespace CPB\Utilities\Collections
         {
             return $this->some(function($k, $v) { return is_string($k); });
         }
-    
+
         /**
          * Get item by index
          *
@@ -809,12 +809,12 @@ namespace CPB\Utilities\Collections
                 ? \array_values($this->items)
                 : \array_keys($this->items);
             $key = Arithmetic::Modulus($i, count($values));
-        
+
             return \key_exists($key, $values)
                 ? $values[$key]
                 : self::UNDEFINED;
         }
-    
+
         /**
          * Returns the first item
          */
@@ -822,7 +822,7 @@ namespace CPB\Utilities\Collections
         {
             return $this->byIndex(0, $key);
         }
-    
+
         /**
          * Returns the last item
          */
@@ -830,7 +830,7 @@ namespace CPB\Utilities\Collections
         {
             return $this->byIndex(-1, $key);
         }
-    
+
         /**
          * Split items into chunks
          *
@@ -840,7 +840,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_chunk($this->items, $size, $preserveKeys));
         }
-    
+
         /**
          * Combine another iterable with items
          *
@@ -856,7 +856,7 @@ namespace CPB\Utilities\Collections
                 : $values
             ));
         }
-    
+
         /**
          * Loops recursively over the Collection and
          * flattens the structure to a 1-dimensional
@@ -869,9 +869,9 @@ namespace CPB\Utilities\Collections
                 $key = \strlen($prefix) > 0
                     ? $prefix . $delimiter
                     : '';
-            
+
                 $key .= $i;
-            
+
                 if($item instanceof Collection)
                 {
                     yield from $item->flatten($delimiter, $key);
@@ -882,7 +882,7 @@ namespace CPB\Utilities\Collections
                 }
             }
         }
-    
+
         /**
          * Searches for a value in the items via callback
          */
@@ -900,7 +900,7 @@ namespace CPB\Utilities\Collections
                 ? null
                 : self::UNDEFINED;
         }
-    
+
         /**
          * Searches for an index in the items via callback
          */
@@ -913,10 +913,10 @@ namespace CPB\Utilities\Collections
                     return $i;
                 }
             }
-            
+
             return null;
         }
-    
+
         /**
          * Executes check on every item
          *
@@ -935,10 +935,10 @@ namespace CPB\Utilities\Collections
                     return false;
                 }
             }
-        
+
             return true;
         }
-    
+
         /**
          * Executes check on every item
          *
@@ -954,10 +954,10 @@ namespace CPB\Utilities\Collections
                     return true;
                 }
             }
-        
+
             return false;
         }
-    
+
         /**
          * Checks if Collection contains the given value
          */
@@ -965,52 +965,52 @@ namespace CPB\Utilities\Collections
         {
             return array_search($value, $this->items) !== false;
         }
-    
+
         /**
          * Checks if each passed key exists in the Collection
          */
         public function has($key, string ...$keys): bool
         {
             $keys = \array_merge([ $key ], $keys);
-        
+
             return count(array_diff($keys, array_keys($this->items))) === 0;
         }
-    
+
         /**
          * Checks if any passed key exists in the Collection
          */
         public function hasAny($key, string ...$keys): bool
         {
             \array_unshift($keys, $key);
-        
+
             return count(array_diff($keys, array_keys($this->items))) < count($keys);
         }
-    
+
         /**
          * returns the values of the provided keys
          */
         public function get($key, string ...$keys): Resolvable
         {
             $keys = \array_merge([ $key ], $keys);
-            
+
             if(!$this->has(...$keys))
             {
                 throw new NotFoundException;
             }
-        
+
             return static::from(\array_intersect_key($this->items, \array_flip($keys)));
         }
-    
+
         /**
          * sets the value of the given key
          */
         public function set(string $key, $value = self::UNDEFINED): Resolvable
         {
             $this[$key] = $value;
-            
+
             return $this;
         }
-    
+
         /**
          * Sanitize iterable to array
          */
@@ -1020,30 +1020,33 @@ namespace CPB\Utilities\Collections
                 ? iterator_to_array($items, true)
                 : $items;
         }
-    
+
         /**
          * Create Collection from iterable
          */
-        public static function from(iterable $items): CollectionInterface
+        public static function from(iterable $items, bool $lazy = false): CollectionInterface
         {
             $inst = new static;
             $items = static::sanitize($items);
-    
-            // TODO(Chris Kruining)
-            // This map makes this method
-            // very expensive, maybe split
-            // this of into another method
-            $items = \array_map(function($v) {
-                return \is_array($v)
-                    ? static::from($v)
-                    : $v;
-            }, $items);
-        
+
+            if($lazy === false)
+            {
+                // TODO(Chris Kruining)
+                // This map makes this method
+                // very expensive, maybe split
+                // this of into another method
+                $items = \array_map(function($v) {
+                    return \is_array($v)
+                        ? static::from($v)
+                        : $v;
+                }, $items);
+            }
+
             $inst->items = $items;
-        
+
             return $inst;
         }
-    
+
         /**
          * Create Collection from JSON string
          */
@@ -1051,22 +1054,22 @@ namespace CPB\Utilities\Collections
         {
             return static::from(\json_decode($items, true) ?? []);
         }
-    
+
         /**
          * Returns the items
          */
         public function toArray() : array
         {
             $self = clone $this;
-        
+
             \array_walk($self->items, function(&$i){ $i = $i instanceof CollectionInterface ? $i->toArray() : $i; });
-        
+
             return iterator_to_array(
                 $self,
                 true
             );
         }
-    
+
         /**
          * Returns object with the items as properties
          */
@@ -1074,7 +1077,7 @@ namespace CPB\Utilities\Collections
         {
             return (object)$this->toArray();
         }
-    
+
         /**
          * Returns string of items joined by delimiter
          *
@@ -1083,17 +1086,17 @@ namespace CPB\Utilities\Collections
         public function toString(string $delimiter = '', string $format = null): string
         {
             $parts = $this->toArray();
-            
+
             if($format !== null)
             {
                 $parts = \array_map(function($p) use ($format){
                     return \sprintf($format, $p);
                 }, $parts);
             }
-    
+
             return join($delimiter, $parts);
         }
-    
+
         /**
          * Create Collection from string exploded by delimiter
          */
@@ -1101,7 +1104,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(explode($delimiter, $subject));
         }
-    
+
         /**
          * Return size of Collection
          */
@@ -1109,7 +1112,7 @@ namespace CPB\Utilities\Collections
         {
             return count($this->items);
         }
-    
+
         /**
          * Return a Generator
          */
@@ -1119,10 +1122,10 @@ namespace CPB\Utilities\Collections
             {
                 yield $key => $value;
             }
-            
+
             unset($value);
         }
-    
+
         /**
          * Returns if the provided offset exists
          */
@@ -1130,7 +1133,7 @@ namespace CPB\Utilities\Collections
         {
             return key_exists($offset, $this->items);
         }
-    
+
         /**
          * Returns the value by offset
          */
@@ -1140,17 +1143,17 @@ namespace CPB\Utilities\Collections
             {
                 return $this->items[$offset];
             }
-        
+
             switch(\gettype($offset))
             {
                 case 'string':
                     $queries = \array_flip(\preg_split('/\s*,\s*/', $offset));
-                    
+
                     foreach($queries as $query => &$container)
                     {
                         $parts = \explode('.', $query);
                         $container = $this->items;
-    
+
                         while(($key = \array_shift($parts)) !== null)
                         {
                             if(
@@ -1158,32 +1161,32 @@ namespace CPB\Utilities\Collections
                                 ($container instanceof CollectionInterface && !$container->has($key))
                             ) {
                                 $container = self::UNDEFINED;
-            
+
                                 continue 2;
                             }
-        
+
                             $container = $container[$key];
                         }
                     }
-                    
+
                     unset($container);
-                    
+
                     $queries = static::from($queries);
-                    
+
                     return $queries->count() === 1
                         ? $queries->first()
                         : $queries;
-                    
+
                 case 'integer':
                     return $this->byIndex($offset);
-            
+
                 default:
                     throw new \Exception(
                         'Unsupported offset type'
                     );
             }
         }
-    
+
         /**
          * Sets value by offset
          */
@@ -1194,7 +1197,7 @@ namespace CPB\Utilities\Collections
                 case 'string':
                     $parts = \explode('.', $offset);
                     $container = &$this->items;
-    
+
                     while(($key = \array_shift($parts)) !== null && \count($parts) > 0)
                     {
                         if(
@@ -1203,26 +1206,26 @@ namespace CPB\Utilities\Collections
                         ) {
                             $container[$key] = new static;
                         }
-    
+
                         $container = &$container[$key];
                     }
-                    
+
                     $container[$key] = $value;
                     break;
-                    
+
                 case 'integer':
                     $this->items[$offset] = $value;
                     break;
-            
+
                 case 'NULL':
                     $this->items[] = $value;
                     break;
-            
+
                 default:
                     throw new \InvalidArgumentException;
             }
         }
-    
+
         /**
          * Removes value by offset
          */
@@ -1232,10 +1235,10 @@ namespace CPB\Utilities\Collections
             {
                 return;
             }
-            
+
             unset($this->items[$offset]);
         }
-    
+
         /**
          * Serializes Collection to JSON string
          */
@@ -1243,17 +1246,17 @@ namespace CPB\Utilities\Collections
         {
             return \serialize($this->items);
         }
-    
+
         /**
          * Create Collection from JSON string
          */
         public function unserialize($serialized): Collection
         {
             $this->items = \unserialize($serialized);
-            
+
             return $this;
         }
-    
+
         /**
          * Prepares Collection to be JSON encoded
          */
@@ -1261,13 +1264,13 @@ namespace CPB\Utilities\Collections
         {
             return $this->items ?? [];
         }
-    
+
         public function resolve(string $key)
         {
             return $this[$key];
         }
-    
-    
+
+
         private function iterableToArray(array $iterables): array
         {
             return array_map(function($i) {
@@ -1275,20 +1278,20 @@ namespace CPB\Utilities\Collections
                 {
                     return $i->items;
                 }
-                
+
                 return $i instanceof \Traversable
                     ? iterator_to_array($i)
                     : $i;
             }, $iterables);
         }
-    
+
         private function sortCall(string $function, ...$arguments): CollectionInterface
         {
             $function($this->items, ...$arguments);
-    
+
             return $this;
         }
-    
+
         private function chainOrExecute(callable $function, ...$args)
         {
             throw new Deprecated;

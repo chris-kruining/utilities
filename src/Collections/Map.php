@@ -4,7 +4,7 @@ namespace CPB\Utilities\Collections
 {
     use CPB\Utilities\Common\CollectionInterface;
     use CPB\Utilities\Common\Regex;
-    
+
     class Map extends Collection
     {
         /**
@@ -17,31 +17,31 @@ namespace CPB\Utilities\Collections
         public function append(iterable $data): CollectionInterface
         {
             $keys = $this->keys();
-        
+
             foreach($data as $key => $value)
             {
                 $count = $keys->filter(
                     function($v) use($key){
                         return count(Regex::match(
                             \sprintf(
-                                '/^%s(\(\d\))?/',
+                                '/^%s(__\(\d\))?$/',
                                 \str_replace('/', '\\/', \preg_quote($key))
                             ),
                             $v
                         )) > 0; }
                 )->count();
-            
+
                 if($count > 0)
                 {
                     $key .= '__(' . $count . ')';
                 }
-            
+
                 $this[$key] = $value;
             }
-        
+
             return $this;
         }
-    
+
         /**
          * Sums all values by key
          */
@@ -49,7 +49,7 @@ namespace CPB\Utilities\Collections
         {
             return $this->columnAction('array_sum', $key ?? '');
         }
-    
+
         /**
          * Averages all values by key
          */
@@ -57,7 +57,7 @@ namespace CPB\Utilities\Collections
         {
             return $this->columnAction(function($arr){ return array_sum($arr) / count($arr); }, $key ?? '');
         }
-    
+
         /**
          * Returns highest value by key
          *
@@ -66,7 +66,7 @@ namespace CPB\Utilities\Collections
         public function max(string $key = null, float $limit = null)
         {
             $result = $this->columnAction('max', $key ?? '');
-        
+
             if($limit !== null)
             {
                 if($result instanceof static)
@@ -78,10 +78,10 @@ namespace CPB\Utilities\Collections
                     $result = min($result, $limit);
                 }
             }
-        
+
             return $result;
         }
-    
+
         /**
          * Returns lowest value by key
          *
@@ -90,7 +90,7 @@ namespace CPB\Utilities\Collections
         public function min(string $key = null, float $limit = null)
         {
             $result = $this->columnAction('min', $key ?? '');
-        
+
             if($limit !== null)
             {
                 if($result instanceof static)
@@ -102,10 +102,10 @@ namespace CPB\Utilities\Collections
                     $result = max($result, $limit);
                 }
             }
-        
+
             return $result;
         }
-    
+
         /**
          * Returns value by key with lower and upper bound
          */
@@ -113,7 +113,7 @@ namespace CPB\Utilities\Collections
         {
             $result = $this->min($key, $lower);
             $map = function($k, $v) use($upper){ return min($v, $upper); };
-        
+
             if($result instanceof static)
             {
                 return $result->map($map);
@@ -123,24 +123,24 @@ namespace CPB\Utilities\Collections
                 return $map(null, $result);
             }
         }
-    
+
         private function columnAction(callable $method, string $key, ...$args)
         {
             $items = $key === ''
                 ? $this->items
                 : $this->select($key);
-        
+
             switch(true)
             {
                 case $items instanceof static:
                     $items = $items->toArray();
                     break;
-            
+
                 case !\is_array($items):
                     $items = [ $items ];
                     break;
             }
-        
+
             return $method($items, ...$args);
         }
     }
