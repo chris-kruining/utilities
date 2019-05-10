@@ -3,6 +3,7 @@
 namespace CPB\Utilities\Collections
 {
     use Core\Utility\Exception\Deprecated;
+    use CPB\Utilities\Collections\Exception\KeyMissing;
     use CPB\Utilities\Common\CollectionInterface;
     use CPB\Utilities\Common\NotFoundException;
     use CPB\Utilities\Contracts\Resolvable;
@@ -1268,6 +1269,16 @@ namespace CPB\Utilities\Collections
         public function resolve(string $key)
         {
             return $this[$key];
+        }
+
+        public function enforceKeys(iterable $keys): void
+        {
+            if($this->has(...$keys) === false)
+            {
+                $ownKeys = $this->keys();
+
+                throw new KeyMissing($ownKeys->diff($keys), $ownKeys);
+            }
         }
 
 
