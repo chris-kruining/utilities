@@ -11,9 +11,9 @@ namespace CPB\Utilities\Common
             return $matches;
         }
 
-        public static function matchAll(string $pattern, string $subject) : array
+        public static function matchAll(string $pattern, string $subject, $flag = PREG_PATTERN_ORDER) : array
         {
-            preg_match_all($pattern, $subject, $matches);
+            preg_match_all($pattern, $subject, $matches, $flag);
 
             return $matches;
         }
@@ -39,7 +39,7 @@ namespace CPB\Utilities\Common
         {
             return preg_split($pattern, $subject, $limit, $flags);
         }
-        
+
         public static function replace(
             $pattern,
             string $subject,
@@ -51,14 +51,14 @@ namespace CPB\Utilities\Common
             {
                 case 'array':
                     return \preg_replace_callback_array($pattern, $subject, $limit, $count);
-                    
+
                 case 'string':
                     $function = \is_string($replacement)
                         ? 'preg_replace'
                         : 'preg_replace_callback';
-                    
+
                     return $function($pattern, $replacement, $subject, $limit, $count);
-                    
+
                 default:
                     throw new \InvalidArgumentException(
                         'Pattern provided is of a unsupported type'
