@@ -1132,7 +1132,40 @@ namespace CPB\Utilities\Collections
          */
         public function offsetExists($offset): bool
         {
-            return key_exists($offset, $this->items);
+            if((\is_string($offset) || \is_numeric($offset)) && \key_exists($offset, $this->items))
+            {
+                return true;
+            }
+
+
+            switch(\gettype($offset))
+            {
+                case 'string':
+                    $parts = \explode('.', $offset);
+                    $container = $this->items;
+
+                    while(($key = \array_shift($parts)) !== null)
+                    {
+                        if(
+                            (\is_array($container) && !\key_exists($key, $container)) ||
+                            ($container instanceof CollectionInterface && !$container->has($key))
+                        ) {
+                            return false;
+                        }
+
+                        $container = $container[$key];
+                    }
+
+                    return true;
+
+                case 'integer':
+                    return key_exists($offset, $this->items);
+
+                default:
+                    throw new \Exception(
+                        'Unsupported offset type'
+                    );
+            }
         }
 
         /**
