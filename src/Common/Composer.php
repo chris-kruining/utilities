@@ -31,6 +31,19 @@ namespace CPB\Utilities\Common
             return $result;
         }
 
+        public static function install(string $path = null): string
+        {
+            return static::execute([
+                'install',
+                '--no-dev' => true,
+                '--no-progress' => true,
+                '--no-plugins' => true,
+                '--no-suggest' => true,
+                '--no-interaction' => true,
+                '--working-dir' => $path ?? getcwd(),
+            ]);
+        }
+
         public static function outdated(): iterable
         {
             $res = static::execute([
