@@ -17,7 +17,7 @@
         "php": ">=7.1.0",
         "psr/container": "1.0.0",
         "nesbot/carbon": "2.21.0",
-        "composer/composer": "1.8.6"
+        "composer/composer": "1.9.0"
     },
     "require-dev": {
         "phpunit/phpunit": "8.2.5",
