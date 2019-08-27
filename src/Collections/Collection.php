@@ -91,9 +91,7 @@ namespace CPB\Utilities\Collections
          */
         public function push($item, ...$items): CollectionInterface
         {
-            \array_unshift($items, $item);
-
-            \array_push($this->items, ...$items);
+            \array_push($this->items, $item, ...$items);
 
             return $this;
         }
