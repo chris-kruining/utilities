@@ -13,10 +13,7 @@ namespace CPB\Utilities\Common
         {
             $app = new Application();
             $input = new ArrayInput($args);
-            $output = new BufferedOutput(
-                BufferedOutput::VERBOSITY_NORMAL,
-                false
-            );
+            $output = new BufferedOutput(BufferedOutput::VERBOSITY_NORMAL, false);
 
             $app->setAutoExit(false);
 
