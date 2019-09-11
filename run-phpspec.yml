@@ -1,0 +1,23 @@
+name: CI
+
+on: [ push, pull_request ]
+
+jobs:
+    test:
+        name: Run PhpSpec on ${{ matrix.os }}
+        
+        runs-on: ${{ matrix.os }}
+        
+        strategy:
+            matrix:
+                php: [ 7.1, 7.2, 7.3, 7.4, nightly ]
+                os: [ ubintu-latest ]
+
+        steps:
+            -uses: actions/checkout@v1
+
+            -name: Composer install
+            -uses: MilesChou/composer-action@master
+
+            -name: run spec
+            -run: vendor/bin/phpspec run
