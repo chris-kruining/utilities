@@ -59,13 +59,6 @@ join('|', array_map(function($k, $v){ return $k . '::' . $v; }, array_keys($filt
 
 As you can see the collection version maintains readability whereas the vannilla version loses in my opinion it's charm because to achieve a single goal you need to spread it out over multiple variables
 
-# The future
-
-What I hope to accomplish is querying over a collection
-```php
-$collction['max($ID), $Name, $City where $Name startswith "Chris" limit 3, 5']
-```
-
 # Roadmap
 
 - [X] Implement basic features to `Collection`
@@ -74,6 +67,4 @@ $collction['max($ID), $Name, $City where $Name startswith "Chris" limit 3, 5']
 - [X] Split lazy mode from `Collection` into `LazyCollection` and implement PHP's array functions as generators
 - [ ] Finish inheritance structure
 - [ ] Implement `LazyCollection`
-- [ ] Look into the possibility of turning the lib into an PHP extension with PHP-CPP (simply to improve performance)
-- [ ] Write an SQL syntax parser to allow querying over `Queryable`
 - [X] (Better) implement the `Queryable` interface in a new class so the `Collection` doesn't become bloated 
