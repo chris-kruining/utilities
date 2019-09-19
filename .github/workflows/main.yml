@@ -1,0 +1,20 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: composer-php
+        uses: nick-zh/composer@v0.2.0
+      
+      - name: PHP Runner
+        uses: franzliedke/gh-action-php@0.2.0
+        
+      - name: PHP Lint
+        uses: michaelw90/PHP-Lint@1.0.0
+
+
