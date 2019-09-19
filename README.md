@@ -44,7 +44,7 @@ CPB\Utilities\Collections\Collection::from([ 'these', '', '', 'are', null, 'some
 
 would yield
 ```php
-'0_these|1_are|2_some|3_test|4_values'
+'0::these|1::are|2::some|3::test|4::values'
 ```
 
 which is the same as
