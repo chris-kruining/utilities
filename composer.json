@@ -1,6 +1,6 @@
 {
     "name": "chris-kruining/utilities",
-    "type": "Utilities",
+    "type": "utilities",
     "description": "Utilities for PHP 7.1^",
     "keywords": ["Utilities","PHP"],
     "homepage": "https://github.com/chris-kruining/utilities",
@@ -17,7 +17,7 @@
         "php": ">=7.1.0",
         "psr/container": "1.0.0",
         "nesbot/carbon": "2.25.3",
-        "composer/composer": "1.9.0"
+        "composer/composer": "1.9.1"
     },
     "require-dev": {
         "phpunit/phpunit": "8.4.0",
