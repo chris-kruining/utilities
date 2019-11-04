@@ -1,6 +1,6 @@
 {
     "name": "chris-kruining/utilities",
-    "type": "Utilities",
+    "type": "utilities",
     "description": "Utilities for PHP 7.1^",
     "keywords": ["Utilities","PHP"],
     "homepage": "https://github.com/chris-kruining/utilities",
