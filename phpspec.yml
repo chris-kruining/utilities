@@ -1,7 +1,7 @@
 formatter.name: pretty
-composer_suite_detection: true
-#bootstrap: bootstrap.php
 suites:
-  CPB-Utilities:
-    namespace: \CPB\Utilities
-    psr4_prefix: \CPB\Utilities
+  utilities:
+    namespace: CPB\Utilities
+    psr4_prefix: CPB\Utilities
+    src_path: "%paths.config%/src"
+    spec_path: "%paths.config%"
