@@ -4,37 +4,37 @@ namespace CPB\Utilities\Collections
 {
     use Core\Utility\Exception\NotImplemented;
     use CPB\Utilities\Common\CollectionInterface;
-    use CPB\Utilities\Common\NotFoundException;
+    use CPB\Utilities\Common\Exceptions\NotFound;
     use CPB\Utilities\Common\Regex;
     use CPB\Utilities\Contracts\Queryable;
     use CPB\Utilities\Contracts\Resolvable;
     use CPB\Utilities\Enums\JoinStrategy;
     use CPB\Utilities\Enums\SortDirection;
     use CPB\Utilities\Parser\Expression;
-    
+
     class Table extends Map implements Queryable
     {
         protected
             $type
         ;
-        
+
         public function __construct(string $type = null)
         {
             $this->type = $type;
         }
-        
+
         public static function from(iterable $items, string $type = null): CollectionInterface
         {
             $inst = parent::from($items);
             $inst->type = $type;
-            
+
             return $inst;
         }
-    
+
         public function has($key, string ...$keys): bool
         {
             \array_unshift($keys, $key);
-            
+
             return $this->some(function($i, $row) use($keys){
                 if($row instanceof Resolvable)
                 {
@@ -43,43 +43,43 @@ namespace CPB\Utilities\Collections
                 elseif($row instanceof \Traversable)
                 {
                     $exists = true;
-    
+
                     foreach($keys as $key)
                     {
                         $exists &= isset($row[$key]);
                     }
-                    
+
                     return (bool)$exists;
                 }
                 elseif(\is_object($row))
                 {
                     $exists = true;
-                    
+
                     foreach($keys as $key)
                     {
                         $exists &= \property_exists($row, $key);
                     }
-                    
+
                     return (bool)$exists;
                 }
                 elseif(\is_array($row))
                 {
                     return count(array_diff($keys, array_keys($row))) === 0;
                 }
-                
+
                 return false;
             });
         }
-        
+
         public function get($key, string ...$keys): Resolvable
         {
             \array_unshift($keys, $key);
-            
+
             if(!$this->has(...$keys))
             {
-                throw new NotFoundException;
+                throw new NotFound;
             }
-            
+
             return $this->map(function($i, $row) use($keys){
                 if($row instanceof Resolvable)
                 {
@@ -88,43 +88,43 @@ namespace CPB\Utilities\Collections
                 elseif(\is_object($row))
                 {
                     $res = [];
-            
+
                     foreach($keys as $key)
                     {
                         $res[$key] = $row->$key;
                     }
-    
+
                     return $res;
                 }
                 elseif(\is_array($row))
                 {
                     $res = [];
-    
+
                     foreach($keys as $key)
                     {
                         $res[$key] = $row[$key];
                     }
-    
+
                     return $res;
                 }
             });
         }
-    
+
         /**
          * Queries over the items
          */
         public function select(string $query)
         {
             $result = Expression::init($query)($this);
-            
+
             if(!$result instanceof CollectionInterface)
             {
                 $result = static::from([ [ $query => $result] ]);
             }
-            
+
             return $result;
         }
-    
+
         /**
          * Inserts value into the Items based on provided query
          *
@@ -147,21 +147,21 @@ namespace CPB\Utilities\Collections
                         : \gettype($value)
                 ));
             }
-            
+
             $this->items[] = $value;
-    
+
             $newValue = $this->count() - 1;
-        
+
             return $this;
         }
-        
+
         public function delete(): Queryable
         {
             $this->items = [];
-            
+
             return $this;
         }
-    
+
         /**
          * Filters items
          *
@@ -171,7 +171,7 @@ namespace CPB\Utilities\Collections
         public function where(string $query, iterable $variables = []): Queryable
         {
             $query = Expression::init(Regex::replace('/:([A-Za-z_][A-Za-z0-9_]*)/', $query, '{{$1}}'));
-    
+
             return $this->filter(function($row) use($query, $variables){
                 if($row instanceof Resolvable)
                 {
@@ -181,11 +181,11 @@ namespace CPB\Utilities\Collections
                 {
                     return $query(Collection::from($row), $variables);
                 }
-                
+
                 return false;
             })->values();
         }
-    
+
         /**
          * Executes a mysql'esc JOIN on the Collection
          *
@@ -199,7 +199,7 @@ namespace CPB\Utilities\Collections
         ): Queryable
         {
             throw new NotImplemented;
-    
+
             $iterable = static::from($iterable)->map(function($k, $v){
                 return array_combine(
                     array_map(
@@ -212,11 +212,11 @@ namespace CPB\Utilities\Collections
                 );
             })->toArray();
             $foreignKey = 'right' . $foreignKey;
-        
+
             $leftIndex = array_map(function($row) use($localKey){ return $row[$localKey]; }, $this->items);
             $rightIndex = array_map(function($row) use($foreignKey){ return $row[$foreignKey]; }, $iterable);
             $matchedIndexes = array_map(function($v) use ($rightIndex){ return array_search($v, $rightIndex); }, array_intersect($leftIndex, $rightIndex));
-        
+
             switch($strategy ?? JoinStrategy::INNER)
             {
                 // both collections need to have a matching value
@@ -227,35 +227,35 @@ namespace CPB\Utilities\Collections
                             $iterable[$v]
                         );
                     }, array_keys($matchedIndexes), $matchedIndexes);
-                
+
                     break;
                 // all rows from both collections and intersect matching rows
                 case Queryable::JOIN_OUTER:
                     $result = [];
                     $usedIndexes = [];
-                
+
                     foreach($this->items as $i => $row)
                     {
                         if(key_exists($i, $matchedIndexes))
                         {
                             $usedIndexes[] = $matchedIndexes[$i];
-                        
+
                             $right = $iterable[$matchedIndexes[$i]];
                         }
-                    
+
                         $result[] = array_merge(
                             $row,
                             $right ?? []
                         );
                     }
-                
+
                     $result = array_merge($result, array_filter($iterable, function($i) use($usedIndexes){ return !in_array($i, $usedIndexes); }, ARRAY_FILTER_USE_KEY));
-                
+
                     break;
                 // all rows from left collection and intersect matching rows
                 case Queryable::JOIN_LEFT:
                     $result = [];
-                
+
                     foreach($this->items as $i => $row)
                     {
                         $result[] = array_merge(
@@ -263,14 +263,14 @@ namespace CPB\Utilities\Collections
                             $iterable[$matchedIndexes[$i] ?? -1] ?? []
                         );
                     }
-                
+
                     break;
                 // all rows from right collection and intersect matching rows
                 case Queryable::JOIN_RIGHT:
                     $result = [];
-                
+
                     $matchedIndexes = array_flip($matchedIndexes);
-                
+
                     foreach($iterable as $i => $row)
                     {
                         $result[] = array_merge(
@@ -278,17 +278,17 @@ namespace CPB\Utilities\Collections
                             $row
                         );
                     }
-                
+
                     break;
             }
-        
+
             return static::from($result);
         }
-        
+
         public function in(...$args)
         {
         }
-    
+
         /**
          * Return sub-selection of items
          *
@@ -298,7 +298,7 @@ namespace CPB\Utilities\Collections
         {
             return $this->slice(0, $length);
         }
-    
+
         /**
          * Return sub-selection of items
          *
@@ -308,7 +308,7 @@ namespace CPB\Utilities\Collections
         {
             return $this->slice($start, null);
         }
-    
+
         /**
          * Executes a mysql'esc UNION on Collction
          *
@@ -318,7 +318,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_merge($this->items, Collection::from($iterable)->toArray()));
         }
-    
+
         /**
          * Fetches all unique values of provided key
          */
@@ -326,7 +326,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(array_unique(array_map(function($v) use($key){ return $v[$key]; }, $this->items)));
         }
-    
+
         /**
          * Sort items by provided key and direction
          */
@@ -337,11 +337,11 @@ namespace CPB\Utilities\Collections
                 {
                     [$b, $a] = [$a, $b];
                 }
-            
+
                 return $a[$key] ?? null <=> $b[$key] ?? null;
             });
         }
-    
+
         /**
          * Prepares the groups of later queries
          *
@@ -352,24 +352,24 @@ namespace CPB\Utilities\Collections
         public function group(string $key): Queryable
         {
             $this->groupKey = $key;
-        
+
             return $this;
         }
-        
+
         public function count(string $key = null): int
         {
             if($key === null)
             {
                 return parent::count();
             }
-            
+
             // TODO(Chris Kruining)
             // Implement the usage
             // of the key argument.
-            
+
             return count($this->items);
         }
-    
+
         public function offsetGet($offset)
         {
             return \is_string($offset) && !\key_exists($offset, $this->items)
@@ -384,20 +384,20 @@ namespace CPB\Utilities\Collections
                 case 'integer':
                     $this->insert($offset, $value);
                     break;
-            
+
                 case 'NULL':
                     $this->items[] = $value;
                     break;
-            
+
                 default:
                     throw new \InvalidArgumentException;
             }
         }
-    
+
         public function resolve(string $key)
         {
             $result = $this->select($key);
-        
+
             return count($result) === 1 && $result->toArray()[0] === [ $key => $key]
                 ? new Collection
                 : $result;

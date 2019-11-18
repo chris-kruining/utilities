@@ -5,7 +5,7 @@ namespace CPB\Utilities\Collections
     use Core\Utility\Exception\Deprecated;
     use CPB\Utilities\Collections\Exception\KeyMissing;
     use CPB\Utilities\Common\CollectionInterface;
-    use CPB\Utilities\Common\NotFoundException;
+    use CPB\Utilities\Common\Exceptions\NotFound;
     use CPB\Utilities\Contracts\Resolvable;
     use CPB\Utilities\Math\Arithmetic;
 
@@ -994,7 +994,7 @@ namespace CPB\Utilities\Collections
 
             if(!$this->has(...$keys))
             {
-                throw new NotFoundException;
+                throw new NotFound;
             }
 
             return static::from(\array_intersect_key($this->items, \array_flip($keys)));

@@ -1,10 +1,10 @@
 <?php
 
-namespace CPB\Utilities\Common
+namespace CPB\Utilities\Common\Exceptions
 {
     use Psr\Container\NotFoundExceptionInterface;
 
-    class NotFoundException extends \Exception implements NotFoundExceptionInterface
+    class NotFound extends \Exception implements NotFoundExceptionInterface
     {
         public function __construct(\Throwable $previous = null)
         {

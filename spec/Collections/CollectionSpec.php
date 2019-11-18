@@ -80,7 +80,7 @@ namespace spec\CPB\Utilities\Collections
             $set->shouldContain([ 'Three' ]);
         }
 
-        public function it_can_read_items()
+        public function it_can_read_item_by_key()
         {
             $this::from([
                 'one',
