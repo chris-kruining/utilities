@@ -4,12 +4,12 @@ on: [push]
 
 jobs:
   build:
-    name: ${{ matrix.os }}-php(${{ matrix.php }})
+    name: PHP ${{ matrix.php }} (${{ matrix.os }})
 
     runs-on: ${{ matrix.os }}
 
     strategy:
-      max-parallel: 15
+      fail-fast: false
       matrix:
         php: [ 7.1, 7.2, 7.3, 7.4, nightly ]
         os: [ ubuntu-latest ]
