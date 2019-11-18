@@ -1,18 +1,18 @@
 <?php
 
-namespace spec\CPB\Utilities\Common
+namespace spec\CPB\Utilities\Collections
 {
     use CPB\Utilities\Collections\Collection;
     use PhpSpec\ObjectBehavior;
 
     class CollectionSpec extends ObjectBehavior
     {
-        public function it_is_initializable()
+        public function it_can_be_initialised()
         {
             $this->shouldHaveType(Collection::class);
         }
 
-        public function it_is_statically_initializable()
+        public function it_can_be_statically_initialised()
         {
             $this::from([])->shouldHaveType(Collection::class);
         }
