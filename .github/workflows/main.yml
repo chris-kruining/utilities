@@ -4,21 +4,28 @@ on: [push]
 
 jobs:
   build:
-    name: Run PhpSpec on ${{ matrix.os }}
+    name: ${{ matrix.os }}-php(${{ matrix.php }})
 
     runs-on: ${{ matrix.os }}
 
     strategy:
+      max-parallel: 15
       matrix:
         php: [ 7.1, 7.2, 7.3, 7.4, nightly ]
-        os: [ ubintu-latest ]
+        os: [ ubuntu-latest ]
 
     steps:
-    - uses: actions/checkout@v1
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@master
+      with:
+        php-version: ${{ matrix.php }}
+
     - uses: php-actions/composer@master
-    - name: phpspec
+
+    - name: PHP spec
       uses: php-actions/phpspec@master
       with:
         config: phpspec.yml
-
-
