@@ -8,9 +8,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - uses: phpactions/composer@master
+    - uses: php-actions/composer@master
     - name: phpspec
-      uses: phpactions/phpspec@master
+      uses: php-actions/phpspec@master
       with:
         config: phpspec.yml
 
