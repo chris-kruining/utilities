@@ -89,9 +89,9 @@ namespace CPB\Utilities\Collections
          *
          * @wraps array_push
          */
-        public function push($item, ...$items): CollectionInterface
+        public function push(...$items): CollectionInterface
         {
-            \array_push($this->items, $item, ...$items);
+            \array_push($this->items, ...$items);
 
             return $this;
         }
