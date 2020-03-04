@@ -1333,10 +1333,5 @@ namespace CPB\Utilities\Collections
 
             return $this;
         }
-
-        private function chainOrExecute(callable $function, ...$args)
-        {
-            throw new Deprecated;
-        }
     }
 }
