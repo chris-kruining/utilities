@@ -59,7 +59,7 @@ namespace CPB\Utilities\Collections
         }
 
         /**
-         * Shift an element off the beginning of the Collection
+         * Shift an element off the start of the Collection
          *
          * @wraps array_shift
          */
@@ -67,6 +67,19 @@ namespace CPB\Utilities\Collections
         {
             $inst = static::from($this->items);
             $shifted = \array_shift($inst->items);
+
+            return $inst;
+        }
+
+        /**
+         * Add arguments to the start of the Collection
+         *
+         * @wraps array_unshift
+         */
+        public function unshift(...$args): CollectionInterface
+        {
+            $inst = static::from($this->items);
+            \array_unshift($inst->items, ...$args);
 
             return $inst;
         }
