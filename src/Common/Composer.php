@@ -55,15 +55,9 @@ namespace CPB\Utilities\Common
                 PREG_SET_ORDER
             );
 
-            return Collection::from($match)
-                ->map(function($k, $match){
-                    return $match->intersectKey(Collection::from([
-                        'package',
-                        'old',
-                        'new',
-                        'description'
-                    ])->flip());
-                });
+            return Collection::from($match)->map(fn($k, $match) => $match->intersectKey(
+                Collection::from([ 'package', 'old', 'new', 'description' ])->flip()
+            ));
         }
     }
 }

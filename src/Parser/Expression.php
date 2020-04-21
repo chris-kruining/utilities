@@ -106,7 +106,7 @@ namespace CPB\Utilities\Parser
 
                 // Match for operator
                 $subQuery = strtolower(\substr($query, $i, self::$longestOperator));
-                $operator = self::$operators->find(function($v) use($subQuery){ return \strpos($subQuery, $v) === 0; });
+                $operator = self::$operators->find(fn($v) => \strpos($subQuery, $v) === 0);
 
                 if($operator !== Collection::UNDEFINED)
                 {
@@ -195,7 +195,7 @@ namespace CPB\Utilities\Parser
                 }
             }
 
-            return Collection::from($out)->map(function($k, $v){ return \trim($v); });
+            return Collection::from($out)->map(fn($k, $v) => \trim($v));
         }
         private function resolve(Collection $keys)
         {
@@ -206,9 +206,7 @@ namespace CPB\Utilities\Parser
                 ],
             ];
 
-            $keys->map(function($key, $value) use(&$parsedKeys){
-                $parsedKeys[$key % 2 === 0 ? 'keys' : 'operators'][] = $value;
-            });
+            $keys->map(fn($key, $value) => $parsedKeys[$key % 2 === 0 ? 'keys' : 'operators'][] = $value);
 
             $value = '';
 
@@ -270,7 +268,7 @@ namespace CPB\Utilities\Parser
                 // Parse arrays
                 case ($match = Regex::match('/^\[(.*)\]$/', $trimmed)[1] ?? null) !== null:
                     return $this->parseParameters($match)
-                        ->map(function($k, $v){ return static::init($v)($this->resolvable, $this->variables); })
+                        ->map(fn($k, $v) => static::init($v)($this->resolvable, $this->variables))
                         ->toArray();
 
                 // Parse 'sub-queries'

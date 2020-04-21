@@ -24,10 +24,8 @@ namespace CPB\Utilities\Decorations
 
             $class = self::class;
             $methods = Collection::from((new \ReflectionClass($class))->getMethods())
-                ->filter(function(\ReflectionMethod $m) {
-                    return \strpos($m->getDocComment() ?: '', '@macro') !== false;
-                })
-                ->map(function(int $k, \ReflectionMethod $v){ return $v->name; });
+                ->filter(fn(\ReflectionMethod $m) => \strpos($m->getDocComment() ?: '', '@macro') !== false)
+                ->map(fn(int $k, \ReflectionMethod $v) => $v->name);
 
             self::$classes[$class] = $methods;
             $this->callback = $callback;

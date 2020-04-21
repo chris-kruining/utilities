@@ -36,8 +36,8 @@ join(' ', array_filter([ 'these', 'are', null, null, 'some', null, 'test', 'valu
 I agree, the vannilla way is shorter now but the strength really comes into play when we start adding callbacks and increase the chain length
 ```php
 CPB\Utilities\Collections\Collection::from([ 'these', '', '', 'are', null, 'some', null, 'test', '', 'values', '' ])
-  ->filter(function($v){ return $v !== null && strlen($v) > 0; })
-  ->map(function($k, $v){ return $k . '::' . $v; })
+  ->filter(fn($v) => $v !== null && strlen($v) > 0)
+  ->map(fn($k, $v) => $k . '::' . $v)
   ->toString('|');
 ```
 
@@ -50,10 +50,10 @@ which is the same as
 ```php
 $filtered = array_filter(
   [ 'these', '', '', 'are', null, 'some', null, 'test', '', 'values', '' ], 
-  function($v){ return $v !== null && strlen($v) > 0; }
+  fn($v) => $v !== null && strlen($v) > 0
 );
 
-join('|', array_map(function($k, $v){ return $k . '::' . $v; }, array_keys($filtered), $filtered));
+join('|', array_map(fn($k, $v) => $k . '::' . $v, array_keys($filtered), $filtered));
 ```
 
 As you can see the collection version maintains readability whereas the vannilla version loses in my opinion it's charm because to achieve a single goal you need to spread it out over multiple variables

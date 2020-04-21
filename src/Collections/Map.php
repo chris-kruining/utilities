@@ -20,16 +20,12 @@ namespace CPB\Utilities\Collections
 
             foreach($data as $key => $value)
             {
-                $count = $keys->filter(
-                    function($v) use($key){
-                        return count(Regex::match(
-                            \sprintf(
-                                '/^%s(__\(\d\))?$/',
-                                \str_replace('/', '\\/', \preg_quote($key))
-                            ),
-                            $v
-                        )) > 0; }
-                )->count();
+                $count = $keys
+                    ->filter(fn($v) => \count(Regex::match(
+                        \sprintf('/^%s(__\(\d\))?$/', \str_replace('/', '\\/', \preg_quote($key))),
+                        $v
+                    )) > 0)
+                    ->count();
 
                 if($count > 0)
                 {
@@ -55,7 +51,7 @@ namespace CPB\Utilities\Collections
          */
         public function average(string $key)
         {
-            return $this->columnAction(function($arr){ return array_sum($arr) / count($arr); }, $key ?? '');
+            return $this->columnAction(fn($arr) => \array_sum($arr) / \count($arr), $key ?? '');
         }
 
         /**
@@ -71,7 +67,7 @@ namespace CPB\Utilities\Collections
             {
                 if($result instanceof static)
                 {
-                    $result = $result->map(function($k, $v) use($limit){ return min($v, $limit); });
+                    $result = $result->map(fn($k, $v) => \min($v, $limit));
                 }
                 else
                 {
@@ -95,7 +91,7 @@ namespace CPB\Utilities\Collections
             {
                 if($result instanceof static)
                 {
-                    $result = $result->map(function($k, $v) use($limit){ return max($v, $limit); });
+                    $result = $result->map(fn($k, $v) => \max($v, $limit));
                 }
                 else
                 {
@@ -112,7 +108,7 @@ namespace CPB\Utilities\Collections
         public function clamp(string $key, float $lower, float $upper)
         {
             $result = $this->min($key, $lower);
-            $map = function($k, $v) use($upper){ return min($v, $upper); };
+            $map = fn($k, $v) => \min($v, $upper);
 
             if($result instanceof static)
             {

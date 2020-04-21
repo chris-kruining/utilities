@@ -200,33 +200,24 @@ namespace CPB\Utilities\Collections
         {
             throw new NotImplemented;
 
-            $iterable = static::from($iterable)->map(function($k, $v){
-                return array_combine(
-                    array_map(
-                        function($key) {
-                            return 'right' . $key;
-                        },
-                        array_keys($v)
-                    ),
-                    $v
-                );
-            })->toArray();
+            $iterable = static::from($iterable)
+                ->map(fn($k, $v) => \array_combine(\array_map(fn($key) => 'right' . $key, \array_keys($v)), $v))
+                ->toArray();
             $foreignKey = 'right' . $foreignKey;
 
-            $leftIndex = array_map(function($row) use($localKey){ return $row[$localKey]; }, $this->items);
-            $rightIndex = array_map(function($row) use($foreignKey){ return $row[$foreignKey]; }, $iterable);
-            $matchedIndexes = array_map(function($v) use ($rightIndex){ return array_search($v, $rightIndex); }, array_intersect($leftIndex, $rightIndex));
+            $leftIndex = array_map(fn($row) => $row[$localKey], $this->items);
+            $rightIndex = array_map(fn($row) => $row[$foreignKey], $iterable);
+            $matchedIndexes = array_map(fn($v) => array_search($v, $rightIndex), array_intersect($leftIndex, $rightIndex));
 
             switch($strategy ?? JoinStrategy::INNER)
             {
                 // both collections need to have a matching value
                 case Queryable::JOIN_INNER:
-                    $result = array_map(function($k, $v) use($iterable) {
-                        return array_merge(
-                            $this->items[$k],
-                            $iterable[$v]
-                        );
-                    }, array_keys($matchedIndexes), $matchedIndexes);
+                    $result = array_map(
+                        fn($k, $v) => \array_merge($this->items[$k], $iterable[$v]),
+                        array_keys($matchedIndexes),
+                        $matchedIndexes
+                    );
 
                     break;
                 // all rows from both collections and intersect matching rows
@@ -249,7 +240,10 @@ namespace CPB\Utilities\Collections
                         );
                     }
 
-                    $result = array_merge($result, array_filter($iterable, function($i) use($usedIndexes){ return !in_array($i, $usedIndexes); }, ARRAY_FILTER_USE_KEY));
+                    $result = array_merge(
+                        $result,
+                        array_filter($iterable, fn($i) => \in_array($i, $usedIndexes) === false, ARRAY_FILTER_USE_KEY)
+                    );
 
                     break;
                 // all rows from left collection and intersect matching rows
@@ -324,7 +318,7 @@ namespace CPB\Utilities\Collections
          */
         public function distinct(string $key): Queryable
         {
-            return static::from(array_unique(array_map(function($v) use($key){ return $v[$key]; }, $this->items)));
+            return static::from(array_unique(array_map(fn($v) => $v[$key], $this->items)));
         }
 
         /**

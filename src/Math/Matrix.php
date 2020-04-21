@@ -20,20 +20,12 @@ namespace CPB\Utilities\Math
 
         public function __toString(): string
         {
-            return $this->data
-                ->map(function($k, $v)
-                {
-                    return $v->toString(',');
-                })
-                ->toString(',');
+            return $this->data->map(fn($k, $v) => $v->toString(','))->toString(',');
         }
 
         public function toArray(): array
         {
-            return $this->data->reduce(function(array $t, int $k, Collection $v)
-            {
-                return array_merge($t, $v->toArray());
-            });
+            return $this->data->reduce(fn(array $t, int $k, Collection $v) => \array_merge($t, $v->toArray()));
         }
 
         public function jsonSerialize(): array

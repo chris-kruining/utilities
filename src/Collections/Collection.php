@@ -168,7 +168,7 @@ namespace CPB\Utilities\Collections
         {
             $result = array_reduce(
                 \array_keys($this->items),
-                function($t, $i) use($callback){ return $callback($t, $i, $this->items[$i]); },
+                fn($t, $i) => $callback($t, $i, $this->items[$i]),
                 $input ?? []
             );
 
@@ -378,13 +378,7 @@ namespace CPB\Utilities\Collections
         {
             return static::from(\array_filter(
                 $this->items,
-                function($v, $k = null) use($callback){
-                    $args = $k === null
-                        ? [ $v ]
-                        : [ $v, $k ];
-
-                    return !$callback(...$args);
-                },
+                fn($v, $k = null) => $callback(...($k === null ? [ $v ] : [ $v, $k ])) === false,
                 $option
             ));
         }
@@ -736,7 +730,7 @@ namespace CPB\Utilities\Collections
         public function topologicalSort(string $edgeKey): CollectionInterface
         {
             $keys = array_fill_keys(array_keys($this->items), 0);
-            $values = $this->map(function($k, $v) use($edgeKey){ return $v[$edgeKey]; });
+            $values = $this->map(fn($k, $v) => $v[$edgeKey]);
 
             foreach($values as $value)
             {
@@ -804,7 +798,7 @@ namespace CPB\Utilities\Collections
          */
         public function isAssociative(): bool
         {
-            return $this->some(function($k, $v) { return is_string($k); });
+            return $this->some(fn($k, $v) => is_string($k));
         }
 
         /**
@@ -1047,11 +1041,7 @@ namespace CPB\Utilities\Collections
                 // This map makes this method
                 // very expensive, maybe split
                 // this of into another method
-                $items = \array_map(function($v) {
-                    return \is_array($v)
-                        ? static::from($v)
-                        : $v;
-                }, $items);
+                $items = \array_map(fn($v) => \is_array($v) ? static::from($v) : $v, $items);
             }
 
             $inst->items = $items;
@@ -1074,7 +1064,7 @@ namespace CPB\Utilities\Collections
         {
             $self = clone $this;
 
-            \array_walk($self->items, function(&$i){ $i = $i instanceof CollectionInterface ? $i->toArray() : $i; });
+            \array_walk($self->items, fn(&$i) => $i = $i instanceof CollectionInterface ? $i->toArray() : $i);
 
             return iterator_to_array(
                 $self,
@@ -1101,9 +1091,7 @@ namespace CPB\Utilities\Collections
 
             if($format !== null)
             {
-                $parts = \array_map(function($p) use ($format){
-                    return \sprintf($format, $p);
-                }, $parts);
+                $parts = \array_map(fn($p) => \sprintf($format, $p), $parts);
             }
 
             return join($delimiter, $parts);

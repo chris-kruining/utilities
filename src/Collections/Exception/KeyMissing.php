@@ -20,8 +20,8 @@ namespace CPB\Utilities\Collections\Exception
 
             parent::__construct(\sprintf(
                 'Key(\'s) missing from iterable, expected [ %s ] in [ %s ]',
-                \join(', ', \array_map(function($key){ return \sprintf('`%s`', $key); }, $missing)),
-                \join(', ', \array_map(function($key){ return \sprintf('`%s`', $key); }, Collection::sanitize($keys)))
+                \join(', ', \array_map(fn($key) => \sprintf('`%s`', $key), $missing)),
+                \join(', ', \array_map(fn($key) => \sprintf('`%s`', $key), Collection::sanitize($keys)))
             ));
         }
     }
