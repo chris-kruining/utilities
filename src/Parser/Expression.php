@@ -206,7 +206,9 @@ namespace CPB\Utilities\Parser
                 ],
             ];
 
-            $keys->map(fn($key, $value) => $parsedKeys[$key % 2 === 0 ? 'keys' : 'operators'][] = $value);
+            $keys->map(function($key, $value) use(&$parsedKeys){
+                $parsedKeys[$key % 2 === 0 ? 'keys' : 'operators'][] = $value;
+            });
 
             $value = '';
 

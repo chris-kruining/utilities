@@ -59,7 +59,7 @@ namespace CPB\Utilities\Tools
                     $l = $v[0];
                     return $r;
                 })
-                ->some(fn($k, $v) =>$callback($v));
+                ->some(fn($k, $v) => $callback($v));
         }
 
         public static function measure(callable $cb, int ...$repeat)
