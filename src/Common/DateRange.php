@@ -105,7 +105,32 @@ namespace CPB\Utilities\Common
         {
             foreach($periods as $period)
             {
-                var_dump($this->periods->filter(fn($p) => $period->intersectsWith($p)));
+                foreach($this->periods->filter(fn($p) => $period->intersectsWith($p)) as $i => $p)
+                {
+                    // `$period` falls fully within `$p`
+                    if($p->start < $period->start && $p->end > $period->end)
+                    {
+                        $this->periods->splice($i, 1, [
+                            new DatePeriod($p->start, $period->start),
+                            new DatePeriod($period->end, $p->end),
+                        ]);
+                    }
+                    // `$period` has overlap on beginning of `$p`
+                    elseif($p->start > $period->start && $p->end > $period->end)
+                    {
+                        $this->periods[$i]->start = $period->end;
+                    }
+                    // `$period` has overlap on beginning of `$p`
+                    elseif($p->start < $period->start && $p->end < $period->end)
+                    {
+                        $this->periods[$i]->end = $period->start;
+                    }
+                    // `$period` is fully "covers" `$p`
+                    elseif($p->start > $period->start && $p->end < $period->end)
+                    {
+                        unset($this->periods[$i]);
+                    }
+                }
             }
 
             return $this;
