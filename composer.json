@@ -20,7 +20,7 @@
         "composer/composer": "2.0.4"
     },
     "require-dev": {
-        "phpspec/phpspec": "6.2.2"
+        "phpspec/phpspec": "6.3.0"
     },
     "config": {
         "optimize-autoloader": true
