@@ -15,12 +15,12 @@
     ],
     "require": {
         "php": ">=7.4.0",
-        "psr/container": "1.0.0",
-        "nesbot/carbon": "2.41.0",
-        "composer/composer": "1.10.13"
+        "psr/container": "2.0.1",
+        "nesbot/carbon": "2.46.0",
+        "composer/composer": "2.0.11"
     },
     "require-dev": {
-        "phpspec/phpspec": "6.2.1"
+        "phpspec/phpspec": "7.0.1"
     },
     "config": {
         "optimize-autoloader": true
