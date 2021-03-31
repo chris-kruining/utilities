@@ -85,6 +85,11 @@ namespace CPB\Utilities\Common
             return new static(max($this->start, $b->start), min($this->end, $b->end));
         }
 
+        public function contains(DateTime $dateTime): bool
+        {
+            return $dateTime >= $this->start && $dateTime <=$this->end;
+        }
+
         public function getIterator()
         {
             yield from new \DatePeriod($this->start, $this->interval, $this->end);

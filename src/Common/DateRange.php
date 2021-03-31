@@ -152,6 +152,11 @@ namespace CPB\Utilities\Common
             return $inst;
         }
 
+        public function contains(DateTime $dateTime): bool
+        {
+            return $this->periods->some(fn($k, $p) => $p->contains($dateTime));
+        }
+
         public function &iterator()
         {
             foreach($this->periods as $i => &$period)
