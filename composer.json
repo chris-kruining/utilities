@@ -16,7 +16,7 @@
     "require": {
         "php": ">=7.4.0",
         "psr/container": "2.0.1",
-        "nesbot/carbon": "2.51.0",
+        "nesbot/carbon": "2.51.1",
         "composer/composer": "2.1.5"
     },
     "require-dev": {
