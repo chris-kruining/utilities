@@ -164,16 +164,16 @@ namespace CPB\Utilities\Collections
          *
          * @wraps array_reduce
          */
-        public function reduce(callable $callback, $input = null)
+        public function reduce(callable $callback, $input = [])
         {
             $result = array_reduce(
                 \array_keys($this->items),
                 fn($t, $i) => $callback($t, $i, $this->items[$i]),
-                $input ?? []
+                $input
             );
 
-            return \is_iterable($result) ?
-                static::from($result)
+            return \is_iterable($result)
+                ? static::from($result)
                 : $result;
         }
 
