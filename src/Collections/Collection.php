@@ -53,6 +53,22 @@ namespace CPB\Utilities\Collections
             return $this->toString();
         }
 
+        /**
+         * Serializes Collection
+         */
+        public function __serialize(): array
+        {
+            return $this->items;
+        }
+
+        /**
+         * Unserialize data
+         */
+        public function __unserialize(array $data): void
+        {
+            $this->items = $data;
+        }
+
         public function __debugInfo(): array
         {
             return $this->items ?? [];
@@ -1129,7 +1145,7 @@ namespace CPB\Utilities\Collections
         /**
          * Returns if the provided offset exists
          */
-        public function offsetExists($offset): bool
+        public function offsetExists(mixed $offset): bool
         {
             if((\is_string($offset) || \is_numeric($offset)) && \key_exists($offset, $this->items))
             {
@@ -1170,7 +1186,7 @@ namespace CPB\Utilities\Collections
         /**
          * Returns the value by offset
          */
-        public function offsetGet($offset)
+        public function offsetGet(mixed $offset): mixed
         {
             if((\is_string($offset) || \is_numeric($offset)) && \key_exists($offset, $this->items))
             {
@@ -1223,7 +1239,7 @@ namespace CPB\Utilities\Collections
         /**
          * Sets value by offset
          */
-        public function offsetSet($offset, $value)
+        public function offsetSet(mixed $offset, mixed $value): void
         {
             switch(\gettype($offset))
             {
@@ -1262,7 +1278,7 @@ namespace CPB\Utilities\Collections
         /**
          * Removes value by offset
          */
-        public function offsetUnset($offset)
+        public function offsetUnset(mixed $offset): void
         {
             if($offset === null)
             {
@@ -1273,27 +1289,9 @@ namespace CPB\Utilities\Collections
         }
 
         /**
-         * Serializes Collection to JSON string
-         */
-        public function serialize(): string
-        {
-            return \serialize($this->items);
-        }
-
-        /**
-         * Create Collection from JSON string
-         */
-        public function unserialize($serialized): Collection
-        {
-            $this->items = \unserialize($serialized);
-
-            return $this;
-        }
-
-        /**
          * Prepares Collection to be JSON encoded
          */
-        public function jsonSerialize(): array
+        public function jsonSerialize(): mixed
         {
             return $this->items ?? [];
         }

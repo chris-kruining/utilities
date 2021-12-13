@@ -32,7 +32,7 @@ namespace CPB\Utilities\Common
             return $this->value;
         }
 
-        public final function jsonSerialize()
+        public final function jsonSerialize(): mixed
         {
             $constants = self::$map[static::class];
 

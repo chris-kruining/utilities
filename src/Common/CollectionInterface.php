@@ -12,7 +12,6 @@ namespace CPB\Utilities\Common
         \Countable,
         \IteratorAggregate,
         \ArrayAccess,
-        \Serializable,
         \JsonSerializable,
         Cloneable
     {
@@ -37,13 +36,13 @@ namespace CPB\Utilities\Common
         public function keys(): CollectionInterface;
 
         public function values(): CollectionInterface;
-    
+
         public function flip(): CollectionInterface;
 
         public function unique(): CollectionInterface;
 
         public function reverse(): CollectionInterface;
-        
+
         public function reduce(callable $callback, $input = null);
 
         public function find(callable $callback);
@@ -57,21 +56,21 @@ namespace CPB\Utilities\Common
         public function diff(iterable ...$sets): CollectionInterface;
 
         public function diffAssoc(iterable ...$sets): CollectionInterface;
-        
+
         public function diffKey(iterable ...$sets): CollectionInterface;
-        
+
         public function diffUAssoc(callable $callback, iterable ...$sets): CollectionInterface;
-        
+
         public function diffUKey(callable $callback, iterable ...$sets): CollectionInterface;
 
         public function intersect(iterable ...$sets): CollectionInterface;
 
         public function intersectAssoc(iterable ...$sets): CollectionInterface;
-        
+
         public function intersectKey(iterable ...$sets): CollectionInterface;
-        
+
         public function intersectUAssoc(callable $callback, iterable ...$sets): CollectionInterface;
-        
+
         public function intersectUKey(callable $callback, iterable ...$sets): CollectionInterface;
 
         public function sort(int $flags = SORT_REGULAR): CollectionInterface;
