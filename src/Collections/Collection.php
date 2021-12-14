@@ -327,7 +327,7 @@ namespace CPB\Utilities\Collections
          *
          * @wraps array_search
          */
-        public function search($needle, bool $strict = null): ?int
+        public function search($needle, bool $strict = false): ?int
         {
             $result = array_search($needle, $this->items, $strict);
 
