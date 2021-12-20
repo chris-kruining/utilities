@@ -165,7 +165,7 @@ namespace CPB\Utilities\Common
             }
         }
 
-        public function getIterator()
+        public function getIterator(): \Traversable
         {
             yield from $this->periods
                 ->reduce(fn($t, $k, $v) => \array_merge(
@@ -174,7 +174,7 @@ namespace CPB\Utilities\Common
                 ));
         }
 
-        public function jsonSerialize()
+        public function jsonSerialize(): mixed
         {
             return [
                 'periods' => $this->periods->map(fn($k, $v) => [
@@ -186,19 +186,20 @@ namespace CPB\Utilities\Common
             ];
         }
 
-        public function offsetExists($offset)
+        public function offsetExists(mixed $offset): bool
         {
             return key_exists($offset, $this->periods);
         }
-        public function offsetGet($offset)
+        public function offsetGet(mixed $offset): mixed
         {
             throw new NotImplemented;
         }
-        public function offsetSet($offset, $value)
+        public function offsetSet(mixed $offset, mixed $value): void
         {
             throw new NotImplemented;
         }
-        public function offsetUnset($offset) {
+        public function offsetUnset(mixed $offset): void
+        {
             unset($this->periods[$offset]);
         }
     }

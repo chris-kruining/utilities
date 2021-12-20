@@ -769,6 +769,8 @@ namespace CPB\Utilities\Collections
                 $value = $this->items[$key];
             }
 
+            unset($value);
+
             $this->items = $keys;
 
             return $this;

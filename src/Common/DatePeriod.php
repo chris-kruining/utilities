@@ -90,7 +90,7 @@ namespace CPB\Utilities\Common
             return $dateTime >= $this->start && $dateTime <=$this->end;
         }
 
-        public function getIterator()
+        public function getIterator(): \Traversable
         {
             yield from new \DatePeriod($this->start, $this->interval, $this->end);
         }
